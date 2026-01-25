@@ -16,7 +16,6 @@ import AIChat from "./pages/Dashboard/AIChat";
 import HeroSection from "./components/HeroSection";
 import Features from "./components/Features";
 import Testimonials from "./components/Testimonials";
-import Hero from "./components/HeroSection1";
 import WhyNHWSection from "./components/WhyNHWSection";
 import AboutUs from "./components/AboutUs";
 import SignUp from "./pages/SignUp";
@@ -84,7 +83,6 @@ const App = () => {
               <>
                 <Header />
                 <HeroSection />
-                <Hero />
                 <Features />
                 <WhyNHWSection />
                 <Testimonials />

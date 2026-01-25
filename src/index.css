@@ -4,7 +4,7 @@
 
 
 @theme {
-  --color-primary: #30B349;
+  --color-primary: #3AB54A;
   --color-primary-2: #8CC43D;
 }
 /* Hide desktop toggle button on mobile */
@@ -23,11 +23,11 @@
 
 /* ✅ Make active tab and underline green */
 .custom-tabs .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
-  color: #30B349 !important;
+  color: #3AB54A !important;
 }
 
 .custom-tabs .ant-tabs-ink-bar {
-  background: #30B349 !important;
+  background: #3AB54A !important;
 }
 
 
