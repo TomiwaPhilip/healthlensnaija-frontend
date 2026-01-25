@@ -91,7 +91,7 @@ const HeroSection = () => {
 
           <motion.h1 
             variants={itemVariants}
-            className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-extrabold leading-tight mb-6 text-gray-900"
+            className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-extrabold leading-tight mb-6 text-gray-900"
           >
             <div className="min-h-[3.6em] sm:min-h-[3em] lg:min-h-[3.6em]">
             <Typewriter
@@ -118,7 +118,7 @@ const HeroSection = () => {
 
           <motion.p 
             variants={itemVariants}
-            className="mt-4 text-lg md:text-xl text-gray-600 max-w-lg leading-relaxed"
+            className="mt-4 text-base md:text-lg text-gray-600 max-w-lg leading-relaxed"
           >
             Empowering journalists and health professionals with the latest insights through AI-powered storytelling and analysis.
           </motion.p>
