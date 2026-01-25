@@ -194,8 +194,7 @@ const Header = () => {
                   );
                 })}
               </motion.nav>
-              <div className="flex flex-col space-y-4 pb-4">
-                <motion.div px-2">
+              <div className="flex flex-col space-y-4 pb-4 px-2">
                 <motion.div
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
@@ -222,6 +221,7 @@ const Header = () => {
                   >
                     <UserPlus className="w-5 h-5" />
                     <span>Get Started</span>
+                  </Link>
                 </motion.div>
               </div>
             </div>
