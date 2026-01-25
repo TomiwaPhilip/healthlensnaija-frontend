@@ -1,0 +1,84 @@
+{
+    "title": "Ressources de la rédaction",
+    "subtitle": "Outils et guides pour soutenir votre pratique du journalisme de solutions",
+    "searchPlaceholder": "Rechercher des ressources par titre ou description...",
+    "tags": {
+      "all": "Toutes les ressources",
+      "style-guide": "Guide de style",
+      "impact-tracker": "Suivi d'impact",
+      "solution-story": "Histoire de solution",
+      "data-tool": "Outil de données"
+    },
+    "actions": {
+      "viewDocs": "Voir la documentation",
+      "download": "Télécharger",
+      "clearFilters": "Réinitialiser les filtres"
+    },
+    "labels": {
+      "available": "{{count}} ressource disponible",
+      "available_plural": "{{count}} ressources disponibles",
+      "fileSize": "Taille du fichier : {{size}}",
+      "noResults": "Aucune ressource ne correspond à vos critères de recherche"
+    },
+    "quickInsight": {
+      "title": "QuickInsight SoJo de la semaine",
+      "quote": "\"Au lieu de demander ce qui ne va pas, demandez ce qui fonctionne. Le cadre d'une histoire de solution change la façon dont nous voyons les problèmes — et comment nous les résolvons.\"",
+      "explore": "Explorer plus d'aperçus"
+    },
+    "resources": [
+      {
+        "title": "Guide de style éditorial",
+        "description": "Guide complet couvrant les normes d'écriture de notre rédaction, les préférences terminologiques et les meilleures pratiques du journalisme de solutions.",
+        "type": "style-guide",
+        "url": "/downloads/style-guide.pdf",
+        "fileType": "pdf",
+        "fileSize": "2,4 Mo",
+        "updated": "Mis à jour il y a 2 semaines"
+      },
+      {
+        "title": "Modèle de suivi d'impact",
+        "description": "Modèle Excel pour suivre systématiquement la portée, l'engagement et l'impact mesurable de votre reportage axé sur les solutions.",
+        "type": "impact-tracker",
+        "url": "/downloads/impact-tracker.xlsx",
+        "fileType": "xlsx",
+        "fileSize": "1,1 Mo",
+        "updated": "Mis à jour il y a 1 mois"
+      },
+      {
+        "title": "Liste de vérification des histoires de solutions",
+        "description": "Liste de vérification étape par étape pour évaluer si votre histoire répond à tous les critères d'un journalisme de solutions rigoureux.",
+        "type": "solution-story",
+        "url": "/downloads/solutions-checklist.pdf",
+        "fileType": "pdf",
+        "fileSize": "0,8 Mo",
+        "updated": "Mis à jour il y a 3 jours"
+      },
+      {
+        "title": "Documentation API QuickInsights",
+        "description": "Documentation technique pour intégrer nos outils de données SoJo QuickInsights dans votre système de gestion de contenu.",
+        "type": "data-tool",
+        "url": "/docs/quickinsights",
+        "fileType": "web",
+        "updated": "Dernière version"
+      },
+      {
+        "title": "Guide de photographie de solutions",
+        "description": "Lignes directrices pour la narration visuelle afin de capturer des images orientées solutions qui préservent l'intégrité journalistique.",
+        "type": "style-guide",
+        "url": "/downloads/photography-guide.pdf",
+        "fileType": "pdf",
+        "fileSize": "3,2 Mo",
+        "updated": "Nouveau"
+      },
+      {
+        "title": "Guide d'engagement communautaire",
+        "description": "Stratégies pour une implication significative de la communauté tout au long du processus de journalisme de solutions.",
+        "type": "solution-story",
+        "url": "/downloads/engagement-playbook.pdf",
+        "fileType": "pdf",
+        "fileSize": "4,5 Mo",
+        "updated": "Mis à jour il y a 1 semaine"
+      }
+    ]
+  }
+  

@@ -1,0 +1,84 @@
+{
+    "breadcrumb": {
+      "overview": "Overview",
+      "generate": "Conversations"
+    },
+    "heading": "Conversations",
+    "form": {
+      "selectPillar": "Select Pillar",
+      "selectKeywords": "Select Keywords",
+      "enterPrompt": "Enter your prompt",
+      "voiceInput": "Voice Input",
+      "generateButton": "Generate Story"
+    },
+    "settings": {
+      "language": "Language",
+      "tone": "Tone"
+    },
+    "messages": {
+      "fillAll": "Please fill all fields!",
+      "missingUser": "User ID is missing! Please log in again.",
+      "generatedSuccess": "Story generated and saved successfully!",
+      "deleteSuccess": "Story deleted!",
+      "deleteError": "Error deleting story.",
+      "errorGenerate": "Error generating story"
+    },
+    "modal": {
+      "deleteTitle": "Delete Story",
+      "deleteConfirm": "Are you sure you want to delete this story?",
+      "cancel": "Cancel",
+      "confirm": "Delete"
+    },
+    "list": {
+      "recommendations": "Recommendations",
+      "continueDiscussion": "Continue Discussion",
+      "exportPdf": "Export as PDF",
+      "title": "Conversations",
+      "emptyTitle": "No stories yet",
+      "emptySubtitle": "Generate your first story by filling the form above",
+      "emptyButton": "Create Your First Story",
+      "sortBy": "Sort by:",
+      "filterBy": "Filter by:",
+      "sortNewest": "Newest First",
+      "sortOldest": "Oldest First",
+      "sortTitle": "Title (A-Z)",
+      "allTags": "All Tags",
+      "showing": "Showing",
+      "to": "to",
+      "of": "of",
+      "stories": "stories",
+      "noResults": "No stories match your current filters.",
+      "clearFilters": "Clear filters"
+    },
+    "loading": {
+  "title": "Generating your story angle...",
+  "gathering": "Gathering information...",
+  "analyzing": "Analyzing keywords...",
+  "writing": "Writing content...",
+  "finalizing": "Finalizing your story...",
+  "wait": "This may take a moment..."
+},
+"voiceModal": {
+  "title": "Voice Input",
+  "listening": "Listening... Speak now.",
+  "startPrompt": "Click the record button to start speaking",
+  "startBtn": "Start Recording",
+  "stopBtn": "Stop Recording",
+  "cancel": "Cancel",
+  "apply": "Apply to Form"
+},
+"card": {
+  "solutionFocused": "✅ Solution-Focused",
+  "researchSources": "Research Sources",
+  "keyInsights": "Key Insights",
+  "created": "Created",
+  "export": "Export",
+  "continue": "Continue",
+  "edit": "Edit",
+  "copy": "Copy",
+  "copySuccess": "✅ Story copied to clipboard!",
+  "delete": "Delete"
+}
+
+  }
+  

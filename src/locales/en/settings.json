@@ -1,0 +1,62 @@
+{
+    "breadcrumb": {
+      "overview": "Overview",
+      "account": "Account",
+      "settings": "Settings"
+    },
+    "profileCompletion": {
+      "title": "Profile Information",
+      "subtitle": "Manage your account details",
+      "button": "Complete your profile"
+    },
+    "userManagement": {
+      "title": "User Management"
+    },
+    "sections": {
+      "profile": {
+        "title": "Profile",
+        "subtitle": "Name, Email, Picture",
+        "changePicture": "Change Picture",
+        "uploading": "Uploading...",
+        "firstName": "First Name",
+        "lastName": "Last Name",
+        "email": "Email Address",
+        "save": "Save",
+        "saving": "Saving..."
+      },
+      "password": {
+        "title": "Password",
+        "subtitle": "Change your login password",
+        "current": "Current Password",
+        "new": "New Password",
+        "save": "Save",
+        "updating": "Updating..."
+      },
+      "storySettings": {
+        "title": "Story Settings",
+        "subtitle": "Customize generation language and tone",
+        "language": "Language",
+        "tone": "Tone"
+      },
+      "siteLanguage": {
+        "title": "Site Language",
+        "subtitle": "Change the display language of the dashboard",
+        "label": "App Language"
+      }
+    },
+    "toast": {
+      "profilePictureUpdated": "Profile picture updated!",
+      "profileUpdated": "Profile updated!",
+      "profileUpdateFailed": "Failed to update profile",
+      "uploadFailed": "Upload failed. Try again.",
+      "passwordChanged": "Password changed",
+      "passwordFailed": "Password change failed",
+      "languageUpdated": "Language updated!",
+      "languageFailed": "Failed to save language to server",
+      "toneUpdated": "Tone updated!",
+      "toneFailed": "Failed to save tone to server",
+      "siteLanguageUpdated": "Site language updated!",
+      "fetchFailed": "Failed to fetch user profile"
+    }
+  }
+  

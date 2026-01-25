@@ -1,0 +1,19 @@
+{
+    "nav": {
+      "dashboard": "Tableau de bord",
+      "startWriting": "Commencer à écrire",
+      "uploadData": "Téléverser des données",
+      "conversations": "Conversations",
+      "resources": "Ressources",
+      "admin": "Administration",
+      "settings": "Paramètres",
+      "helpCenter": "Centre d’aide"
+    },
+    "logout": {
+      "title": "Êtes-vous sûr de vouloir vous déconnecter ?",
+      "description": "Lorsque vous cliquez sur Déconnexion, vous serez déconnecté de Healthlens Naija Newsroom.",
+      "cancel": "Annuler",
+      "confirm": "Déconnexion"
+    }
+  }
+  

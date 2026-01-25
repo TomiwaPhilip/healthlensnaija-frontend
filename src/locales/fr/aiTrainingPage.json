@@ -1,0 +1,41 @@
+{
+    "title": "Entraînement IA",
+    "documentsCount": "{{count}} documents",
+    "trainAllTitle": "Entraîner tous les documents",
+    "trainAllDesc": "Entraîne automatiquement tous les documents téléchargés",
+    "trainAllButton": "Tout entraîner",
+    "uploadFileTitle": "Téléverser un fichier",
+    "uploadFileDesc": "Téléversez un fichier PDF, DOCX ou TXT pour l’entraînement",
+    "uploadFileButton": "Téléverser",
+    "addTextTitle": "Ajouter un document texte",
+    "addTextDesc": "Écrire ou coller du texte directement pour l’entraînement",
+    "addTextButton": "Ajouter un texte",
+    "trainingDocuments": "Documents d’entraînement",
+    "noDocsTitle": "Aucun document téléchargé",
+    "noDocsSubtitle": "Téléversez des fichiers ou ajoutez du texte pour commencer",
+    "dragDropIdle": "Glissez et déposez des fichiers ici ou cliquez pour téléverser",
+    "dragDropActive": "Relâchez pour téléverser vos fichiers",
+    "supportedFormats": "Formats pris en charge : PDF, DOCX, TXT",
+    "statusTrained": "Entraîné",
+    "pendingTraining": "En attente d’entraînement",
+    "trainNow": "Entraîner maintenant",
+    "next": "Suivant",
+    "close": "Fermer",
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+  
+    "toast": {
+      "uploaded": "✅ {{title}} téléversé avec succès",
+      "uploadFailed": "❌ Échec du téléversement : {{error}}",
+      "fetchFailed": "❌ Impossible de récupérer les documents",
+      "missingFields": "⚠️ Veuillez remplir tous les champs",
+      "textSaved": "✅ Document texte enregistré",
+      "textSaveFailed": "❌ Échec de l’enregistrement du document texte : {{error}}",
+      "deleted": "🗑️ Document supprimé",
+      "deleteFailed": "❌ Échec de la suppression du document : {{error}}",
+      "trainedAll": "🚀 Tous les documents ont été entraînés avec succès",
+      "trainFailed": "❌ Échec de l’entraînement : {{error}}",
+      "trainedOne": "✅ Document entraîné avec succès"
+    }
+  }
+  

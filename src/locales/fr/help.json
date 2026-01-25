@@ -1,0 +1,63 @@
+{
+    "title": "Centre d'aide",
+    "searchPlaceholder": "Rechercher des articles d'aide...",
+    "tags": {
+      "all": "Tous les sujets",
+      "profile": "Profil",
+      "account": "Compte",
+      "security": "Sécurité",
+      "feedback": "Retour d'expérience"
+    },
+    "solutionInsight": {
+      "title": "Aperçu de la solution",
+      "quote": "\"Lorsque les gens comprennent comment d'autres ont résolu des problèmes similaires, ils se sentent plus capables d'agir. C'est l'essence du journalisme de solution.\""
+    },
+    "faqTitle": "Questions fréquemment posées",
+    "faqHelpful": "Cela vous a-t-il été utile ?",
+    "noResults": "Aucun résultat trouvé. Essayez une autre recherche ou un autre filtre.",
+    "contact": {
+      "title": "Vous avez encore besoin d'aide ?",
+      "subtitle": "Notre équipe est heureuse de répondre à vos questions",
+      "button": "Contacter le support"
+    },
+    "chat": {
+      "title": "Support client",
+      "welcome": "Bonjour ! 👋 Comment pouvons-nous vous aider aujourd'hui ? Notre délai moyen de réponse est de 15 minutes.",
+      "placeholder": "Tapez votre message ici...",
+      "hint": "Appuyez sur Entrée pour envoyer",
+      "send": "Envoyer"
+    },
+    "faqs": [
+      {
+        "question": "Comment mettre à jour mon profil ?",
+        "answer": "Pour mettre à jour votre profil, allez dans la page des paramètres, faites vos modifications et cliquez sur enregistrer. Vous pouvez mettre à jour vos informations personnelles, votre photo de profil et vos préférences à tout moment.",
+        "tag": "profile"
+      },
+      {
+        "question": "Comment puis-je contacter le support ?",
+        "answer": "Vous pouvez contacter notre équipe de support en envoyant un e-mail à support@nigeriahealthwatch.com ou en appelant notre ligne d'assistance au +234 800 123 4567. Nos horaires de support sont du lundi au vendredi, de 9h à 17h WAT.",
+        "tag": "account"
+      },
+      {
+        "question": "Comment réinitialiser mon mot de passe ?",
+        "answer": "Cliquez sur 'Mot de passe oublié' sur la page de connexion, et suivez les instructions envoyées à votre adresse e-mail enregistrée. Pour des raisons de sécurité, le lien de réinitialisation du mot de passe expire après 24 heures.",
+        "tag": "security"
+      },
+      {
+        "question": "Comment signaler un bug ou suggérer une fonctionnalité ?",
+        "answer": "Nous accueillons vos retours ! Veuillez envoyer un e-mail à innovation@nigeriahealthwatch.com ou utiliser la fenêtre de chat pour partager vos idées ou signaler tout problème rencontré.",
+        "tag": "feedback"
+      },
+      {
+        "question": "Où puis-je trouver les paramètres de mon compte ?",
+        "answer": "Les paramètres du compte sont accessibles depuis le menu déroulant en haut à droite de l'écran lorsque vous êtes connecté. Cherchez votre photo de profil ou vos initiales.",
+        "tag": "account"
+      },
+      {
+        "question": "Mes informations personnelles sont-elles sécurisées ?",
+        "answer": "Nous prenons votre vie privée au sérieux. Toutes les données personnelles sont cryptées et stockées en toute sécurité conformément aux réglementations nigérianes sur la protection des données.",
+        "tag": "security"
+      }
+    ]
+  }
+  

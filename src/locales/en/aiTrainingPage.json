@@ -1,0 +1,41 @@
+{
+    "title": "AI Training",
+    "documentsCount": "{{count}} documents",
+    "trainAllTitle": "Train All Documents",
+    "trainAllDesc": "Automatically train all uploaded documents",
+    "trainAllButton": "Train All",
+    "uploadFileTitle": "Upload File",
+    "uploadFileDesc": "Upload a PDF, DOCX, or TXT file to train",
+    "uploadFileButton": "Upload File",
+    "addTextTitle": "Add Text Document",
+    "addTextDesc": "Write or paste text directly to train",
+    "addTextButton": "Add Text",
+    "trainingDocuments": "Training Documents",
+    "noDocsTitle": "No documents uploaded yet",
+    "noDocsSubtitle": "Upload files or add text to get started",
+    "dragDropIdle": "Drag and drop files here or click to upload",
+    "dragDropActive": "Release to upload your files",
+    "supportedFormats": "Supported: PDF, DOCX, TXT",
+    "statusTrained": "Trained",
+    "pendingTraining": "Pending training",
+    "trainNow": "Train Now",
+    "next": "Next",
+    "close": "Close",
+    "cancel": "Cancel",
+    "save": "Save",
+  
+    "toast": {
+      "uploaded": "✅ {{title}} uploaded successfully",
+      "uploadFailed": "❌ Upload failed: {{error}}",
+      "fetchFailed": "❌ Failed to fetch documents",
+      "missingFields": "⚠️ Please fill all fields",
+      "textSaved": "✅ Text document saved",
+      "textSaveFailed": "❌ Failed to save text document: {{error}}",
+      "deleted": "🗑️ Document deleted",
+      "deleteFailed": "❌ Failed to delete document: {{error}}",
+      "trainedAll": "🚀 All documents trained successfully",
+      "trainFailed": "❌ Training failed: {{error}}",
+      "trainedOne": "✅ Document trained successfully"
+    }
+  }
+  

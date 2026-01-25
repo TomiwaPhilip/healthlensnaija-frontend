@@ -1,0 +1,81 @@
+{
+    "admin": {
+      "title": "Admin Dashboard",
+      "overview": "Overview",
+      "users": "Users",
+      "content": "Content",
+      "aiTraining": "AI Training",
+      "chats": "Chats",
+      "support": "Support",
+      "faqs": "FAQs",
+      "tools": "Tools",
+      "manageFaqs": "Manage FAQs",
+      "faqQuestion": "FAQ Question",
+      "faqAnswer": "FAQ Answer",
+      "addFaq": "Add FAQ",
+      "loadingFaqs": "Loading FAQs...",
+      "noFaqs": "No FAQs added yet.",
+      "supportInbox": "Support Inbox",
+      "noSupport": "No support conversations yet.",
+  
+      "aiTrainingPage": {
+        "title": "AI Training",
+        "trainAllTitle": "Train All",
+        "trainAllDesc": "Process all documents for AI learning",
+        "trainAllButton": "Train All Documents",
+        "uploadFileTitle": "Upload File",
+        "uploadFileDesc": "Add PDF, DOCX, or TXT files",
+        "uploadFileButton": "Select File",
+        "addTextTitle": "Add Text",
+        "addTextDesc": "Paste or write content directly",
+        "addTextButton": "Create Text Document",
+        "dragDropIdle": "Drag and drop files here to upload",
+        "dragDropActive": "Drop your file here",
+        "supportedFormats": "Supports PDF, DOCX, TXT",
+        "trainingDocuments": "Training Documents",
+        "show": "Show",
+        "noDocsTitle": "No documents uploaded yet.",
+        "noDocsSubtitle": "Upload files or add text to start training your AI",
+        "addTextModalTitle": "Add Text Document",
+        "addTextModalFields": {
+          "title": "Title",
+          "content": "Content",
+          "placeholderTitle": "Document Title",
+          "placeholderContent": "Paste your text here..."
+        },
+        "cancel": "Cancel",
+        "save": "Save Document",
+        "statusTrained": "Trained",
+        "statusPending": "Pending",
+        "pendingTraining": "Pending training",
+        "trainNow": "Train Now",
+        "next": "Next",
+        "close": "Close",
+        "actionsMenu": "Actions Menu",
+        "trainingStatus": "Training status",
+        "documentsCount": "{{count}} document",
+        "documentsCount_plural": "{{count}} documents",
+  
+        "toast": {
+          "uploaded": "Uploaded: {{title}}",
+          "uploadFailed": "Upload failed: {{error}}",
+          "fetchFailed": "Failed to fetch documents",
+          "missingFields": "Please enter a title and content.",
+          "textSaved": "Text document saved successfully",
+          "textSaveFailed": "Failed to save: {{error}}",
+          "deleted": "Document deleted successfully",
+          "deleteFailed": "Delete failed: {{error}}",
+          "trainedAll": "All documents trained successfully",
+          "trainFailed": "Training failed: {{error}}",
+          "previewFailed": "Could not load preview: {{error}}",
+          "trainedOne": "Document trained successfully"
+        },
+  
+        "statusMessages": {
+          "trainingAll": "Training all documents...",
+          "trainingOne": "Training document..."
+        }
+      }
+    }
+  }
+  

@@ -1,0 +1,19 @@
+{
+    "chat": {
+      "history": "Historique des discussions",
+      "startNew": "Démarrer une nouvelle discussion",
+      "newChat": "Nouvelle discussion",
+      "emptyTitle": "Comment puis-je vous aider aujourd'hui ?",
+      "emptySubtitle": "Commencez une nouvelle conversation",
+      "emptyHelper": "Demandez-moi tout sur les politiques, l’analyse des données ou obtenez des recommandations pour vos recherches.",
+      "downloadPdf": "Télécharger en PDF",
+      "copyMessage": "Copier le message",
+      "editResend": "Modifier et renvoyer",
+      "greeting": "Comment puis-je vous aider aujourd'hui ?",
+      "startConversation": "Commencez une nouvelle conversation",
+      "processing": "Traitement de votre demande...",
+      "transcriptPrefix": "Transcription de la discussion",
+      "assistantName": "Assistant IA Healthlens Naija"
+    }
+  }
+  

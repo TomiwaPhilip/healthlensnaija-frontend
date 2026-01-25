@@ -1,0 +1,21 @@
+
+
+  {
+    "chat": {
+      "history": "Chat History",
+      "startNew": "Start New Chat",
+      "newChat": "New Chat",
+      "emptyTitle": "How can I help you today?",
+      "emptySubtitle": "Start a new conversation",
+      "emptyHelper": "Ask me anything about policy, data analysis, or get recommendations for your research.",
+      "downloadPdf": "Download as PDF",
+      "copyMessage": "Copy Message",
+      "editResend": "Edit & Resend",
+      "greeting": "How can I help you today?",
+      "startConversation": "Start a new conversation",
+      "processing": "Processing your request...",
+      "transcriptPrefix": "Chat Transcript",
+      "assistantName": "Healthlens Naija AI Assistant"
+    }
+  }
+  

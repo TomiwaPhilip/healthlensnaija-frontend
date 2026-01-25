@@ -1,0 +1,85 @@
+{
+    "breadcrumb": {
+      "overview": "Aperçu",
+      "generate": "Générer une histoire"
+    },
+    "heading": "Générer des angles d'histoire",
+    "form": {
+      "selectPillar": "Sélectionner un pilier",
+      "selectKeywords": "Sélectionner des mots-clés",
+      "enterPrompt": "Saisissez votre invite",
+      "voiceInput": "Entrée vocale",
+      "generateButton": "Générer une histoire"
+    },
+    "settings": {
+      "language": "Langue",
+      "tone": "Ton"
+    },
+    "messages": {
+      "fillAll": "Veuillez remplir tous les champs !",
+      "missingUser": "L'identifiant utilisateur est manquant ! Veuillez vous reconnecter.",
+      "generatedSuccess": "Histoire générée et enregistrée avec succès !",
+      "deleteSuccess": "Histoire supprimée !",
+      "deleteError": "Erreur lors de la suppression de l'histoire.",
+      "errorGenerate": "Erreur lors de la génération de l'histoire"
+    },
+    "modal": {
+      "deleteTitle": "Supprimer l'histoire",
+      "deleteConfirm": "Êtes-vous sûr de vouloir supprimer cette histoire ?",
+      "cancel": "Annuler",
+      "confirm": "Supprimer"
+    },
+    "list": {
+      "recommendations": "Recommandations",
+      "continueDiscussion": "Continuer la discussion",
+      "exportPdf": "Exporter en PDF",
+      "title": "Histoires générées",
+      "emptyTitle": "Aucune histoire pour le moment",
+      "emptySubtitle": "Générez votre première histoire en remplissant le formulaire ci-dessus",
+      "emptyButton": "Créer votre première histoire",
+      "sortBy": "Trier par :",
+      "filterBy": "Filtrer par :",
+      "sortNewest": "Plus récentes",
+      "sortOldest": "Plus anciennes",
+      "sortTitle": "Titre (A-Z)",
+      "allTags": "Tous les tags",
+      "showing": "Affichage",
+      "to": "à",
+      "of": "sur",
+      "stories": "histoires",
+      "noResults": "Aucune histoire ne correspond à vos filtres actuels.",
+      "clearFilters": "Réinitialiser les filtres"
+    },
+    "loading": {
+  "title": "Génération de votre angle d'histoire...",
+  "gathering": "Collecte d'informations...",
+  "analyzing": "Analyse des mots-clés...",
+  "writing": "Rédaction du contenu...",
+  "finalizing": "Finalisation de votre histoire...",
+  "wait": "Cela peut prendre un moment..."
+},
+"voiceModal": {
+  "title": "Entrée vocale",
+  "listening": "Écoute... Parlez maintenant.",
+  "startPrompt": "Cliquez sur le bouton d'enregistrement pour commencer à parler",
+  "startBtn": "Commencer l'enregistrement",
+  "stopBtn": "Arrêter l'enregistrement",
+  "cancel": "Annuler",
+  "apply": "Appliquer au formulaire"
+},
+"card": {
+  "solutionFocused": "✅ Axé sur les solutions",
+  "researchSources": "Sources de recherche",
+  "keyInsights": "Principaux enseignements",
+  "created": "Créé",
+  "export": "Exporter",
+  "continue": "Continuer",
+  "edit": "Éditer",
+  "copy": "Copier",
+  "copySuccess": "✅ Histoire copiée dans le presse-papiers !",
+  "delete": "Supprimer"
+}
+
+
+  }
+  

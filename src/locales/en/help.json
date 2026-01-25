@@ -1,0 +1,63 @@
+{
+    "title": "Help Center",
+    "searchPlaceholder": "Search help articles...",
+    "tags": {
+      "all": "All Topics",
+      "profile": "Profile",
+      "account": "Account",
+      "security": "Security",
+      "feedback": "Feedback"
+    },
+    "solutionInsight": {
+      "title": "Solution Insight",
+      "quote": "\"When people understand how others have solved similar issues, they feel more empowered to act. That's the core of solution journalism.\""
+    },
+    "faqTitle": "Frequently Asked Questions",
+    "faqHelpful": "Was this helpful?",
+    "noResults": "No results found. Try a different search or filter.",
+    "contact": {
+      "title": "Still need help?",
+      "subtitle": "Our team is happy to answer your questions",
+      "button": "Contact Support"
+    },
+    "chat": {
+      "title": "Customer Support",
+      "welcome": "Hi there! 👋 How can we help you today? Our average response time is 15 minutes.",
+      "placeholder": "Type your message here...",
+      "hint": "Press Enter to send",
+      "send": "Send"
+    },
+    "faqs": [
+      {
+        "question": "How do I update my profile?",
+        "answer": "To update your profile, go to the settings page, make your changes, and click save. You can update your personal information, profile picture, and preferences at any time.",
+        "tag": "profile"
+      },
+      {
+        "question": "How can I contact support?",
+        "answer": "You can contact our support team by sending an email to support@nigeriahealthwatch.com or by calling our helpline at +234 800 123 4567. Our support hours are Monday-Friday, 9am-5pm WAT.",
+        "tag": "account"
+      },
+      {
+        "question": "How do I reset my password?",
+        "answer": "Click on 'Forgot Password' on the login page, and follow the instructions sent to your registered email address. For security reasons, the password reset link expires after 24 hours.",
+        "tag": "security"
+      },
+      {
+        "question": "How do I report a bug or suggest a feature?",
+        "answer": "We welcome your feedback! Please email innovation@nigeriahealthwatch.com or use the chat window to share your ideas or report any issues you encounter.",
+        "tag": "feedback"
+      },
+      {
+        "question": "Where can I find my account settings?",
+        "answer": "Account settings are accessible from the dropdown menu in the top right corner of the screen when you're logged in. Look for your profile picture or initials.",
+        "tag": "account"
+      },
+      {
+        "question": "Is my personal information secure?",
+        "answer": "We take your privacy seriously. All personal data is encrypted and stored securely in compliance with Nigerian data protection regulations.",
+        "tag": "security"
+      }
+    ]
+  }
+  

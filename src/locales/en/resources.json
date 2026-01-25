@@ -1,0 +1,84 @@
+{
+    "title": "Newsroom Resources",
+    "subtitle": "Tools and guides to support your solutions journalism practice",
+    "searchPlaceholder": "Search resources by title or description...",
+    "tags": {
+      "all": "All Resources",
+      "style-guide": "Style Guide",
+      "impact-tracker": "Impact Tracker",
+      "solution-story": "Solution Story",
+      "data-tool": "Data Tool"
+    },
+    "actions": {
+      "viewDocs": "View Docs",
+      "download": "Download",
+      "clearFilters": "Clear filters"
+    },
+    "labels": {
+      "available": "{{count}} resource available",
+      "available_plural": "{{count}} resources available",
+      "fileSize": "File size: {{size}}",
+      "noResults": "No resources match your search criteria"
+    },
+    "quickInsight": {
+      "title": "SoJo QuickInsight of the Week",
+      "quote": "\"Instead of asking what's wrong, ask what's working. The frame of a solution story changes how we see problems—and how we fix them.\"",
+      "explore": "Explore more insights"
+    },
+    "resources": [
+      {
+        "title": "Editorial Style Guide",
+        "description": "Comprehensive guide covering our newsroom's writing standards, terminology preferences, and solutions journalism best practices.",
+        "type": "style-guide",
+        "url": "/downloads/style-guide.pdf",
+        "fileType": "pdf",
+        "fileSize": "2.4 MB",
+        "updated": "Updated 2 weeks ago"
+      },
+      {
+        "title": "Impact Tracker Template",
+        "description": "Excel template to systematically track the reach, engagement, and measurable impact of your solution-focused reporting.",
+        "type": "impact-tracker",
+        "url": "/downloads/impact-tracker.xlsx",
+        "fileType": "xlsx",
+        "fileSize": "1.1 MB",
+        "updated": "Updated 1 month ago"
+      },
+      {
+        "title": "Solutions Story Checklist",
+        "description": "Step-by-step checklist to evaluate whether your story meets all criteria for rigorous solutions journalism.",
+        "type": "solution-story",
+        "url": "/downloads/solutions-checklist.pdf",
+        "fileType": "pdf",
+        "fileSize": "0.8 MB",
+        "updated": "Updated 3 days ago"
+      },
+      {
+        "title": "QuickInsights API Documentation",
+        "description": "Technical documentation for integrating our SoJo QuickInsights data tools into your content management system.",
+        "type": "data-tool",
+        "url": "/docs/quickinsights",
+        "fileType": "web",
+        "updated": "Latest version"
+      },
+      {
+        "title": "Solutions Photography Guide",
+        "description": "Visual storytelling guidelines for capturing solution-oriented images that maintain journalistic integrity.",
+        "type": "style-guide",
+        "url": "/downloads/photography-guide.pdf",
+        "fileType": "pdf",
+        "fileSize": "3.2 MB",
+        "updated": "New"
+      },
+      {
+        "title": "Community Engagement Playbook",
+        "description": "Strategies for meaningful community involvement throughout the solutions journalism process.",
+        "type": "solution-story",
+        "url": "/downloads/engagement-playbook.pdf",
+        "fileType": "pdf",
+        "fileSize": "4.5 MB",
+        "updated": "Updated 1 week ago"
+      }
+    ]
+  }
+  

@@ -1,0 +1,19 @@
+{
+    "nav": {
+      "dashboard": "Dashboard",
+      "startWriting": "Start Writing",
+      "uploadData": "Upload Data",
+      "conversations": "Conversations",
+      "resources": "Resources",
+      "admin": "Admin",
+      "settings": "Settings",
+      "helpCenter": "Help Center"
+    },
+    "logout": {
+      "title": "Are you sure you want to log out?",
+      "description": "When you click logout, you’ll be signed out of Healthlens Naija Newsroom.",
+      "cancel": "Cancel",
+      "confirm": "Logout"
+    }
+  }
+  

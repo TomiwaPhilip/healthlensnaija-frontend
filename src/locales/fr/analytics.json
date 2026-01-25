@@ -1,0 +1,30 @@
+{
+    "analytics": {
+      "overviewTitle": "Aperçu analytique",
+      "summary": {
+        "title": "Métriques de synthèse",
+        "activeUsers": "Utilisateurs actifs",
+        "daily": "Quotidien",
+        "weekly": "Hebdomadaire",
+        "retention": "Rétention",
+        "retentionRate": "Taux de rétention",
+        "retentionDesc": "Utilisateurs revenant après 7 jours"
+      },
+      "activity": {
+        "title": "Métriques d'activité"
+      },
+      "userAnalytics": {
+        "title": "Analyse des utilisateurs"
+      },
+      "distribution": {
+        "title": "Métriques de distribution"
+      },
+      "loading": "Chargement de l’aperçu...",
+      "error": "Échec du chargement des analyses",
+      "generatedStories": "Histoires générées",
+      "metricsOverview": "Aperçu des métriques",
+      "viewStory": "Voir l’histoire",
+      "close": "Fermer"
+    }
+  }
+  

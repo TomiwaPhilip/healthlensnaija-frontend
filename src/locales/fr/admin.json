@@ -1,0 +1,81 @@
+{
+    "admin": {
+      "title": "Tableau de bord Admin",
+      "overview": "Vue d'ensemble",
+      "users": "Utilisateurs",
+      "content": "Contenu",
+      "aiTraining": "Entraînement IA",
+      "chats": "Discussions",
+      "support": "Assistance",
+      "faqs": "FAQs",
+      "tools": "Outils",
+      "manageFaqs": "Gérer les FAQs",
+      "faqQuestion": "Question FAQ",
+      "faqAnswer": "Réponse FAQ",
+      "addFaq": "Ajouter une FAQ",
+      "loadingFaqs": "Chargement des FAQs...",
+      "noFaqs": "Aucune FAQ ajoutée pour le moment.",
+      "supportInbox": "Boîte de réception de l'assistance",
+      "noSupport": "Aucune conversation d'assistance.",
+  
+      "aiTrainingPage": {
+        "title": "Entraînement IA",
+        "trainAllTitle": "Tout entraîner",
+        "trainAllDesc": "Traiter tous les documents pour l'apprentissage de l'IA",
+        "trainAllButton": "Entraîner tous les documents",
+        "uploadFileTitle": "Téléverser un fichier",
+        "uploadFileDesc": "Ajouter des fichiers PDF, DOCX ou TXT",
+        "uploadFileButton": "Sélectionner un fichier",
+        "addTextTitle": "Ajouter du texte",
+        "addTextDesc": "Coller ou écrire du contenu directement",
+        "addTextButton": "Créer un document texte",
+        "dragDropIdle": "Glissez-déposez vos fichiers ici pour les téléverser",
+        "dragDropActive": "Déposez votre fichier ici",
+        "supportedFormats": "Formats pris en charge : PDF, DOCX, TXT",
+        "trainingDocuments": "Documents d'entraînement",
+        "show": "Afficher",
+        "noDocsTitle": "Aucun document téléversé pour le moment.",
+        "noDocsSubtitle": "Téléversez des fichiers ou ajoutez du texte pour commencer à entraîner votre IA",
+        "addTextModalTitle": "Ajouter un document texte",
+        "addTextModalFields": {
+          "title": "Titre",
+          "content": "Contenu",
+          "placeholderTitle": "Titre du document",
+          "placeholderContent": "Collez votre texte ici..."
+        },
+        "cancel": "Annuler",
+        "save": "Enregistrer le document",
+        "statusTrained": "Entraîné",
+        "statusPending": "En attente",
+        "pendingTraining": "En attente d'entraînement",
+        "trainNow": "Entraîner maintenant",
+        "next": "Suivant",
+        "close": "Fermer",
+        "actionsMenu": "Menu d'actions",
+        "trainingStatus": "Statut d'entraînement",
+        "documentsCount": "{{count}} document",
+        "documentsCount_plural": "{{count}} documents",
+  
+        "toast": {
+          "uploaded": "Téléversé : {{title}}",
+          "uploadFailed": "Échec du téléversement : {{error}}",
+          "fetchFailed": "Échec de la récupération des documents",
+          "missingFields": "Veuillez entrer un titre et du contenu.",
+          "textSaved": "Document texte enregistré avec succès",
+          "textSaveFailed": "Échec de l'enregistrement : {{error}}",
+          "deleted": "Document supprimé avec succès",
+          "deleteFailed": "Échec de la suppression : {{error}}",
+          "trainedAll": "Tous les documents ont été entraînés avec succès",
+          "trainFailed": "Échec de l'entraînement : {{error}}",
+          "previewFailed": "Impossible de charger l'aperçu : {{error}}",
+          "trainedOne": "Document entraîné avec succès"
+        },
+  
+        "statusMessages": {
+          "trainingAll": "Entraînement de tous les documents...",
+          "trainingOne": "Entraînement du document..."
+        }
+      }
+    }
+  }
+  

@@ -1,0 +1,30 @@
+{
+    "analytics": {
+      "overviewTitle": "Analytics Overview",
+      "summary": {
+        "title": "Summary Metrics",
+        "activeUsers": "Active Users",
+        "daily": "Daily",
+        "weekly": "Weekly",
+        "retention": "Retention",
+        "retentionRate": "Retention Rate",
+        "retentionDesc": "Users returning after 7 days"
+      },
+      "activity": {
+        "title": "Activity Metrics"
+      },
+      "userAnalytics": {
+        "title": "User Analytics"
+      },
+      "distribution": {
+        "title": "Distribution Metrics"
+      },
+      "loading": "Loading overview...",
+      "error": "Failed to load analytics",
+      "generatedStories": "Generated Story Angles",
+      "metricsOverview": "Metrics Overview",
+      "viewStory": "View Story",
+      "close": "Close"
+    }
+  }
+  
