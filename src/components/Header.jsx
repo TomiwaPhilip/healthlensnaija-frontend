@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaTimes, FaBars, FaUser, FaUserPlus } from "react-icons/fa";
 import logo from "../assets/logo.png";
@@ -7,6 +7,7 @@ import "../index.css";
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const location = useLocation();
 
   // Animation variants
   const containerVariants = {
@@ -53,6 +54,7 @@ const Header = () => {
   };
 
   const navLinks = [
+    { path: "/", text: "Home" },
     { path: "/about", text: "About Us" },
     { path: "/features", text: "Features" },
     { path: "/contact", text: "Contact Us" }
@@ -87,22 +89,26 @@ const Header = () => {
           variants={containerVariants}
           className="hidden lg:flex space-x-8 mx-8"
         >
-          {navLinks.map((link, index) => (
-            <motion.div
-              key={index}
-              variants={itemVariants}
-              whilehover={{ y: -2 }}
-              whiletap={{ scale: 0.95 }}
-            >
-              <Link 
-                to={link.path} 
-                className="text-gray-800 hover:text-green-600 font-medium relative group transition-colors"
+          {navLinks.map((link, index) => {
+            const isActive = location.pathname === link.path;
+            
+            return (
+              <motion.div
+                key={index}
+                variants={itemVariants}
+                whileHover={{ y: -2 }}
+                whileTap={{ scale: 0.95 }}
               >
-                {link.text}
-                <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-green-600 transition-all duration-300 group-hover:w-full"></span>
-              </Link>
-            </motion.div>
-          ))}
+                <Link 
+                  to={link.path} 
+                  className={`font-medium relative group transition-colors ${isActive ? 'text-[#3AB54A]' : 'text-gray-800 hover:text-[#3AB54A]'}`}
+                >
+                  {link.text}
+                  <span className={`absolute left-0 bottom-0 h-0.5 bg-[#3AB54A] transition-all duration-300 ${isActive ? 'w-full' : 'w-0 group-hover:w-full'}`}></span>
+                </Link>
+              </motion.div>
+            );
+          })}
         </motion.nav>
 
         {/* Auth Buttons (Desktop) */}
@@ -113,9 +119,9 @@ const Header = () => {
           <motion.div variants={itemVariants}>
             <Link 
               to="/signin"
-              className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white py-2 px-5 rounded-lg font-medium transition-colors"
-              whilehover={{ scale: 1.05 }}
-              whiletap={{ scale: 0.95 }}
+              className="flex items-center gap-2 bg-[#3AB54A] hover:bg-[#2d963c] text-white py-2 px-5 rounded-lg font-medium transition-colors"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
               <FaUser className="text-sm" />
               Login
@@ -124,8 +130,9 @@ const Header = () => {
           <motion.div variants={itemVariants}>
             <Link
               to="/signup"
-              className="flex items-center gap-2 bg-white text-green-600 hover:text-green-700 py-2 px-5 rounded-lg font-medium border-2 border-green-600 hover:border-green-700 transition-colors"
-              whilehover={{ scale: 1.05 }}
+              className="flex items-center gap-2 bg-white text-[#3AB54A] hover:text-[#2d963c] py-2 px-5 rounded-lg font-medium border-2 border-[#3AB54A] hover:border-[#2d963c] transition-colors"
+              whileHover={{ scale: 1.05 }}
+              whileTover={{ scale: 1.05 }}
               whiletap={{ scale: 0.95 }}
             >
               <FaUserPlus className="text-sm" />
@@ -168,22 +175,25 @@ const Header = () => {
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.2 }}
               >
-                {navLinks.map((link, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ x: -20, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    transition={{ delay: 0.3 + index * 0.1 }}
-                  >
-                    <Link 
-                      to={link.path} 
-                      className="block py-2 text-gray-800 hover:text-green-600 font-medium transition-colors"
-                      onClick={() => setMenuOpen(false)}
+                {navLinks.map((link, index) => {
+                  const isActive = location.pathname === link.path;
+                  return (
+                    <motion.div
+                      key={index}
+                      initial={{ x: -20, opacity: 0 }}
+                      animate={{ x: 0, opacity: 1 }}
+                      transition={{ delay: 0.3 + index * 0.1 }}
                     >
-                      {link.text}
-                    </Link>
-                  </motion.div>
-                ))}
+                      <Link 
+                        to={link.path} 
+                        className={`block py-2 font-medium transition-colors ${isActive ? 'text-[#3AB54A]' : 'text-gray-800 hover:text-[#3AB54A]'}`}
+                        onClick={() => setMenuOpen(false)}
+                      >
+                        {link.text}
+                      </Link>
+                    </motion.div>
+                  );
+                })}
               </motion.nav>
               <div className="flex flex-col space-y-4 pb-4">
                 <motion.div
@@ -193,7 +203,7 @@ const Header = () => {
                 >
                   <Link
                     to="/signin"
-                    className="flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white py-2 px-5 rounded-lg font-medium transition-colors"
+                    className="flex items-center justify-center gap-2 bg-[#3AB54A] hover:bg-[#2d963c] text-white py-2 px-5 rounded-lg font-medium transition-colors"
                     onClick={() => setMenuOpen(false)}
                   >
                     <FaUser className="text-sm" />
@@ -207,7 +217,7 @@ const Header = () => {
                 >
                   <Link
                     to="/signup"
-                    className="flex items-center justify-center gap-2 bg-white text-green-600 hover:text-green-700 py-2 px-5 rounded-lg font-medium border-2 border-green-600 hover:border-green-700 transition-colors"
+                    className="flex items-center justify-center gap-2 bg-white text-[#3AB54A] hover:text-[#2d963c] py-2 px-5 rounded-lg font-medium border-2 border-[#3AB54A] hover:border-[#2d963c] transition-colors"
                     onClick={() => setMenuOpen(false)}
                   >
                     <FaUserPlus className="text-sm" />
