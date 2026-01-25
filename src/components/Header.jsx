@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaTimes, FaBars, FaUser, FaUserPlus } from "react-icons/fa";
+import { Menu, X, LogIn, UserPlus } from "lucide-react";
 import logo from "../assets/logo.png";
 import "../index.css";
 
@@ -114,29 +114,28 @@ const Header = () => {
         {/* Auth Buttons (Desktop) */}
         <motion.div 
           variants={containerVariants}
-          className="hidden lg:flex space-x-4"
+          className="hidden lg:flex items-center space-x-4"
         >
           <motion.div variants={itemVariants}>
             <Link 
               to="/signin"
-              className="flex items-center gap-2 bg-[#3AB54A] hover:bg-[#2d963c] text-white py-2 px-5 rounded-lg font-medium transition-colors"
+              className="flex items-center gap-2 text-gray-700 hover:text-[#3AB54A] font-medium transition-colors px-4 py-2"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <FaUser className="text-sm" />
-              Login
+              <LogIn className="w-5 h-5" />
+              <span>Login</span>
             </Link>
           </motion.div>
           <motion.div variants={itemVariants}>
             <Link
               to="/signup"
-              className="flex items-center gap-2 bg-white text-[#3AB54A] hover:text-[#2d963c] py-2 px-5 rounded-lg font-medium border-2 border-[#3AB54A] hover:border-[#2d963c] transition-colors"
+              className="group flex items-center gap-2 bg-[#3AB54A] text-white px-6 py-2.5 rounded-full font-medium shadow-md hover:bg-[#2d963c] hover:shadow-lg transition-all duration-300"
               whileHover={{ scale: 1.05 }}
-              whileTover={{ scale: 1.05 }}
-              whiletap={{ scale: 0.95 }}
+              whileTap={{ scale: 0.95 }}
             >
-              <FaUserPlus className="text-sm" />
-              Sign Up
+              <UserPlus className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" />
+              <span>Get Started</span>
             </Link>
           </motion.div>
         </motion.div>
@@ -146,14 +145,14 @@ const Header = () => {
           variants={itemVariants}
           className="lg:hidden text-gray-800 focus:outline-none p-2"
           onClick={() => setMenuOpen(!menuOpen)}
-          whilehover={{ scale: 1.1 }}
-          whiletap={{ scale: 0.95 }}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.95 }}
           aria-label="Toggle menu"
         >
           {menuOpen ? (
-            <FaTimes className="w-5 h-5" />
+            <X className="w-6 h-6" />
           ) : (
-            <FaBars className="w-5 h-5" />
+            <Menu className="w-6 h-6" />
           )}
         </motion.button>
       </div>
@@ -196,6 +195,7 @@ const Header = () => {
                 })}
               </motion.nav>
               <div className="flex flex-col space-y-4 pb-4">
+                <motion.div px-2">
                 <motion.div
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
@@ -203,11 +203,11 @@ const Header = () => {
                 >
                   <Link
                     to="/signin"
-                    className="flex items-center justify-center gap-2 bg-[#3AB54A] hover:bg-[#2d963c] text-white py-2 px-5 rounded-lg font-medium transition-colors"
+                    className="flex w-full items-center justify-center gap-2 text-gray-700 bg-gray-50 hover:bg-gray-100 py-3 rounded-xl font-medium transition-colors"
                     onClick={() => setMenuOpen(false)}
                   >
-                    <FaUser className="text-sm" />
-                    Login
+                    <LogIn className="w-5 h-5" />
+                    <span>Login</span>
                   </Link>
                 </motion.div>
                 <motion.div
@@ -217,12 +217,11 @@ const Header = () => {
                 >
                   <Link
                     to="/signup"
-                    className="flex items-center justify-center gap-2 bg-white text-[#3AB54A] hover:text-[#2d963c] py-2 px-5 rounded-lg font-medium border-2 border-[#3AB54A] hover:border-[#2d963c] transition-colors"
+                    className="flex w-full items-center justify-center gap-2 bg-[#3AB54A] hover:bg-[#2d963c] text-white py-3 rounded-xl font-medium shadow-md transition-colors"
                     onClick={() => setMenuOpen(false)}
                   >
-                    <FaUserPlus className="text-sm" />
-                    Sign Up
-                  </Link>
+                    <UserPlus className="w-5 h-5" />
+                    <span>Get Started</span>
                 </motion.div>
               </div>
             </div>
