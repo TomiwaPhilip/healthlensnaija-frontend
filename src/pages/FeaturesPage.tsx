@@ -339,7 +339,7 @@ const FeaturesPage = () => {
                     <p className="text-primary-foreground/90 text-lg md:text-xl mb-10 leading-relaxed opacity-90">
                         Join verified journalists and newsrooms who are already creating better stories faster with HealthLensNaija.
                     </p>
-                    <Button size="lg" variant="secondary" className="px-8 py-8 text-lg rounded-full font-bold shadow-lg hover:scale-105 transition-all text-primary">
+                    <Button size="lg" className="px-8 py-8 text-lg rounded-full font-bold shadow-lg hover:scale-105 transition-all bg-background text-primary hover:bg-background/90">
                         Start Creating Today
                         <ArrowRight className="ml-2 h-5 w-5" />
                     </Button>

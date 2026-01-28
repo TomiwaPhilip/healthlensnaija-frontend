@@ -86,7 +86,7 @@ const HeroSection = () => {
         {/* Left Column: Text */}
         <div className="text-left relative z-10">
           <motion.div variants={itemVariants} className="mb-4">
-            <Badge variant="secondary" className="px-4 py-2 text-primary font-semibold text-sm tracking-wide rounded-full">
+            <Badge variant="outline" className="px-4 py-2 bg-primary/10 text-primary border-primary/20 font-semibold text-sm tracking-wide rounded-full">
               Powering Health Narratives
             </Badge>
           </motion.div>
