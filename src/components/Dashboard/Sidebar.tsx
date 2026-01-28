@@ -49,7 +49,7 @@ const AdminSidebar = ({
   const showExpanded = !collapsed || isMobile;
 
   return (
-    <div className="flex flex-col h-full bg-white dark:bg-gray-950">
+    <div className="flex flex-col h-full bg-background">
       {/* Header */}
       <div className="border-b border-gray-200 dark:border-gray-800 p-4 flex items-center gap-3">
         <img src={logo} alt="Nigeria Health Watch" className="w-10 h-10" />
@@ -119,7 +119,7 @@ const UserSidebar = ({
   const { t } = useTranslation("sidebar");
 
   return (
-    <div className="flex flex-col h-full bg-white dark:bg-gray-950">
+    <div className="flex flex-col h-full bg-background">
       {/* Header */}
       <div className="border-b border-gray-200 dark:border-gray-800 p-4">
         <h2 className="text-lg font-bold text-gray-900 dark:text-white">Menu</h2>
@@ -235,7 +235,7 @@ const Sidebar = () => {
 
       {/* Sidebar Container */}
       <div
-        className={`fixed md:relative left-0 top-0 h-full bg-white dark:bg-gray-950 z-40 md:z-auto transition-all duration-300 ${
+        className={`fixed md:relative left-0 top-0 h-full bg-background z-40 md:z-auto transition-all duration-300 ${
           isMobileOpen ? 'w-64' : '-translate-x-full'
         } md:translate-x-0 w-64 md:flex md:flex-col border-r border-gray-200 dark:border-gray-800`}
         onMouseEnter={() => !isMobile && setCollapsed(false)}
