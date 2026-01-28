@@ -10,6 +10,8 @@ import {
 import { cn } from "@/lib/utils";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { SourcesPanel, useSourcesPanelState } from "./components/SourcesPanel";
+import { ChatPanel, useChatPanelState } from "./components/ChatPanel";
+import { ArtifactsPanel, useArtifactsPanelState } from "./components/ArtifactsPanel";
 
 type PanelProps = {
   title: string;
@@ -77,6 +79,8 @@ const NewsroomPanel = ({
 
 const GenerateStory = () => {
   const sourcesPanelState = useSourcesPanelState();
+  const chatPanelState = useChatPanelState();
+  const artifactsPanelState = useArtifactsPanelState();
   const [collapsedPanels, setCollapsedPanels] = useState({
     sources: false,
     artifacts: false,
@@ -87,6 +91,10 @@ const GenerateStory = () => {
       ...prev,
       [panel]: !prev[panel],
     }));
+  };
+
+  const handleAddToArtifacts = (title: string, content: string) => {
+      artifactsPanelState.addArtifact(title, content, "summary");
   };
 
   return (
@@ -112,16 +120,18 @@ const GenerateStory = () => {
           <TabsContent value="chat" className="mt-4 flex-1 h-full overflow-hidden">
             <NewsroomPanel
               title="Chat"
-              description="Design the newsroom chat experience in this section."
               showToggle={false}
-            />
+            >
+              <ChatPanel state={chatPanelState} onAddToArtifacts={handleAddToArtifacts} />
+            </NewsroomPanel>
           </TabsContent>
           <TabsContent value="artifacts" className="mt-4 flex-1 h-full overflow-hidden">
             <NewsroomPanel
               title="Artifacts"
-              description="Surface generated artifacts and reports here."
               showToggle={false}
-            />
+            >
+              <ArtifactsPanel state={artifactsPanelState} />
+            </NewsroomPanel>
           </TabsContent>
         </Tabs>
       </div>
@@ -183,13 +193,14 @@ const GenerateStory = () => {
 
           <NewsroomPanel
             title="Chat"
-            description="Design the newsroom chat experience in this section."
             className={cn(
               "transition-all duration-300",
               collapsedPanels.sources && "pl-14",
               collapsedPanels.artifacts && "pr-14"
             )}
-          />
+          >
+            <ChatPanel state={chatPanelState} onAddToArtifacts={handleAddToArtifacts} />
+          </NewsroomPanel>
         </div>
 
         {/* Artifacts Panel (Right) */}
@@ -203,11 +214,12 @@ const GenerateStory = () => {
         >
           <NewsroomPanel
             title="Artifacts"
-            description="Surface generated artifacts and reports here."
             onToggle={() => togglePanel("artifacts")}
             showToggle
             toggleIcon="right"
-          />
+          >
+            <ArtifactsPanel state={artifactsPanelState} />
+          </NewsroomPanel>
         </div>
       </div>
     </div>
