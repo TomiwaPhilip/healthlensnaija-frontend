@@ -94,7 +94,6 @@ const AdminSidebar = ({
           </Avatar>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{user?.firstName} {user?.lastName}</p>
-            <p className="text-xs text-gray-500 dark:text-gray-400">{user?.role || "Admin"}</p>
           </div>
           <button onClick={() => setShowLogoutModal(true)} className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded">
             <LogOut className="w-4 h-4 text-gray-600 dark:text-gray-400" />
@@ -158,7 +157,6 @@ const UserSidebar = ({
           </Avatar>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{user?.firstName} {user?.lastName}</p>
-            <p className="text-xs text-gray-500 dark:text-gray-400">{user?.role || "Member"}</p>
           </div>
           <button onClick={() => setShowLogoutModal(true)} className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded">
             <LogOut className="w-4 h-4 text-gray-600 dark:text-gray-400" />
