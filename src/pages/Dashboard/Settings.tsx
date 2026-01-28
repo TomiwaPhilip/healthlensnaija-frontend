@@ -1,18 +1,17 @@
 // src/pages/Dashboard/SettingsPage.jsx
 import React, { useContext, useState, useEffect } from "react";
-import { FaChevronRight, FaChevronDown, FaUser } from "react-icons/fa";
 import { DashboardContext } from "../../context/DashboardContext";
-import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
-import "react-circular-progressbar/dist/styles.css";
-import { getInitials } from "../../utils/helpers";
-import axiosInstance from "../../utils/axiosInstance";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useTranslation } from "react-i18next"; 
+import { useTranslation } from "react-i18next";
+import { Card } from "../../components/ui/card";
+import { Input } from "../../components/ui/input";
+import { Button } from "../../components/ui/button";
+import axiosInstance from "../../utils/axiosInstance";
+
 
 const SettingsPage = () => {
-  const [isUserManagementVisible, setIsUserManagementVisible] = useState(false);
-  const [expandedSection, setExpandedSection] = useState(null);
+  const [expandedSection, setExpandedSection] = useState("profile");
   const [profilePicture, setProfilePicture] = useState("");
   const [uploading, setUploading] = useState(false);
   const [savingProfile, setSavingProfile] = useState(false);
@@ -48,8 +47,6 @@ const SettingsPage = () => {
 
   const [language, setLanguage] = useState(localStorage.getItem("language") || "English");
   const [tone, setTone] = useState(localStorage.getItem("tone") || "Neutral");
-
-  const profileCompletion = 85;
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -88,10 +85,6 @@ const SettingsPage = () => {
 
   const toggleSection = (section) => {
     setExpandedSection((prev) => (prev === section ? null : section));
-  };
-
-  const toggleUserManagement = () => {
-    setIsUserManagementVisible((prev) => !prev);
   };
 
   const handleProfilePictureChange = async (event) => {
@@ -187,240 +180,99 @@ const SettingsPage = () => {
   };
 
   return (
-    <div className={`min-h-screen ${isNightMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
+    <div className="min-h-screen bg-background text-foreground">
       <ToastContainer position="top-right" autoClose={3000} />
-      <div className="text-sm mb-6 px-6 mt-5">
-      <span className="font-semibold text-gray-500">{t("breadcrumb.overview")}</span> &gt;{" "}
-<span className="font-semibold text-gray-500">{t("breadcrumb.account")}</span> &gt;{" "}
-<span className="text-black">{t("breadcrumb.settings")}</span>
-      </div>
+      <div className="max-w-3xl mx-auto px-6 py-8">
+        <Card className="p-6 bg-card">
+          <h1 className="text-lg font-semibold mb-4">{t("sections.profile.title")}</h1>
 
-      <div className="flex flex-col lg:flex-row gap-14 px-6">
-        {/* Profile Completion Section */}
-        <div className="flex flex-col gap-6 lg:w-1/3">
-          <div
-            className={`${isNightMode ? "bg-gray-700" : "bg-green-800"} text-white p-6 rounded-lg shadow-md`}
-            style={{ height: "170px" }}
-          >
-            <div className="flex items-center justify-center h-full">
-              <div className="w-28 h-28 mr-6">
-                <CircularProgressbar
-                  value={profileCompletion}
-                  text={`${profileCompletion}%`}
-                  strokeWidth={5}
-                  styles={buildStyles({
-                    textColor: "#ffffff",
-                    pathColor: "#4ade80",
-                    trailColor: "#2d3748",
-                  })}
-                />
+          {/* Profile Form */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-4">
+              <div className="w-20 h-20 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden flex items-center justify-center">
+                {profilePicture ? (
+                  <img src={profilePicture} alt="Profile" className="w-full h-full object-cover" />
+                ) : (
+                  <div className="text-lg font-semibold text-gray-700 dark:text-gray-200">{(firstName || "").charAt(0)}</div>
+                )}
               </div>
-              <div className="flex flex-col">
-              <p className="text-lg font-medium mb-2">{t("profileCompletion.title")}</p>
-               <p className="text-sm mb-4">{t("profileCompletion.subtitle")}</p>
-                <button
-                  className={`py-2 px-4 rounded-lg font-semibold ${
-                    isNightMode ? "bg-gray-300 text-gray-900" : "bg-white text-green-800"
-                  } hover:bg-gray-100`}
-                >
-                 {t("profileCompletion.button")}
-                </button>
-              </div>
+              <label className="inline-flex items-center">
+                <input type="file" accept="image/*" className="hidden" onChange={handleProfilePictureChange} />
+                <Button variant="outline" size="sm">{uploading ? t("sections.profile.uploading") : t("sections.profile.changePicture")}</Button>
+              </label>
+            </div>
+
+            <Input value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder={t("sections.profile.firstName")} />
+            <Input value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder={t("sections.profile.lastName")} />
+            <Input value={email} onChange={(e) => setEmail(e.target.value)} type="email" placeholder={t("sections.profile.email")} />
+
+            <div className="flex justify-end">
+              <Button onClick={handleProfileSave} disabled={savingProfile}>{savingProfile ? t("sections.profile.saving") : t("sections.profile.save")}</Button>
             </div>
           </div>
+        </Card>
 
-          <div
-            className="flex items-center justify-between bg-green-50 text-green-700 px-4 py-3 rounded-lg shadow-md cursor-pointer hover:bg-green-100"
-            onClick={toggleUserManagement}
-          >
-            <div className="flex items-center space-x-3">
-              <FaUser className="text-green-600" />
-              <span className="font-medium">{t("userManagement.title")}</span>
+        {/* Password */}
+        <Card className="p-6 bg-card mt-6">
+          <h2 className="text-lg font-semibold mb-4">{t("sections.password.title")}</h2>
+          <div className="space-y-4">
+            <Input type="password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} placeholder={t("sections.password.current")} />
+            <Input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder={t("sections.password.new")} />
+            <div className="flex justify-end">
+              <Button onClick={handlePasswordChange} disabled={changingPassword}>{changingPassword ? t("sections.password.updating") : t("sections.password.save")}</Button>
             </div>
-            {isUserManagementVisible ? <FaChevronDown className="text-green-600" /> : <FaChevronRight className="text-green-600" />}
           </div>
-        </div>
+        </Card>
 
-        {/* User Management Section */}
-        {isUserManagementVisible && (
-          <div className={`lg:w-2/3 p-6 rounded-lg shadow-md ${isNightMode ? "bg-gray-800" : "bg-green-50"}`}>
-            <h2 className="text-lg font-bold mb-5">User Management</h2>
-            <ul className="space-y-4">
-              {/* Profile Section */}
-              <li>
-                <div
-                  className="flex justify-between items-center cursor-pointer border-b pb-3"
-                  onClick={() => toggleSection("profile")}
-                >
-                  <div>
-                  <p className="font-semibold">{t("sections.profile.title")}</p>
-                   <p className="text-sm">{t("sections.profile.subtitle")}</p>
-                  </div>
-                  {expandedSection === "profile" ? <FaChevronDown /> : <FaChevronRight />}
-                </div>
-                {expandedSection === "profile" && (
-                  <div className="mt-4 space-y-4 text-black">
-                    <div className="flex flex-col items-center mb-4">
-                      <div className="relative w-28 h-28 flex items-center justify-center bg-gray-200 rounded-full border mb-4">
-                        {profilePicture ? (
-                          <img src={profilePicture} alt="Profile" className="w-full h-full rounded-full" />
-                        ) : (
-                          <span className="text-lg font-semibold">{getInitials(firstName, lastName)}</span>
-                        )}
-                      </div>
-                      <label className="bg-green-500 text-white px-5 py-2 rounded-lg hover:bg-green-600 cursor-pointer">
-                      {uploading ? t("sections.profile.uploading") : t("sections.profile.changePicture")}
+        {/* Story Settings */}
+        <Card className="p-6 bg-card mt-6">
+          <h2 className="text-lg font-semibold mb-4">{t("sections.storySettings.title")}</h2>
+          <div className="space-y-4">
+            <div>
+              <label className="block mb-2 text-sm">{t("sections.storySettings.language")}</label>
+              <select value={language} onChange={handleLanguageChange} className="w-full p-2 border rounded-md bg-background text-sm">
+                <option value="English">English</option>
+                <option value="Hausa">Hausa</option>
+                <option value="Yoruba">Yoruba</option>
+                <option value="Igbo">Igbo</option>
+                <option value="French">French</option>
+                <option value="Spanish">Spanish</option>
+              </select>
+            </div>
 
-                        <input type="file" accept="image/*" className="hidden" onChange={handleProfilePictureChange} />
-                      </label>
-                    </div>
-                    <input
-                      type="text"
-                      placeholder={t("sections.profile.firstName")}
-                      className="w-full p-3 border rounded-lg"
-                      value={firstName}
-                      onChange={(e) => setFirstName(e.target.value)}
-                    />
-                    <input
-                      type="text"
-                      placeholder={t("sections.profile.lastName")}
-                      className="w-full p-3 border rounded-lg"
-                      value={lastName}
-                      onChange={(e) => setLastName(e.target.value)}
-                    />
-                    <input
-                      type="email"
-                      placeholder={t("sections.profile.email")}
-                      className="w-full p-3 border rounded-lg"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                    />
-                    <button
-                      onClick={handleProfileSave}
-                      className="bg-green-500 text-white px-5 py-2 rounded-lg hover:bg-green-600"
-                      disabled={savingProfile}
-                    >
-                     {savingProfile ? t("sections.profile.saving") : t("sections.profile.save")}
-                    </button>
-                  </div>
-                )}
-              </li>
-
-              {/* Password Section */}
-              <li>
-                <div
-                  className="flex justify-between items-center cursor-pointer border-b pb-3"
-                  onClick={() => toggleSection("password")}
-                >
-                  <div>
-                  <p className="font-semibold">{t("sections.password.title")}</p>
-                  <p className="text-sm">{t("sections.password.subtitle")}</p>
-                  </div>
-                  {expandedSection === "password" ? <FaChevronDown /> : <FaChevronRight />}
-                </div>
-                {expandedSection === "password" && (
-                  <div className="mt-4 space-y-4">
-                    <input
-                      type="password"
-                      placeholder={t("sections.password.current")}
-                      className="w-full p-3 border rounded-lg"
-                      value={currentPassword}
-                      onChange={(e) => setCurrentPassword(e.target.value)}
-                    />
-                    <input
-                      type="password"
-                      placeholder={t("sections.password.new")}
-                      className="w-full p-3 border rounded-lg"
-                      value={newPassword}
-                      onChange={(e) => setNewPassword(e.target.value)}
-                    />
-                    <button
-                      onClick={handlePasswordChange}
-                      className="bg-green-500 text-white px-5 py-2 rounded-lg hover:bg-green-600"
-                      disabled={changingPassword}
-                    >
-                      {changingPassword ? t("sections.password.updating") : t("sections.password.save")}
-
-                    </button>
-                  </div>
-                )}
-              </li>
-
-              {/* Language & Tone */}
-              <li>
-                <div
-                  className="flex justify-between items-center cursor-pointer border-b pb-3"
-                  onClick={() => toggleSection("settings")}
-                >
-                  <div>
-                  <p className="font-semibold">{t("sections.storySettings.title")}</p>
-                  <p className="text-sm">{t("sections.storySettings.subtitle")}</p>
-                  </div>
-                  {expandedSection === "settings" ? <FaChevronDown /> : <FaChevronRight />}
-                </div>
-                {expandedSection === "settings" && (
-                  <div className="mt-4 space-y-4">
-                    <div>
-                    <label>{t("sections.storySettings.language")}:</label>
-                      <select value={language} onChange={handleLanguageChange} className="w-full p-3 border rounded-lg">
-  <option value="English">English</option>
-  <option value="Hausa">Hausa</option>
-  <option value="Yoruba">Yoruba</option>
-  <option value="Igbo">Igbo</option>
-  <option value="French">French</option>
-  <option value="Spanish">Spanish</option>
-</select>
-
-                    </div>
-                    <div>
-                    <label>{t("sections.storySettings.tone")}:</label>
-                      <select value={tone} onChange={handleToneChange} className="w-full p-3 border rounded-lg">
-                        <option value="Neutral">Neutral</option>
-                        <option value="Formal">Formal</option>
-                        <option value="Casual">Casual</option>
-                        <option value="Inspirational">Inspirational</option>
-                        <option value="Storytelling">Storytelling</option>
-                      </select>
-                    </div>
-                  </div>
-                )}
-              </li>
-
-              
-             {/* 🌍 Site Language Switch */}
-              <li>
-                <div
-                  className="flex justify-between items-center cursor-pointer border-b pb-3"
-                  onClick={() => toggleSection("siteLanguage")}
-                >
-                  <div>
-                  <p className="font-semibold">{t("sections.siteLanguage.title")}</p>
-                  <p className="text-sm">{t("sections.siteLanguage.subtitle")}</p>
-                  </div>
-                  {expandedSection === "siteLanguage" ? <FaChevronDown /> : <FaChevronRight />}
-                </div>
-                {expandedSection === "siteLanguage" && (
-                  <div className="mt-4 space-y-4">
-                  <label>{t("sections.siteLanguage.label")}:</label>
-                    <select
-                      value={i18n.language}
-                      onChange={(e) => {
-                        const lng = e.target.value;
-                        i18n.changeLanguage(lng);
-                        localStorage.setItem("appLang", lng);
-                        toast.success(t("toast.siteLanguageUpdated"));
-                      }}
-                      className="w-full p-3 border rounded-lg"
-                    >
-                      <option value="en">English</option>
-                      <option value="fr">French</option>
-                    </select>
-                  </div>
-                )}
-              </li>
-            </ul>
+            <div>
+              <label className="block mb-2 text-sm">{t("sections.storySettings.tone")}</label>
+              <select value={tone} onChange={handleToneChange} className="w-full p-2 border rounded-md bg-background text-sm">
+                <option value="Neutral">Neutral</option>
+                <option value="Formal">Formal</option>
+                <option value="Casual">Casual</option>
+                <option value="Inspirational">Inspirational</option>
+                <option value="Storytelling">Storytelling</option>
+              </select>
+            </div>
           </div>
-        )}
+        </Card>
+
+        {/* Site Language */}
+        <Card className="p-6 bg-card mt-6 mb-8">
+          <h2 className="text-lg font-semibold mb-4">{t("sections.siteLanguage.title")}</h2>
+          <div>
+            <label className="block mb-2 text-sm">{t("sections.siteLanguage.label")}</label>
+            <select
+              value={i18n.language}
+              onChange={(e) => {
+                const lng = e.target.value;
+                i18n.changeLanguage(lng);
+                localStorage.setItem("appLang", lng);
+                toast.success(t("toast.siteLanguageUpdated"));
+              }}
+              className="w-full p-2 border rounded-md bg-background text-sm"
+            >
+              <option value="en">English</option>
+              <option value="fr">French</option>
+            </select>
+          </div>
+        </Card>
       </div>
     </div>
   );

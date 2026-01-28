@@ -1,6 +1,7 @@
 // src/context/DashboardContext.jsx
 import React, { createContext, useState, useEffect } from "react";
 import axiosInstance from "../utils/axiosInstance";
+import { useTheme } from "next-themes";
 
 export const DashboardContext = createContext();
 
@@ -11,7 +12,9 @@ export const DashboardProvider = ({ children }) => {
       ? JSON.parse(localStorage.getItem("hydratedUser"))
       : null
   );
-  const [isNightMode, setIsNightMode] = useState(false);
+  // `next-themes` manages the actual theme; we'll derive a boolean from it
+  const { theme, setTheme, resolvedTheme } = useTheme();
+  const isNightMode = resolvedTheme === "dark";
 
   // 🔄 Fetch user if no hydrated user but we have a token
   useEffect(() => {
@@ -51,15 +54,10 @@ export const DashboardProvider = ({ children }) => {
     setUser(null);
   };
 
-  const toggleNightMode = () => setIsNightMode((prev) => !prev);
-
-  useEffect(() => {
-    if (isNightMode) {
-      document.body.classList.add("bg-gray-900", "text-white");
-    } else {
-      document.body.classList.remove("bg-gray-900", "text-white");
-    }
-  }, [isNightMode]);
+  const toggleNightMode = () => {
+    // Toggle through next-themes so the ThemeProvider is authoritative
+    setTheme(resolvedTheme === "dark" ? "light" : "dark");
+  };
 
   return (
     <DashboardContext.Provider
