@@ -33,7 +33,7 @@ const VerifyOTP = () => {
       localStorage.removeItem("verifyEmail");
 
       setTimeout(() => {
-        navigate("/generate-story");
+        navigate("/dashboard");
       }, 1500);
     } catch (err) {
       setMessage(err.response?.data?.message || "Verification failed");

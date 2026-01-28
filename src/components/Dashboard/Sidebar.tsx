@@ -19,6 +19,7 @@ import {
   Book,
   LogOut,
   Menu,
+  Plus,
 } from "lucide-react";
 import logo from "../../assets/logo.png";
 import { DashboardContext } from "../../context/DashboardContext";
@@ -146,6 +147,20 @@ const UserSidebar = ({
 
       {/* Navigation */}
       <div className="flex-1 overflow-y-auto p-3 space-y-2">
+        <div className="mb-2">
+           <NavLink to="/generate-story" onClick={onMobileLinkClick}>
+              <Button 
+                className={`w-full ${showExpanded ? 'justify-start gap-2' : 'justify-center px-0'}`} 
+                size={showExpanded ? "default" : "icon"}
+              >
+                  <Plus className="h-4 w-4" />
+                  {showExpanded && "New Story"}
+              </Button>
+           </NavLink>
+        </div>
+        
+        <div className="h-px bg-gray-200 dark:bg-gray-800 my-2" />
+
         <SidebarItem to="/dashboard" icon={<Home className="w-5 h-5" />} label="Dashboard" onClick={onMobileLinkClick} showExpanded={showExpanded} />
         <SidebarItem to="/resources" icon={<Book className="w-5 h-5" />} label="Resources" onClick={onMobileLinkClick} showExpanded={showExpanded} />
         {user?.role === "Admin" && (

@@ -56,7 +56,7 @@ const RecentActivity = () => {
     switch (activity.type) {
       case "story":
       case "opensearch-story":
-        navigate(`/generate-story?storyId=${activity.id}`);
+        navigate(`/generate-story?id=${activity.id}`);
         break;
       case "chat":
         navigate(`/ai-chat?chatId=${activity.id}`);

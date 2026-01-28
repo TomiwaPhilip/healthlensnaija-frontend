@@ -9,7 +9,7 @@ import PendingVerification from "./pages/PendingVerification";
 
 import Header from "./components/Header";
 import Footer from "./components/Footer";
-// import Dashboard from "./pages/Dashboard/Dashboard";
+import Dashboard from "./pages/Dashboard/Dashboard";
 import GenerateStory from "./pages/Dashboard/GenerateStory";
 import UploadData from "./pages/Dashboard/UploadData";
 import AIChat from "./pages/Dashboard/AIChat";
@@ -39,6 +39,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 const allowedRedirects = [
   "/dashboard",
+  "/generate-story",
   "/upload-data",
   "/ai-chat",
   "/settings",
@@ -158,8 +159,8 @@ const App = () => {
 
           {/* 🛡️ Protected Dashboard Routes (Persistent Layout) */}
           <Route element={<ProtectedRoute />}>
-            {/* <Route path="/dashboard" element={<Dashboard />} /> */}
-            <Route path="/dashboard" element={<GenerateStory />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/generate-story" element={<GenerateStory />} />
             <Route path="/upload-data" element={<UploadData />} />
             <Route path="/ai-chat" element={<AIChat />} />
             <Route path="/settings" element={<SettingsPage />} />

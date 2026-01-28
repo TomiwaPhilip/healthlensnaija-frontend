@@ -58,7 +58,7 @@ const Header = () => {
         break;
       case "story":
       case "opensearch-story":
-        navigate(`/generate-story?storyId=${result.id}`);
+        navigate(`/generate-story?id=${result.id}`);
         break;
       default:
         console.warn("Unknown result type:", result.type);
