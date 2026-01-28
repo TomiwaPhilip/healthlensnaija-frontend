@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
-import { ChatBubbleLeftEllipsisIcon } from "@heroicons/react/24/solid";
-import { FaSearch, FaTags, FaTimes, FaChevronDown, FaChevronUp, FaPaperPlane, FaRobot, FaUser } from "react-icons/fa";
+import { MessageCircle, X, ChevronDown, ChevronUp, Send, Bot, User, Search } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import io from "socket.io-client";
+import { Button } from "../../components/ui/button";
+import { Input } from "../../components/ui/input";
+import { Card } from "../../components/ui/card";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -280,153 +282,200 @@ const HelpCenterPage = () => {
   );
 
   return (
-    <div className="p-5 font-sans relative min-h-screen bg-gray-50">
-      <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold mb-6 text-gray-800">{t("title")}</h1>
-
-        {/* Search */}
-        <div className="mb-8">
-          <div className="relative mb-4">
-            <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-            <input
-              type="text"
-              placeholder={t("searchPlaceholder")}
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
+    <div className="flex flex-col min-h-screen bg-background">
+      <div className="flex-1 p-6 md:p-8">
+        <div className="max-w-4xl mx-auto">
+          {/* Header Section */}
+          <div className="mb-8">
+            <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
+              {t("title")}
+            </h1>
+            <p className="text-muted-foreground text-sm">
+              Find answers and get support instantly
+            </p>
           </div>
 
-          <div className="flex flex-wrap gap-2">
-            {Object.entries(tags).map(([key, label]) => (
-              <button
-                key={key}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                  filter === key
-                    ? "bg-green-600 text-white"
-                    : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-100"
-                }`}
-                onClick={() => setFilter(key)}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-        </div>
+          {/* Search Section */}
+          <div className="rounded-lg border border-border bg-card p-6 mb-8 shadow-sm">
+            <div className="space-y-4">
+              {/* Search Input */}
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                <Input
+                  type="text"
+                  placeholder={t("searchPlaceholder")}
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="pl-10 h-10 border-input bg-background text-sm"
+                />
+              </div>
 
-        {/* FAQs */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-          <h2 className="text-xl font-semibold mb-6 text-gray-800">{t("faqTitle")}</h2>
-
-          {filteredFaqs.length > 0 ? (
-            <ul className="space-y-4">
-              {filteredFaqs.map((item, index) => (
-                <li key={index} className="border-b border-gray-100 pb-4">
-                  <button
-                    className="w-full text-left group"
-                    onClick={() => setExpandedIndex(expandedIndex === index ? null : index)}
+              {/* Filter Tags */}
+              <div className="flex flex-wrap gap-2 pt-2">
+                {Object.entries(tags).map(([key, label]) => (
+                  <Button
+                    key={key}
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setFilter(key)}
+                    className={
+                      filter === key
+                        ? "bg-accent text-accent-foreground text-sm"
+                        : "bg-transparent dark:bg-card text-muted-foreground border border-border hover:bg-accent/5 dark:hover:bg-accent/10 text-sm"
+                    }
                   >
-                    <div className="flex justify-between items-start">
-                      <h3 className="font-medium text-gray-800 group-hover:text-green-600 transition-colors">
-                        {item.question}
-                      </h3>
-                      {expandedIndex === index ? (
-                        <FaChevronUp className="text-gray-400 ml-3 mt-1" />
-                      ) : (
-                        <FaChevronDown className="text-gray-400 ml-3 mt-1" />
-                      )}
-                    </div>
-                    <span className="inline-block mt-1 text-xs bg-gray-100 px-2 py-1 rounded-full text-gray-600">
-                      {tags[item.tag]}
-                    </span>
-                  </button>
-                  {expandedIndex === index && (
-                    <div className="mt-3 text-gray-600">
-                      <p>{item.answer}</p>
-                    </div>
-                  )}
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <div className="text-center py-8 text-gray-500">
-              {t("noResults")}
+                    {label as string}
+                  </Button>
+                ))}
+              </div>
             </div>
-          )}
-        </div>
+          </div>
 
-        {/* Contact - Simplified */}
-        <div className="mt-8 bg-white p-6 rounded-lg shadow-sm border border-gray-200 text-center">
-          <h3 className="text-lg font-semibold mb-2">{t("contact.title")}</h3>
-          <p className="text-gray-600 mb-4">{t("contact.subtitle")}</p>
-          <button
-            onClick={toggleChat}
-            className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-medium"
-          >
-            Chat with Support
-          </button>
+          {/* FAQs Section */}
+          <Card className="p-8 border-border bg-card mb-8">
+            <h2 className="text-xl font-semibold text-foreground mb-6">
+              {t("faqTitle")}
+            </h2>
+
+              {filteredFaqs.length > 0 ? (
+              <div className="space-y-3">
+                {filteredFaqs.map((item, index) => (
+                  <div
+                    key={index}
+                    className="border-b border-border last:border-b-0 pb-4 last:pb-0"
+                  >
+                    <button
+                      className="w-full text-left group py-2"
+                      onClick={() =>
+                        setExpandedIndex(expandedIndex === index ? null : index)
+                      }
+                    >
+                      <div className="flex justify-between items-start gap-4">
+                        <h3 className="font-medium text-base text-foreground group-hover:text-accent transition-colors">
+                          {item.question}
+                        </h3>
+                        <div className="flex-shrink-0 mt-1">
+                          {expandedIndex === index ? (
+                            <ChevronUp className="w-5 h-5 text-muted-foreground" />
+                          ) : (
+                            <ChevronDown className="w-5 h-5 text-muted-foreground" />
+                          )}
+                        </div>
+                      </div>
+                      <span className="inline-block mt-2 text-xs bg-secondary text-secondary-foreground px-3 py-1 rounded-full">
+                        {tags[item.tag]}
+                      </span>
+                    </button>
+                    {expandedIndex === index && (
+                      <div className="mt-3 text-muted-foreground pl-1 pb-2">
+                        <p className="text-sm leading-relaxed">{item.answer}</p>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+              ) : (
+              <div className="text-center py-12 text-muted-foreground">
+                <p className="text-sm">{t("noResults")}</p>
+                <p className="text-sm mt-2">Try adjusting your search or filters</p>
+              </div>
+            )}
+          </Card>
+
+          {/* Contact Support Section */}
+          <Card className="p-8 text-center border-border bg-card/50 backdrop-blur-sm">
+            <h3 className="text-lg font-semibold text-foreground mb-3">
+              {t("contact.title")}
+            </h3>
+            <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+              {t("contact.subtitle")}
+            </p>
+            <Button
+              onClick={toggleChat}
+              size="lg"
+              className="bg-accent hover:bg-accent/90 text-accent-foreground"
+            >
+              <MessageCircle className="w-4 h-4 mr-2" />
+              Start a Conversation
+            </Button>
+          </Card>
         </div>
       </div>
 
-      {/* Floating Button */}
+      {/* Floating Chat Button */}
       <button
         onClick={toggleChat}
-        className="fixed bottom-6 right-6 bg-green-600 text-white p-4 rounded-full shadow-lg hover:bg-green-700 flex items-center transition-transform hover:scale-105"
+        className="fixed bottom-6 right-6 bg-accent hover:bg-accent/90 text-accent-foreground p-4 rounded-full shadow-lg transition-all hover:scale-110 z-40 border-0"
+        aria-label="Open chat"
       >
-        <ChatBubbleLeftEllipsisIcon className="h-6 w-6" />
+        <MessageCircle className="w-6 h-6" />
       </button>
 
-      {/* Enhanced Chat Popup */}
+      {/* Chat Popup Modal */}
       {chatOpen && (
-        <div className="fixed bottom-24 right-6 bg-white shadow-xl rounded-lg w-80 overflow-hidden border border-gray-200 flex flex-col">
-          {/* Header */}
-          <div className="bg-green-600 text-white p-4 flex justify-between items-center">
-            <div className="flex items-center space-x-2">
-              <div className="w-2 h-2 bg-green-300 rounded-full animate-pulse"></div>
-              <h3 className="text-lg font-bold">Support Chat</h3>
+        <div className="fixed bottom-24 right-6 w-96 max-h-[600px] bg-card border border-border rounded-xl shadow-2xl flex flex-col z-50 animate-in slide-in-from-bottom-4">
+          {/* Chat Header */}
+          <div className="bg-accent text-accent-foreground p-4 flex justify-between items-center rounded-t-xl border-b border-border/10">
+            <div className="flex items-center gap-3">
+              <div className="w-2 h-2 bg-accent-foreground/60 rounded-full animate-pulse"></div>
+              <h3 className="text-lg font-semibold">Support Chat</h3>
             </div>
-            <button onClick={toggleChat} className="text-white hover:text-green-200">
-              <FaTimes />
-            </button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleChat}
+              className="text-accent-foreground hover:bg-accent/80 h-8 w-8"
+            >
+              <X className="w-4 h-4" />
+            </Button>
           </div>
 
-          {/* Messages Area */}
-          <div className="flex-1 p-4 h-80 overflow-y-auto space-y-3 bg-gray-50">
+          {/* Messages Container */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-background">
             {messages.map((m) => (
               <div
                 key={m.id}
                 className={`flex ${m.sender === "user" ? "justify-end" : "justify-start"}`}
               >
-                <div
-                  className={`max-w-[85%] rounded-2xl p-3 ${
-                    m.sender === "user"
-                      ? "bg-green-500 text-white rounded-br-none"
-                      : "bg-white text-gray-800 rounded-bl-none border border-gray-200"
-                  }`}
-                >
-                  <div className="flex items-center space-x-2 mb-1">
-                    {m.sender === "bot" && <FaRobot className="text-green-500 text-xs" />}
-                    {m.sender === "user" && <FaUser className="text-green-200 text-xs" />}
-                    <span className="text-xs opacity-75">
-                      {m.sender === "bot" ? "Sonia" : "You"}
-                    </span>
+                <div className={`flex gap-2 max-w-[85%]`}>
+                  {m.sender === "bot" && (
+                    <div className="flex-shrink-0 mt-1">
+                      <Bot className="w-5 h-5 text-accent" />
+                    </div>
+                  )}
+                  <div
+                    className={`rounded-lg px-4 py-2 text-sm ${
+                      m.sender === "user"
+                        ? "bg-accent text-accent-foreground rounded-br-none"
+                        : "bg-secondary text-secondary-foreground rounded-bl-none"
+                    }`}
+                  >
+                    <p className="text-sm leading-relaxed">{m.text}</p>
                   </div>
-                  <p className="text-sm">{m.text}</p>
+                  {m.sender === "user" && (
+                    <div className="flex-shrink-0 mt-1">
+                      <User className="w-5 h-5 text-muted-foreground" />
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
-            
+
+            {/* Typing Indicator */}
             {isTyping && (
               <div className="flex justify-start">
-                <div className="bg-white text-gray-800 rounded-2xl rounded-bl-none p-3 border border-gray-200">
-                  <div className="flex items-center space-x-2">
-                    <FaRobot className="text-green-500 text-xs" />
-                    <span className="text-xs opacity-75">Sonia</span>
-                  </div>
-                  <div className="flex space-x-1 mt-1">
-                    <div className="w-2 h-2 bg-gray-300 rounded-full animate-bounce"></div>
-                    <div className="w-2 h-2 bg-gray-300 rounded-full animate-bounce" style={{ animationDelay: "0.2s" }}></div>
-                    <div className="w-2 h-2 bg-gray-300 rounded-full animate-bounce" style={{ animationDelay: "0.4s" }}></div>
+                <div className="flex gap-2 items-center">
+                  <Bot className="w-5 h-5 text-accent flex-shrink-0" />
+                  <div className="bg-secondary text-secondary-foreground rounded-lg px-4 py-2 flex gap-1">
+                    <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce"></div>
+                    <div
+                      className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce"
+                      style={{ animationDelay: "0.2s" }}
+                    ></div>
+                    <div
+                      className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce"
+                      style={{ animationDelay: "0.4s" }}
+                    ></div>
                   </div>
                 </div>
               </div>
@@ -436,44 +485,49 @@ const HelpCenterPage = () => {
 
           {/* Quick Questions - Show only at beginning */}
           {messages.length <= 2 && !handoffToHuman && (
-            <div className="px-4 pb-2">
-              <div className="text-xs text-gray-500 mb-2">Quick questions:</div>
+            <div className="px-4 py-3 border-t border-border bg-background/50">
+              <div className="text-xs text-muted-foreground font-medium mb-2">
+                Quick questions:
+              </div>
               <div className="flex flex-wrap gap-2">
                 {quickQuestions.map((question, index) => (
-                  <button
+                  <Button
                     key={index}
+                    variant="outline"
+                    size="sm"
                     onClick={() => handleQuickQuestion(question)}
-                    className="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-full transition-colors"
+                    className="text-xs h-8 border-border"
                   >
                     {question}
-                  </button>
+                  </Button>
                 ))}
               </div>
             </div>
           )}
 
           {/* Input Area */}
-          <div className="p-4 border-t bg-white">
-            <div className="flex space-x-2">
-              <input
+          <div className="p-4 border-t border-border bg-background rounded-b-xl">
+            <div className="flex gap-2 mb-2">
+              <Input
                 type="text"
-                className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500"
                 placeholder="Type your message..."
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
                 disabled={isTyping}
+                className="flex-1 h-9 border-input bg-card"
               />
-              <button
+              <Button
                 onClick={handleSendMessage}
                 disabled={!message.trim() || isTyping}
-                className="bg-green-600 hover:bg-green-700 text-white p-2 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                size="icon"
+                className="h-9 w-9 bg-accent hover:bg-accent/90"
               >
-                <FaPaperPlane className="text-sm" />
-              </button>
+                <Send className="w-4 h-4" />
+              </Button>
             </div>
             {handoffToHuman && (
-              <div className="text-xs text-green-600 mt-2 text-center">
+              <div className="text-xs text-accent font-medium text-center py-1">
                 ✓ Connected to live support team
               </div>
             )}
