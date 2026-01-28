@@ -9,14 +9,16 @@ import {
 } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { SourcesPanel } from "./components/SourcesPanel";
 
 type PanelProps = {
   title: string;
-  description: string;
+  description?: string;
   className?: string;
   onToggle?: () => void;
   showToggle?: boolean;
   toggleIcon?: "left" | "right";
+  children?: React.ReactNode;
 };
 
 const NewsroomPanel = ({
@@ -26,9 +28,10 @@ const NewsroomPanel = ({
   onToggle,
   showToggle = false,
   toggleIcon = "left",
+  children
 }: PanelProps) => (
-  <Card className={cn("flex h-full flex-col shadow-sm transition-all", className)}>
-    <CardHeader className="flex flex-col space-y-0 pb-2 px-4 pt-4">
+  <Card className={cn("flex h-full flex-col shadow-sm transition-all overflow-hidden", className)}>
+    <CardHeader className="flex flex-col space-y-0 pb-3 px-4 pt-4 flex-shrink-0 border-b">
       <div className="flex w-full items-center justify-between">
         <div className="flex items-center gap-2">
           {showToggle && toggleIcon === "left" && (
@@ -36,22 +39,22 @@ const NewsroomPanel = ({
               type="button"
               variant="ghost"
               size="icon"
-              className="h-8 w-8 lg:hidden" // Only show on mobile or handle differently? Wait, design change.
+              className="h-8 w-8 lg:hidden"
               onClick={onToggle}
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
           )}
-          <CardTitle className="text-lg font-semibold">{title}</CardTitle>
+          <CardTitle className="text-base font-semibold">{title}</CardTitle>
         </div>
         {showToggle && (
-          <Button
+           <Button
             type="button"
             variant="ghost"
             size="icon"
             onClick={onToggle}
             aria-label={`Collapse ${title}`}
-            className="hidden h-8 w-8 text-muted-foreground hover:text-foreground lg:inline-flex"
+            className="hidden h-6 w-6 text-muted-foreground hover:text-foreground lg:inline-flex"
           >
             {toggleIcon === "left" ? (
               <ChevronLeft className="h-4 w-4" />
@@ -62,10 +65,12 @@ const NewsroomPanel = ({
         )}
       </div>
     </CardHeader>
-    <CardContent className="flex-1 overflow-y-auto px-4 pb-4">
-      <div className="flex h-full items-center justify-center rounded-lg border border-dashed border-muted-foreground/40 bg-muted/40 p-4 text-sm text-muted-foreground">
-        {description}
-      </div>
+    <CardContent className="flex-1 min-h-0 p-0 overflow-hidden relative">
+       {children ? children : (
+         <div className="p-4">
+           <p className="text-sm text-muted-foreground">{description}</p>
+         </div>
+       )}
     </CardContent>
   </Card>
 );
@@ -98,9 +103,10 @@ const GenerateStory = () => {
           <TabsContent value="sources" className="mt-4 flex-1 h-full overflow-hidden">
             <NewsroomPanel
               title="Sources"
-              description="Add the sources list panel content here."
               showToggle={false}
-            />
+            >
+              <SourcesPanel />
+            </NewsroomPanel>
           </TabsContent>
           <TabsContent value="chat" className="mt-4 flex-1 h-full overflow-hidden">
             <NewsroomPanel
@@ -132,11 +138,12 @@ const GenerateStory = () => {
         >
           <NewsroomPanel
             title="Sources"
-            description="Add the sources list panel content here."
             onToggle={() => togglePanel("sources")}
             showToggle
             toggleIcon="left"
-          />
+          >
+            <SourcesPanel />
+          </NewsroomPanel>
         </div>
 
         {/* Chat Panel (Center) */}
