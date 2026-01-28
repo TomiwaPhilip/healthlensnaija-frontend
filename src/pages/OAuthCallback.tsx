@@ -18,7 +18,7 @@ const OAuthCallback = () => {
         const hydratedUser = JSON.parse(decodeURIComponent(userParam));
         // ✅ Hydrate both token + user directly
         login(token, refreshToken, hydratedUser);
-        navigate("/generate-story", { replace: true });
+        navigate("/dashboard", { replace: true });
       } catch (err) {
         console.error("Error parsing user info:", err);
         navigate("/signin");

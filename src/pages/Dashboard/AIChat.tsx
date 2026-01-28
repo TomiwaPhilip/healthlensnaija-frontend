@@ -810,7 +810,7 @@ console.log("🔑 Token:", localStorage.getItem("token"));
   {/* 🆕 NEW: Back to Stories button */}
   <div className="mb-4 p-4 border-b border-gray-300 dark:border-gray-600">
       <button 
-        onClick={() => navigate('/generate-story')}
+        onClick={() => navigate('/dashboard')}
         className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
           isNightMode 
             ? "bg-gray-700 hover:bg-gray-600 text-white" 

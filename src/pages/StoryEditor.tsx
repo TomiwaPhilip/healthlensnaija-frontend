@@ -361,7 +361,7 @@ const StoryEditor = () => {
       const data = await response.json();
       if (response.ok) {
         toast.success("Story updated successfully!");
-        navigate("/generate-story");
+        navigate("/dashboard");
       } else {
         toast.error(data.message || "Update failed");
       }
@@ -403,7 +403,7 @@ const StoryEditor = () => {
                 {downloading ? "Downloading..." : "Download"}
               </button> */}
               <button
-                onClick={() => navigate("/generate-story")}
+                onClick={() => navigate("/dashboard")}
                 className="flex items-center px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors"
               >
                 <FaTimes className="mr-2" />

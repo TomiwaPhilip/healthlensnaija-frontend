@@ -28,7 +28,7 @@ const SignIn = () => {
       const parsed = JSON.parse(atob(token.split(".")[1]));
       const isExpired = parsed.exp * 1000 < Date.now();
       if (!isExpired) {
-        navigate("/generate-story", { replace: true });
+        navigate("/dashboard", { replace: true });
       }
     } catch (err) {
       console.warn("Invalid token format, staying on signin.");

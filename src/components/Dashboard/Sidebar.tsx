@@ -70,7 +70,6 @@ const AdminSidebar = ({
         <SidebarItem to="/admin/faq" icon={<HelpCircle className="w-5 h-5" />} label="FAQs" showExpanded={true} />
         <SidebarItem to="/admin/contact" icon={<Mail className="w-5 h-5" />} label="Contact Messages" showExpanded={true} />
         <SidebarItem to="/admin/tools" icon={<Wrench className="w-5 h-5" />} label="Tools" showExpanded={true} />
-        <SidebarItem to="/generate-story" icon={<ChevronLeft className="w-5 h-5" />} label="Back to Dashboard" showExpanded={true} />
       </div>
 
       {/* Footer sections - pinned to bottom */}
@@ -128,11 +127,10 @@ const UserSidebar = ({
 
       {/* Navigation */}
       <div className="flex-1 overflow-y-auto p-3 space-y-2">
-        <SidebarItem to="/generate-story" icon={<Home className="w-5 h-5" />} label={t("nav.dashboard")} onClick={onMobileLinkClick} showExpanded={true} />
-        <SidebarItem to="/writing" icon={<PenTool className="w-5 h-5" />} label={t("nav.startWriting")} onClick={onMobileLinkClick} showExpanded={true} />
-        <SidebarItem to="/resources" icon={<Book className="w-5 h-5" />} label={t("nav.resources")} onClick={onMobileLinkClick} showExpanded={true} />
+        <SidebarItem to="/dashboard" icon={<Home className="w-5 h-5" />} label="Dashboard" onClick={onMobileLinkClick} showExpanded={true} />
+        <SidebarItem to="/resources" icon={<Book className="w-5 h-5" />} label="Resources" onClick={onMobileLinkClick} showExpanded={true} />
         {user?.role === "Admin" && (
-          <SidebarItem to="/admin/overview" icon={<Shield className="w-5 h-5" />} label={t("nav.admin")} onClick={onMobileLinkClick} showExpanded={true} />
+          <SidebarItem to="/admin/overview" icon={<Shield className="w-5 h-5" />} label="Admin Panel" onClick={onMobileLinkClick} showExpanded={true} />
         )}
       </div>
 

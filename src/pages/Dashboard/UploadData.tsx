@@ -819,7 +819,7 @@ useEffect(() => {
                       variants={buttonVariants}
                       whileHover="hover"
                       whileTap="tap"
-                      onClick={() => navigate(`/generate-story?docId=${processedData.documentId}`)}
+                      onClick={() => navigate(`/dashboard?docId=${processedData.documentId}`)}
                       className={`p-2.5 rounded-lg transition-all duration-200 ${
                         isNightMode
                           ? "bg-green-600 hover:bg-green-500 shadow-lg shadow-green-500/25"
@@ -1081,7 +1081,7 @@ useEffect(() => {
                               variants={buttonVariants}
                               whileHover="hover"
                               whileTap="tap"
-                              onClick={() => navigate(`/generate-story?docId=${selectedDocument._id}`)}
+                              onClick={() => navigate(`/dashboard?docId=${selectedDocument._id}`)}
                               className={`p-2.5 rounded-lg transition-all duration-200 ${
                                 isNightMode
                                   ? "bg-green-600 hover:bg-green-500 shadow-lg shadow-green-500/25"
