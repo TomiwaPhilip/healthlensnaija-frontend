@@ -2,8 +2,9 @@ import React from "react";
 import { motion } from "framer-motion";
 import Typewriter from "typewriter-effect";
 import { useNavigate } from "react-router-dom";
-import { FaArrowRight } from "react-icons/fa";
+import { ArrowRight } from "lucide-react";
 import { Button } from "./ui/button";
+import { Badge } from "./ui/badge";
 import featuresImage from "../assets/Main-dashboard.svg";
 import "../index.css";
 
@@ -71,33 +72,33 @@ const HeroSection = () => {
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 0.06 }}
         transition={{ duration: 1.5, delay: 0.5 }}
-        className="absolute -top-20 -left-20 w-96 h-96 rounded-full bg-accent mix-blend-multiply filter blur-[128px] opacity-20 animate-blob"
+        className="absolute -top-20 -left-20 w-96 h-96 rounded-full bg-primary mix-blend-multiply filter blur-[128px] opacity-20 animate-blob"
       />
       <motion.div 
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 0.06 }}
         transition={{ duration: 1.5, delay: 0.8 }}
-        className="absolute top-1/2 -right-20 w-96 h-96 rounded-full bg-accent mix-blend-multiply filter blur-[128px] opacity-20 animate-blob animation-delay-2000"
+        className="absolute top-1/2 -right-20 w-96 h-96 rounded-full bg-primary mix-blend-multiply filter blur-[128px] opacity-20 animate-blob animation-delay-2000"
       />
 
       <div className="container mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center max-w-7xl">
         
         {/* Left Column: Text */}
         <div className="text-left relative z-10">
-          <motion.div variants={itemVariants} className="mb-2">
-            <span className="px-4 py-2 rounded-full bg-accent/10 text-accent font-semibold text-sm tracking-wide">
+          <motion.div variants={itemVariants} className="mb-4">
+            <Badge variant="secondary" className="px-4 py-2 text-primary font-semibold text-sm tracking-wide rounded-full">
               Powering Health Narratives
-            </span>
+            </Badge>
           </motion.div>
 
           <motion.h1 
             variants={itemVariants}
-            className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-extrabold leading-tight mb-6 text-foreground"
+            className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-extrabold leading-tight mb-6 text-foreground tracking-tight"
           >
             <div className="min-h-[3.6em] sm:min-h-[3em] lg:min-h-[3.6em]">
             <Typewriter
               options={{
-                cursorClassName: "typewriter-cursor text-[#3AB54A]",
+                cursorClassName: "typewriter-cursor text-primary",
                 delay: 40,
                 deleteSpeed: 30,
                 autoStart: true,
@@ -108,7 +109,7 @@ const HeroSection = () => {
                   .pauseFor(500)
                   .typeString('Transform Health <br/>Story Ideas Into ')
                   .pauseFor(300)
-                  .typeString('<br/><span class="text-[#3AB54A]">Quality Reporting </span>')
+                  .typeString('<br/><span class="text-primary">Quality Reporting </span>')
                   .pauseFor(300)
                   .typeString('with AI')
                   .start();
@@ -128,10 +129,11 @@ const HeroSection = () => {
             variants={itemVariants}
             className="mt-10 flex flex-wrap gap-4"
           >
-            <Button onClick={handleGetStarted} className="px-6 py-3" size="lg">
+            <Button onClick={handleGetStarted} className="px-6 py-6 text-lg" size="lg">
               Get Started Now
+              <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
-            <Button variant="outline" onClick={() => navigate("/features")} className="px-6 py-3 text-foreground border-foreground/20 hover:bg-muted">
+            <Button variant="outline" onClick={() => navigate("/features")} className="px-6 py-6 text-lg">
               Learn More
             </Button>
           </motion.div>
@@ -143,24 +145,24 @@ const HeroSection = () => {
           whileHover="hover"
           className="relative z-10 hidden lg:block"
         >
-          <div className="relative rounded-2xl p-2 bg-gradient-to-b from-white/40 to-white/10 backdrop-blur-md border border-white/20 shadow-2xl">
+          <div className="relative rounded-2xl p-2 bg-gradient-to-b from-card/40 to-card/10 backdrop-blur-md border border-border shadow-2xl">
               <img 
                 src={featuresImage} 
                 alt="HealthLens Dashboard" 
-                className="w-full h-auto rounded-xl shadow-sm"
+                className="w-full h-auto rounded-xl shadow-sm bg-background/50"
               />
               {/* Floating element decorative */}
               <motion.div 
                 animate={{ y: [0, -10, 0] }}
                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute -bottom-6 -left-6 bg-white p-4 rounded-xl shadow-xl border border-gray-100 flex items-center gap-3"
+                className="absolute -bottom-6 -left-6 bg-card p-4 rounded-xl shadow-xl border border-border flex items-center gap-3"
               >
-                  <div className="w-10 h-10 rounded-full bg-[#3AB54A]/20 flex items-center justify-center">
-                    <div className="w-3 h-3 rounded-full bg-[#3AB54A]" />
+                  <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+                    <div className="w-3 h-3 rounded-full bg-primary" />
                   </div>
                   <div>
-                    <div className="text-xs text-gray-500">Analysis Status</div>
-                    <div className="text-sm font-bold text-gray-800">Complete</div>
+                    <div className="text-xs text-muted-foreground">Analysis Status</div>
+                    <div className="text-sm font-bold text-foreground">Complete</div>
                   </div>
               </motion.div>
           </div>
@@ -174,7 +176,7 @@ const HeroSection = () => {
           <img 
             src={featuresImage} 
             alt="HealthLens Dashboard" 
-            className="w-full h-auto rounded-xl shadow-lg border border-gray-100"
+            className="w-full h-auto rounded-xl shadow-lg border border-border"
           />
         </motion.div>
 

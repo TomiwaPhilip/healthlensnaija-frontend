@@ -1,6 +1,10 @@
-import React, { useState, useRef, useEffect } from "react";
-import { FaPlay, FaTimes } from "react-icons/fa";
+import React, { useRef, useEffect, useState } from "react";
+import { Play, Check, X } from "lucide-react";
 import ReactPlayer from "react-player/lazy";
+import { Dialog, DialogContent, DialogTrigger, DialogClose } from "@/components/ui/dialog";
+import { Card, CardContent } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { cn } from "@/lib/utils";
 
 const WhyNHWSection = () => {
   const features = [
@@ -11,8 +15,7 @@ const WhyNHWSection = () => {
     { title: "Innovation Technology", description: "Stay ahead with AI that evolves with your needs." },
   ];
 
-  const [showModal, setShowModal] = useState(false);
-  const videoRef = useRef(null);
+  const videoRef = useRef<HTMLDivElement>(null);
   const [videoHeight, setVideoHeight] = useState(0);
 
   useEffect(() => {
@@ -27,78 +30,70 @@ const WhyNHWSection = () => {
   }, []);
 
   return (
-    <section className="py-12 bg-background">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-12">
-        <h2 className="text-3xl md:text-4xl font-extrabold text-foreground">
-          Why <span className="text-accent">HealthLens Naija</span> Stands Out
+    <section className="py-20 bg-background">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-16">
+        <h2 className="text-3xl md:text-5xl font-extrabold text-foreground tracking-tight mb-4">
+          Why <span className="text-primary">HealthLens Naija</span> Stands Out
         </h2>
-        <p className="mt-4 text-muted-foreground max-w-2xl mx-auto">
+        <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
           Practical AI tools and expert-backed workflows to speed up reporting and improve accuracy.
         </p>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
         {/* Video Block */}
-        <div className="relative">
-          <div
-            className="relative overflow-hidden rounded-xl bg-card border border-border shadow-lg cursor-pointer"
-            style={{ paddingBottom: '56.25%' }}
-            onClick={() => setShowModal(true)}
-            ref={videoRef}
-          >
-            <div className="absolute inset-0 bg-accent/10 flex items-center justify-center">
-              <FaPlay className="text-accent-foreground text-4xl" />
-            </div>
-          </div>
+        <div className="relative" ref={videoRef}>
+          <Dialog>
+            <DialogTrigger asChild>
+                <div
+                    className="relative overflow-hidden rounded-2xl bg-muted border border-border aspect-video cursor-pointer hover:shadow-xl transition-all group"
+                >
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/5 group-hover:bg-black/10 transition-colors">
+                        <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
+                            <Play className="text-primary-foreground h-6 w-6 ml-1" />
+                        </div>
+                    </div>
+                     {/* Placeholder image or overlay could go here */}
+                     <div className="absolute bottom-4 left-4 p-4 text-white">
+                        <p className="font-semibold text-lg drop-shadow-md">See it in action</p>
+                     </div>
+                </div>
+            </DialogTrigger>
+            <DialogContent className="max-w-4xl p-0 overflow-hidden bg-black border-none">
+                 <div className="relative aspect-video w-full">
+                    <ReactPlayer
+                        url="https://youtu.be/xlROWz1W7dI?si=hXd9Fy3VvzQIQ5Hk"
+                        width="100%"
+                        height="100%"
+                        controls={true}
+                        playing={true}
+                    />
+                 </div>
+            </DialogContent>
+          </Dialog>
         </div>
 
         {/* Feature List Block */}
-        <div className="overflow-hidden">
-          <div style={{ height: videoHeight || 'auto' }} className="space-y-4 overflow-y-auto pr-2 hide-scrollbar">
+        <div className="relative">
+          <ScrollArea style={{ height: videoHeight ? videoHeight : 'auto', maxHeight: '500px' }} className="pr-4">
+            <div className="space-y-4">
             {features.map((feature, index) => (
-              <div
-                key={index}
-                className="flex items-start bg-card p-6 rounded-xl border border-border shadow-sm"
-              >
-                <div className="flex-shrink-0 mt-1 text-accent-foreground">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                  </svg>
+              <Card key={index} className="border-border/60 hover:border-primary/50 transition-colors">
+                <CardContent className="flex items-start p-6">
+                <div className="flex-shrink-0 mt-1 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                  <Check className="h-4 w-4" />
                 </div>
                 <div className="ml-4">
                   <h3 className="text-lg font-semibold text-foreground">{feature.title}</h3>
-                  <p className="mt-2 text-muted-foreground">{feature.description}</p>
+                  <p className="mt-1 text-muted-foreground leading-relaxed">{feature.description}</p>
                 </div>
-              </div>
+                </CardContent>
+              </Card>
             ))}
-          </div>
+            </div>
+          </ScrollArea>
         </div>
       </div>
-
-      {/* Video Modal */}
-      {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={() => setShowModal(false)}>
-          <div className="absolute inset-0 bg-black/50" />
-          <div className="relative w-full max-w-4xl z-10" onClick={(e) => e.stopPropagation()}>
-            <button className="absolute -top-10 right-0 text-white hover:text-gray-200 transition-colors" onClick={() => setShowModal(false)}>
-              <FaTimes className="text-2xl" />
-            </button>
-            <div className="relative" style={{ paddingBottom: "56.25%" }}>
-              <ReactPlayer
-                url="https://youtu.be/xlROWz1W7dI?si=hXd9Fy3VvzQIQ5Hk"
-                width="100%"
-                height="100%"
-                className="absolute top-0 left-0"
-                playing={showModal}
-                controls={true}
-                config={{
-                  youtube: { playerVars: { modestbranding: 1, rel: 0, showinfo: 0 } },
-                }}
-              />
-            </div>
-          </div>
-        </div>
-      )}
     </section>
   );
 };
