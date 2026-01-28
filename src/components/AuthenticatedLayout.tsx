@@ -34,9 +34,6 @@ const AuthenticatedLayout = () => {
 
       {/* Main content area - flexbox column with scrollable content */}
       <div className="flex-1 flex flex-col h-screen overflow-hidden">
-        {/* Top Header - fixed height */}
-        <DashboardHeader />
-
         {/* Scrollable Content Area */}
         <main className="flex-1 overflow-y-auto p-4">
           {/* ⛳️ Nested routes render here (Dashboard, etc.) */}
