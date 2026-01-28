@@ -80,7 +80,7 @@ const Header = () => {
               <div key={index}>
                 <Link 
                   to={link.path} 
-                  className={`font-medium relative group transition-colors ${isActive ? 'text-accent text-accent-foreground' : 'text-foreground/90 hover:text-accent'}`}
+                  className={`font-medium relative group transition-colors ${isActive ? 'text-accent' : 'text-foreground/70 hover:text-accent'}`}
                 >
                   {link.text}
                   <span className={`absolute left-0 bottom-0 h-0.5 bg-accent transition-all duration-300 ${isActive ? 'w-full' : 'w-0 group-hover:w-full'}`}></span>
