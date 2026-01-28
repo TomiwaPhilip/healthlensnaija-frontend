@@ -55,16 +55,16 @@ const Footer = () => {
             </h4>
             <ul className="space-y-2">
               {[
-                { name: "Home", href: "#home" },
-                { name: "Features", href: "#features" },
-                { name: "About Us", href: "#about" },
-                { name: "Contact", href: "#contact" },
+                { name: "Home", href: "/" },
+                { name: "Features", href: "/features" },
+                { name: "About Us", href: "/about" },
+                { name: "Contact", href: "/contact" },
               ].map((link, index) => (
                 <li key={index}>
-                  <a href={link.href} className="text-muted-foreground hover:text-accent flex items-center gap-1 transition-colors">
+                  <Link to={link.href} className="text-muted-foreground hover:text-accent flex items-center gap-1 transition-colors">
                     <FaArrowRight className="text-xs" />
                     {link.name}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>

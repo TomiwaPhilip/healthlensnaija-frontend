@@ -131,7 +131,7 @@ const HeroSection = () => {
             <Button onClick={handleGetStarted} className="px-6 py-3" size="lg">
               Get Started Now
             </Button>
-            <Button variant="outline" onClick={() => navigate("/features")} className="px-6 py-3">
+            <Button variant="outline" onClick={() => navigate("/features")} className="px-6 py-3 text-foreground border-foreground/20 hover:bg-muted">
               Learn More
             </Button>
           </motion.div>
