@@ -38,7 +38,6 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const allowedRedirects = [
-  "/dashboard",
   "/generate-story",
   "/upload-data",
   "/ai-chat",

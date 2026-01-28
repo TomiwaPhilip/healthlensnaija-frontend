@@ -76,7 +76,7 @@ const VerifyEmail = () => {
       // ✅ If verification succeeded and tokens exist → go straight to dashboard
       const token = localStorage.getItem("token");
       if (token) {
-        navigate("/dashboard", { replace: true });
+        navigate("/generate-story", { replace: true });
       } else {
         navigate("/signin", { replace: true });
       }
