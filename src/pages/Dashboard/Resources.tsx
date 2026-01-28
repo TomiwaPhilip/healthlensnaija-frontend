@@ -1,6 +1,10 @@
-import React, { useState } from 'react';
-import { FaFileDownload, FaSearch, FaExternalLinkAlt } from 'react-icons/fa';
+import React, { useState } from "react";
+import { Search, ExternalLink, Download, FileText } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { Card, CardHeader, CardContent, CardFooter } from "../../components/ui/card";
+import { Input } from "../../components/ui/input";
+import { Button } from "../../components/ui/button";
+import { Badge } from "../../components/ui/badge";
 
 const Resources = () => {
   const { t } = useTranslation("resources");
@@ -21,54 +25,70 @@ const Resources = () => {
       (filter === "all" || r.type === filter)
   );
 
-  const getFileIcon = (fileType) => {
-    switch(fileType) {
-      case 'pdf':
-        return <span className="bg-red-100 text-red-800 px-2 py-1 rounded text-xs font-medium">PDF</span>;
-      case 'xlsx':
-        return <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-medium">Excel</span>;
+  const getFileIcon = (fileType: string) => {
+    switch (fileType) {
+      case "pdf":
+        return (
+          <Badge variant="outline" className="bg-red-50 text-foreground">
+            PDF
+          </Badge>
+        );
+      case "xlsx":
+        return (
+          <Badge variant="outline" className="bg-green-50 text-foreground">
+            Excel
+          </Badge>
+        );
       default:
-        return <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs font-medium">Web</span>;
+        return (
+          <Badge variant="outline" className="bg-blue-50 text-foreground">
+            Web
+          </Badge>
+        );
     }
   };
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
       <div className="mb-2 flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-800">{t("title")}</h1>
-        <span className="text-sm text-gray-500">
+        <h1 className="text-2xl font-semibold text-foreground">{t("title")}</h1>
+        <span className="text-sm text-muted-foreground">
           {t("labels.available", { count: filteredResources.length })}
         </span>
       </div>
-      <p className="text-gray-600 mb-8">{t("subtitle")}</p>
+      <p className="text-sm text-muted-foreground mb-8">{t("subtitle")}</p>
 
       {/* Filters */}
       <div className="mb-8">
         <div className="relative mb-4">
-          <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-          <input
-            type="text"
+          <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+            <Search size={16} />
+          </div>
+          <Input
             placeholder={t("searchPlaceholder")}
-            className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+            className="pl-10"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
 
         <div className="flex flex-wrap gap-2">
-          {Object.entries(tagLabels).map(([key, label]) => (
-            <button
-              key={key}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                filter === key
-                  ? "bg-green-600 text-white"
-                  : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-100"
-              }`}
-              onClick={() => setFilter(key)}
-            >
-              {label}
-            </button>
-          ))}
+          {Object.entries(tagLabels).map(([key, label]) => {
+            const isActive = filter === key;
+            return (
+              <button
+                key={key}
+                onClick={() => setFilter(key)}
+                className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-ring ${
+                  isActive
+                    ? "bg-accent text-accent-foreground shadow-sm"
+                    : "bg-background border border-border text-foreground hover:bg-accent/5"
+                }`}
+              >
+                {label}
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -76,88 +96,83 @@ const Resources = () => {
       {filteredResources.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredResources.map((res, i) => (
-            <div 
+            <Card
               key={i}
-              className={`bg-white p-5 rounded-xl shadow-sm border border-gray-200 transition-all duration-200 ${
-                hoveredCard === i ? 'transform hover:-translate-y-1 hover:shadow-md' : ''
-              }`}
+              className={`transition-transform duration-150 hover:-translate-y-1 hover:shadow-lg flex flex-col overflow-hidden`}
               onMouseEnter={() => setHoveredCard(i)}
               onMouseLeave={() => setHoveredCard(null)}
             >
-              <div className="flex justify-between items-start mb-3">
-                {getFileIcon(res.fileType)}
-                <span className="text-xs text-gray-500">{res.updated}</span>
-              </div>
-              
-              <h2 className="text-xl font-semibold mb-2 text-gray-800">{res.title}</h2>
-              <p className="text-gray-600 mb-4">{res.description}</p>
-              
-              <div className="flex items-center justify-between mt-auto">
-                <span className="text-xs bg-gray-100 px-2 py-1 rounded-full text-gray-600">
-                  {tagLabels[res.type]}
-                </span>
-                
-                <a
-                  href={res.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-green-600 hover:text-green-800 text-sm font-medium flex items-center gap-1 transition-colors"
-                >
-                  {res.fileType === 'web' ? (
-                    <>
-                      {t("actions.viewDocs")} <FaExternalLinkAlt className="text-xs" />
-                    </>
-                  ) : (
-                    <>
-                      {t("actions.download")} <FaFileDownload />
-                    </>
-                  )}
-                </a>
-              </div>
-              
-              {res.fileSize && (
-                <div className="mt-3 text-xs text-gray-500">
-                  {t("labels.fileSize", { size: res.fileSize })}
+              <div className="flex gap-4 p-6">
+                <div className="flex-shrink-0 flex flex-col items-center justify-start">
+                  <div className="w-12 h-12 rounded-lg bg-muted flex items-center justify-center text-muted-foreground">
+                    <FileText size={20} />
+                  </div>
+                  <div className="mt-2 text-xs text-muted-foreground">{res.fileType.toUpperCase()}</div>
                 </div>
-              )}
-            </div>
+
+                <div className="flex-1 min-w-0 flex flex-col">
+                  {/* First row: title, description, actions */}
+                  <div>
+                    <div className="min-w-0">
+                      <h3 className="text-base font-semibold text-foreground truncate">{res.title}</h3>
+                      <p className="text-sm text-muted-foreground mt-1 line-clamp-3">{res.description}</p>
+                    </div>
+
+                    {/* Action row: download/view button under description (full width) */}
+                    <div className="mt-3">
+                      <Button asChild size="sm" className="w-full justify-center">
+                        <a
+                          href={res.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          download={res.fileType !== "web" && res.fileType !== "pdf" ? true : undefined}
+                          className="w-full flex items-center justify-center gap-2"
+                        >
+                          {res.fileType === "web" ? t("actions.viewDocs") : t("actions.download")} <Download size={14} />
+                        </a>
+                      </Button>
+                    </div>
+
+                    {/* Second row: category (left) and file size/updated (right) */}
+                    <div className="mt-4 flex items-center justify-between">
+                      <div>
+                        <Badge variant="outline" className="bg-accent/5 text-foreground">{tagLabels[res.type]}</Badge>
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        {res.fileSize ? t("labels.fileSize", { size: res.fileSize }) : res.updated}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Card>
           ))}
         </div>
       ) : (
-        <div className="bg-white p-8 rounded-xl border border-gray-200 text-center">
-          <p className="text-gray-500 mb-4">{t("labels.noResults")}</p>
-          <button 
+        <Card className="p-8 text-center">
+          <div className="text-muted-foreground mb-4">{t("labels.noResults")}</div>
+          <Button
+            variant="link"
             onClick={() => {
-              setSearch('');
-              setFilter('all');
+              setSearch("");
+              setFilter("all");
             }}
-            className="text-green-600 hover:text-green-800 font-medium"
           >
             {t("actions.clearFilters")}
-          </button>
-        </div>
+          </Button>
+        </Card>
       )}
 
       {/* QuickInsights Panel */}
-      <div className="mt-12 bg-gradient-to-r from-green-50 to-blue-50 border-l-4 border-green-600 p-5 rounded-lg">
-        <div className="flex items-start">
-          <span className="text-2xl mr-3">🧠</span>
+      <Card className="mt-12">
+        <CardContent className="flex items-start gap-4 p-6">
+          <div className="text-2xl">🧠</div>
           <div>
-            <h2 className="text-xl font-semibold text-gray-800 mb-2">
-              {t("quickInsight.title")}
-            </h2>
-            <blockquote className="text-gray-700 italic">
-              {t("quickInsight.quote")}
-            </blockquote>
-            <a 
-              href="/quickinsights" 
-              className="inline-block mt-3 text-green-600 hover:text-green-800 font-medium text-sm flex items-center"
-            >
-              {t("quickInsight.explore")} <FaExternalLinkAlt className="ml-1 text-xs" />
-            </a>
+            <h2 className="text-base font-semibold text-foreground mb-2">{t("quickInsight.title")}</h2>
+            <blockquote className="text-muted-foreground italic">{t("quickInsight.quote")}</blockquote>
           </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };
