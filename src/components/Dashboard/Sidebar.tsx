@@ -290,7 +290,7 @@ const SidebarItem = ({
       className={({ isActive }) =>
         `flex items-center gap-3 px-4 py-2 rounded-lg transition-colors ${
           isActive
-            ? 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 font-medium'
+            ? 'bg-accent/10 text-accent font-medium'
             : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
         }`
       }
