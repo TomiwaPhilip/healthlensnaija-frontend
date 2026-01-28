@@ -38,7 +38,7 @@ const Header = () => {
         {/* Logo */}
         <div className="flex-shrink-0 mr-4">
           <Link to="/" className="flex items-center space-x-2">
-            <img src={logo} alt="Nigeria Health Watch" className="h-10 w-auto" />
+            <img src={logo} alt="Nigeria Health Watch" className="h-10 w-auto dark:brightness-0 dark:invert" />
           </Link>
         </div>
 

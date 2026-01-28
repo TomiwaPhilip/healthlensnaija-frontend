@@ -108,7 +108,7 @@ const SignUp = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex">
+    <div className="min-h-screen bg-background flex pt-20 lg:pt-0">
       <ToastContainer position="top-center" theme="colored" />
       
       {/* Left Section: Image & Brand (Hidden on Mobile) */}
@@ -192,7 +192,7 @@ const SignUp = () => {
 
             <div className="text-center mb-8 lg:text-left">
               <Link to="/" className="inline-block lg:hidden mb-6">
-                <img src={logo} alt="HealthLens Logo" className="h-10 dark:invert" />
+                <img src={logo} alt="HealthLens Logo" className="h-10 dark:brightness-0 dark:invert" />
               </Link>
               <h2 className="text-3xl font-bold text-foreground mb-2">Create an Account</h2>
               <p className="text-muted-foreground">

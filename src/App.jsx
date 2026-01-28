@@ -104,9 +104,8 @@ const App = () => {
             path="/signup"
             element={
               <>
-                <Header />
                 <SignUp />
-                <Footer />
+                {/* <Footer /> */}
               </>
             }
           />
@@ -124,9 +123,8 @@ const App = () => {
             path="/signin"
             element={
               <>
-                <Header />
                 <SignIn />
-                <Footer />
+                {/* <Footer /> */}
               </>
             }
           />

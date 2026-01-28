@@ -80,7 +80,7 @@ const SignIn = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex">
+    <div className="min-h-screen bg-background flex pt-20 lg:pt-0">
       {/* Left Section: Image & Brand (Hidden on Mobile) */}
       <div className="hidden lg:flex w-1/2 relative bg-primary overflow-hidden">
         <div className="absolute inset-0 z-10 bg-gradient-to-b from-primary/80 to-primary/90 mix-blend-multiply" />
@@ -151,7 +151,7 @@ const SignIn = () => {
           >
             <div className="text-center mb-10 lg:hidden">
                <Link to="/" className="inline-block mb-6">
-                  <img src={logo} alt="HealthLens Logo" className="h-10 dark:invert" />
+                  <img src={logo} alt="HealthLens Logo" className="h-10 dark:brightness-0 dark:invert" />
                </Link>
             </div>
 
