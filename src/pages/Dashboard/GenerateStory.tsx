@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -8,7 +9,7 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { SourcesPanel, useSourcesPanelState } from "./components/SourcesPanel";
 import { ChatPanel, useChatPanelState } from "./components/ChatPanel";
 import { ArtifactsPanel, useArtifactsPanelState } from "./components/ArtifactsPanel";
@@ -77,7 +78,8 @@ const NewsroomPanel = ({
   </Card>
 );
 
-const GenerateStory = () => {
+// --- Main Logic Component ---
+const NewsroomContent = ({ resetKey }: { resetKey: string }) => {
   const sourcesPanelState = useSourcesPanelState();
   const chatPanelState = useChatPanelState();
   const artifactsPanelState = useArtifactsPanelState();
@@ -98,12 +100,10 @@ const GenerateStory = () => {
   };
 
   return (
-    <div className="p-5 min-h-screen transition-colors duration-300 bg-background text-foreground">
-      <h1 className="text-2xl font-bold mb-6">Newsroom</h1>
-
+    <>
       {/* Mobile Tabs */}
       <div className="lg:hidden h-[calc(100vh-8rem)]">
-        <Tabs defaultValue="sources" className="w-full h-full flex flex-col">
+        <Tabs defaultValue="chat" className="w-full h-full flex flex-col">
           <TabsList className="grid w-full grid-cols-3 flex-shrink-0">
             <TabsTrigger value="sources">Sources</TabsTrigger>
             <TabsTrigger value="chat">Chat</TabsTrigger>
@@ -222,6 +222,31 @@ const GenerateStory = () => {
           </NewsroomPanel>
         </div>
       </div>
+    </>
+  );
+};
+
+const GenerateStory = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const storyId = searchParams.get("id");
+  const [sessionKey, setSessionKey] = useState(0);
+
+  const handleCreateNew = () => {
+    setSearchParams({}); // Clear ID
+    setSessionKey((prev) => prev + 1); // Reset State
+  };
+
+  return (
+    <div className="p-5 min-h-screen transition-colors duration-300 bg-background text-foreground">
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold">Newsroom</h1>
+        <Button onClick={handleCreateNew} className="gap-2">
+             <Plus className="h-4 w-4" />
+             New Story
+        </Button>
+      </div>
+
+      <NewsroomContent key={`${storyId}-${sessionKey}`} resetKey={`${storyId}-${sessionKey}`} />
     </div>
   );
 };

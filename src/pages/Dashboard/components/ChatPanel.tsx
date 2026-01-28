@@ -193,14 +193,14 @@ export function ChatPanel({ state, onAddToArtifacts }: {
                                 <Button
                                     variant="ghost" 
                                     size="sm" 
-                                    className="h-6 px-2 text-[10px] text-muted-foreground hover:text-primary gap-1.5 ml-auto"
+                                    className="group h-6 px-2 text-[10px] text-muted-foreground hover:bg-green-100 hover:text-green-700 gap-1.5 ml-auto transition-all duration-300 ease-in-out"
                                     onClick={() => onAddToArtifacts(
                                         `Insight: ${msg.content.slice(0, 20)}...`, 
                                         msg.content
                                     )}
                                 >
                                     <FilePlus className="h-3 w-3" />
-                                    Add to Artifacts
+                                    <span className="">Add to Artifacts</span>
                                 </Button>
                             )}
                         </div>
