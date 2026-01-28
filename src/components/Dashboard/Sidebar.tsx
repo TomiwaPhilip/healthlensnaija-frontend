@@ -49,54 +49,65 @@ const AdminSidebar = ({
   const showExpanded = !collapsed || isMobile;
 
   return (
-    <div className="flex flex-col h-full bg-background">
-      {/* Header */}
-      <div className="border-b border-gray-200 dark:border-gray-800 p-4 flex items-center gap-3">
-        <img src={logo} alt="Nigeria Health Watch" className="w-10 h-10" />
-        <div className="flex-1">
-          <h2 className="text-lg font-bold text-gray-900 dark:text-white">Admin</h2>
+    <div className="flex flex-col h-full bg-background overflow-hidden">
+      {/* Header with Toggle Button (Desktop only) */}
+      <div className="border-b border-gray-200 dark:border-gray-800 p-4 flex items-center gap-3 justify-between">
+        <div className="flex items-center gap-3 flex-1 min-w-0">
+          <img src={logo} alt="Nigeria Health Watch" className="w-10 h-10 flex-shrink-0" />
+          {showExpanded && <h2 className="text-lg font-bold text-gray-900 dark:text-white truncate">Admin</h2>}
         </div>
+        <button
+          onClick={toggleSidebar}
+          className="hidden lg:flex p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors flex-shrink-0"
+          aria-label="Toggle sidebar"
+        >
+          <ChevronLeft className={`w-5 h-5 text-gray-900 dark:text-white transition-transform duration-300 ${collapsed ? 'rotate-180' : ''}`} />
+        </button>
       </div>
 
       {/* Navigation */}
       <div className="flex-1 overflow-y-auto p-3 space-y-2">
-        <SidebarItem to="/admin/overview" icon={<BarChart className="w-5 h-5" />} label="Overview" showExpanded={true} />
-        <SidebarItem to="/admin/users" icon={<Users className="w-5 h-5" />} label="Users" showExpanded={true} />
-        <SidebarItem to="/admin/content" icon={<File className="w-5 h-5" />} label="Content" showExpanded={true} />
-        <SidebarItem to="/admin/ai-training" icon={<Bot className="w-5 h-5" />} label="AI Training" showExpanded={true} />
-        <SidebarItem to="/admin/chats" icon={<MessageCircle className="w-5 h-5" />} label="Chats" showExpanded={true} />
-        <SidebarItem to="/admin/testimonials" icon={<List className="w-5 h-5" />} label="Testimonials" showExpanded={true} />
-        <SidebarItem to="/admin/support" icon={<Shield className="w-5 h-5" />} label="Support" showExpanded={true} />
-        <SidebarItem to="/admin/faq" icon={<HelpCircle className="w-5 h-5" />} label="FAQs" showExpanded={true} />
-        <SidebarItem to="/admin/contact" icon={<Mail className="w-5 h-5" />} label="Contact Messages" showExpanded={true} />
-        <SidebarItem to="/admin/tools" icon={<Wrench className="w-5 h-5" />} label="Tools" showExpanded={true} />
+        <SidebarItem to="/admin/overview" icon={<BarChart className="w-5 h-5" />} label="Overview" showExpanded={showExpanded} />
+        <SidebarItem to="/admin/users" icon={<Users className="w-5 h-5" />} label="Users" showExpanded={showExpanded} />
+        <SidebarItem to="/admin/content" icon={<File className="w-5 h-5" />} label="Content" showExpanded={showExpanded} />
+        <SidebarItem to="/admin/ai-training" icon={<Bot className="w-5 h-5" />} label="AI Training" showExpanded={showExpanded} />
+        <SidebarItem to="/admin/chats" icon={<MessageCircle className="w-5 h-5" />} label="Chats" showExpanded={showExpanded} />
+        <SidebarItem to="/admin/testimonials" icon={<List className="w-5 h-5" />} label="Testimonials" showExpanded={showExpanded} />
+        <SidebarItem to="/admin/support" icon={<Shield className="w-5 h-5" />} label="Support" showExpanded={showExpanded} />
+        <SidebarItem to="/admin/faq" icon={<HelpCircle className="w-5 h-5" />} label="FAQs" showExpanded={showExpanded} />
+        <SidebarItem to="/admin/contact" icon={<Mail className="w-5 h-5" />} label="Contact Messages" showExpanded={showExpanded} />
+        <SidebarItem to="/admin/tools" icon={<Wrench className="w-5 h-5" />} label="Tools" showExpanded={showExpanded} />
       </div>
 
       {/* Footer sections - pinned to bottom */}
       <div className="mt-auto flex flex-col">
         {/* Footer */}
         <div className="border-t border-gray-200 dark:border-gray-800 p-3 space-y-2">
-          <SidebarItem to="/settings" icon={<Cog className="w-5 h-5" />} label="Settings" showExpanded={true} />
-          <SidebarItem to="/help-center" icon={<HelpCircle className="w-5 h-5" />} label="Help Center" showExpanded={true} />
+          <SidebarItem to="/settings" icon={<Cog className="w-5 h-5" />} label="Settings" showExpanded={showExpanded} />
+          <SidebarItem to="/help-center" icon={<HelpCircle className="w-5 h-5" />} label="Help Center" showExpanded={showExpanded} />
         </div>
 
         {/* Theme Toggle */}
-        <div className="border-t border-gray-200 dark:border-gray-800 p-4">
-          <ThemeToggle />
+        <div className={`border-t border-gray-200 dark:border-gray-800 p-4 ${!showExpanded ? 'flex justify-center' : ''}`}>
+          <ThemeToggle hideLabel={!showExpanded} />
         </div>
 
         {/* User Profile */}
-        <div className="border-t border-gray-200 dark:border-gray-800 p-4 flex items-center gap-3">
+        <div className={`border-t border-gray-200 dark:border-gray-800 p-4 flex items-center gap-3 ${!showExpanded ? 'justify-center' : ''}`}>
           <Avatar className="w-8 h-8 flex-shrink-0">
             <AvatarImage src={user?.profilePicture} alt={user?.firstName} />
             <AvatarFallback className="text-xs">{user?.firstName?.charAt(0) || 'A'}</AvatarFallback>
           </Avatar>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{user?.firstName} {user?.lastName}</p>
-          </div>
-          <button onClick={() => setShowLogoutModal(true)} className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded">
-            <LogOut className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-          </button>
+          {showExpanded ? (
+            <>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{user?.firstName} {user?.lastName}</p>
+              </div>
+              <button onClick={() => setShowLogoutModal(true)} className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded">
+                <LogOut className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+              </button>
+            </>
+          ) : null}
         </div>
       </div>
     </div>
@@ -117,20 +128,28 @@ const UserSidebar = ({
 }) => {
   const { isNightMode } = useContext(DashboardContext);
   const { t } = useTranslation("sidebar");
+  const showExpanded = !collapsed || isMobile;
 
   return (
-    <div className="flex flex-col h-full bg-background">
-      {/* Header */}
-      <div className="border-b border-gray-200 dark:border-gray-800 p-4">
-        <h2 className="text-lg font-bold text-gray-900 dark:text-white">Menu</h2>
+    <div className="flex flex-col h-full bg-background overflow-hidden">
+      {/* Header with Toggle Button (Desktop only) */}
+      <div className="border-b border-gray-200 dark:border-gray-800 p-4 flex items-center justify-between">
+        {showExpanded && <h2 className="text-lg font-bold text-gray-900 dark:text-white truncate">Menu</h2>}
+        <button
+          onClick={toggleSidebar}
+          className="hidden lg:flex p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors ml-auto"
+          aria-label="Toggle sidebar"
+        >
+          <ChevronLeft className={`w-5 h-5 text-gray-900 dark:text-white transition-transform duration-300 ${collapsed ? 'rotate-180' : ''}`} />
+        </button>
       </div>
 
       {/* Navigation */}
       <div className="flex-1 overflow-y-auto p-3 space-y-2">
-        <SidebarItem to="/dashboard" icon={<Home className="w-5 h-5" />} label="Dashboard" onClick={onMobileLinkClick} showExpanded={true} />
-        <SidebarItem to="/resources" icon={<Book className="w-5 h-5" />} label="Resources" onClick={onMobileLinkClick} showExpanded={true} />
+        <SidebarItem to="/dashboard" icon={<Home className="w-5 h-5" />} label="Dashboard" onClick={onMobileLinkClick} showExpanded={showExpanded} />
+        <SidebarItem to="/resources" icon={<Book className="w-5 h-5" />} label="Resources" onClick={onMobileLinkClick} showExpanded={showExpanded} />
         {user?.role === "Admin" && (
-          <SidebarItem to="/admin/overview" icon={<Shield className="w-5 h-5" />} label="Admin Panel" onClick={onMobileLinkClick} showExpanded={true} />
+          <SidebarItem to="/admin/overview" icon={<Shield className="w-5 h-5" />} label="Admin Panel" onClick={onMobileLinkClick} showExpanded={showExpanded} />
         )}
       </div>
 
@@ -138,27 +157,31 @@ const UserSidebar = ({
       <div className="mt-auto flex flex-col">
         {/* Footer */}
         <div className="border-t border-gray-200 dark:border-gray-800 p-3 space-y-2">
-          <SidebarItem to="/settings" icon={<Cog className="w-5 h-5" />} label={t("nav.settings")} onClick={onMobileLinkClick} showExpanded={true} />
-          <SidebarItem to="/help-center" icon={<HelpCircle className="w-5 h-5" />} label={t("nav.helpCenter")} onClick={onMobileLinkClick} showExpanded={true} />
+          <SidebarItem to="/settings" icon={<Cog className="w-5 h-5" />} label={t("nav.settings")} onClick={onMobileLinkClick} showExpanded={showExpanded} />
+          <SidebarItem to="/help-center" icon={<HelpCircle className="w-5 h-5" />} label={t("nav.helpCenter")} onClick={onMobileLinkClick} showExpanded={showExpanded} />
         </div>
 
         {/* Theme Toggle */}
-        <div className="border-t border-gray-200 dark:border-gray-800 p-4">
-          <ThemeToggle />
+        <div className={`border-t border-gray-200 dark:border-gray-800 p-4 ${!showExpanded ? 'flex justify-center' : ''}`}>
+          <ThemeToggle hideLabel={!showExpanded} />
         </div>
 
         {/* User Profile */}
-        <div className="border-t border-gray-200 dark:border-gray-800 p-4 flex items-center gap-3">
+        <div className={`border-t border-gray-200 dark:border-gray-800 p-4 flex items-center gap-3 ${!showExpanded ? 'justify-center' : ''}`}>
           <Avatar className="w-8 h-8 flex-shrink-0">
             <AvatarImage src={user?.profilePicture} alt={user?.firstName} />
             <AvatarFallback className="text-xs">{user?.firstName?.charAt(0) || 'U'}</AvatarFallback>
           </Avatar>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{user?.firstName} {user?.lastName}</p>
-          </div>
-          <button onClick={() => setShowLogoutModal(true)} className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded">
-            <LogOut className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-          </button>
+          {showExpanded ? (
+            <>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{user?.firstName} {user?.lastName}</p>
+              </div>
+              <button onClick={() => setShowLogoutModal(true)} className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded">
+                <LogOut className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+              </button>
+            </>
+          ) : null}
         </div>
       </div>
     </div>
@@ -235,15 +258,13 @@ const Sidebar = () => {
 
       {/* Sidebar Container */}
       <div
-        className={`fixed md:relative left-0 top-0 h-full bg-background z-40 md:z-auto transition-all duration-300 ${
-          isMobileOpen ? 'w-64' : '-translate-x-full'
-        } md:translate-x-0 w-64 md:flex md:flex-col border-r border-gray-200 dark:border-gray-800`}
-        onMouseEnter={() => !isMobile && setCollapsed(false)}
-        onMouseLeave={() => !isMobile && setCollapsed(true)}
+        className={`fixed md:relative left-0 top-0 h-full bg-background z-40 md:z-auto transition-all duration-300 border-r border-gray-200 dark:border-gray-800 overflow-x-hidden ${
+          isMobileOpen ? 'w-64' : '-translate-x-full md:translate-x-0'
+        } ${collapsed && !isMobile ? 'md:w-20' : 'md:w-64'} md:flex md:flex-col`}
       >
         <SidebarContentComponent
           collapsed={collapsed && !isMobile}
-          toggleSidebar={() => !isMobile && setCollapsed((prev) => !prev)}
+          toggleSidebar={() => setCollapsed((prev) => !prev)}
           user={user}
           setShowLogoutModal={setShowLogoutModal}
           onMobileLinkClick={() => setIsMobileOpen(false)}
@@ -286,16 +307,17 @@ const SidebarItem = ({
     <NavLink
       to={to}
       className={({ isActive }) =>
-        `flex items-center gap-3 px-4 py-2 rounded-lg transition-colors ${
+        `flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 ${
           isActive
             ? 'bg-accent/10 text-accent font-medium'
             : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
-        }`
+        } ${!showExpanded ? 'justify-center px-2' : ''}`
       }
       onClick={onClick}
+      title={!showExpanded ? label : ""}
     >
-      <span className="w-5 h-5 flex-shrink-0">{icon}</span>
-      {showExpanded && <span className="text-sm">{label}</span>}
+      <span className="w-5 h-5 flex-shrink-0 flex items-center justify-center">{icon}</span>
+      {showExpanded && <span className="text-sm truncate">{label}</span>}
     </NavLink>
   );
 };
