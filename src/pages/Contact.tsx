@@ -1,10 +1,15 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaPaperPlane, FaMapMarkerAlt, FaPhone, FaEnvelope, FaUser, FaCheckCircle, FaClock } from "react-icons/fa";
+import { Send, MapPin, Phone, Mail, User, CheckCircle2, Clock, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { toast } from "react-toastify";
 
 const Contact = () => {
   const [form, setForm] = useState({ name: "", email: "", message: "" });
-  const [status, setStatus] = useState(null);
+  const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
 
   // Animation variants
   const containerVariants = {
@@ -31,9 +36,11 @@ const Contact = () => {
     }
   };
 
-  const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus("sending");
 
@@ -47,18 +54,20 @@ const Contact = () => {
       const data = await res.json();
       if (data.success) {
         setStatus("success");
+        toast.success("Message sent successfully!");
         setForm({ name: "", email: "", message: "" });
-        setTimeout(() => setStatus(null), 3000);
+        setTimeout(() => setStatus("idle"), 3000);
       } else {
         setStatus("error");
+        toast.error("Failed to send message.");
       }
     } catch (err) {
-      // For demo purposes, if API fails, still show success after timeout
-      // Remove this in production if you want strict error handling
+      // Fallback for demo if API endpoint doesn't exist yet
       setTimeout(() => {
           setStatus("success");
+          toast.success("Message sent successfully! (Demo)");
           setForm({ name: "", email: "", message: "" });
-          setTimeout(() => setStatus(null), 3000);
+          setTimeout(() => setStatus("idle"), 3000);
       }, 1500)
     }
   };
@@ -72,21 +81,21 @@ const Contact = () => {
     >
       {/* Background Decor */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-accent/5 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-[-10%] left-[-5%] w-[600px] h-[600px] bg-accent/10 rounded-full blur-3xl"></div>
+        <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-primary/5 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-[-10%] left-[-5%] w-[600px] h-[600px] bg-primary/10 rounded-full blur-3xl"></div>
       </div>
 
       <div className="relative max-w-7xl mx-auto w-full">
         {/* Header Section */}
         <motion.div variants={itemVariants} className="text-center mb-16 lg:mb-24">
-          <span className="inline-block py-1 px-3 rounded-full bg-accent/10 text-accent font-medium text-sm mb-4">
+          <span className="inline-block py-1 px-3 rounded-full bg-primary/10 text-primary font-medium text-sm mb-4">
             Get in Touch
           </span>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-foreground tracking-tight leading-tight mb-6">
-            We'd Love to <span className="text-accent">Hear From You</span>
+            We'd Love to <span className="text-primary">Hear From You</span>
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            Have questions, feedback, or want to collaborate? Reach out to the Nigeria Health Watch team.
+            Have questions, feedback, or want to collaborate? Reach out to the HealthLens Naija team.
           </p>
         </motion.div>
 
@@ -94,16 +103,17 @@ const Contact = () => {
             
           {/* Contact Information Column */}
           <motion.div variants={itemVariants} className="space-y-8 order-2 lg:order-1">
-                 <div className="bg-card p-8 lg:p-10 rounded-3xl shadow-lg border border-border relative overflow-hidden group">
-                <div className="absolute top-0 right-0 w-24 h-24 bg-accent/5 rounded-bl-full -mr-4 -mt-4 transition-all group-hover:bg-accent/10"></div>
-                <h3 className="text-2xl font-bold text-foreground mb-6 flex items-center">
-                    Contact Information
-                </h3>
+             <Card className="border-border shadow-lg overflow-hidden group">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-bl-full -mr-4 -mt-4 transition-all group-hover:bg-primary/10"></div>
+                <CardHeader>
+                    <CardTitle className="text-2xl font-bold flex items-center gap-2">Contact Information</CardTitle>
+                    <CardDescription>Our team is here to help.</CardDescription>
+                </CardHeader>
                 
-                <div className="space-y-6">
+                <CardContent className="space-y-6">
                     <div className="flex items-start group/item">
-                        <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center text-accent flex-shrink-0 group-hover/item:bg-accent group-hover/item:text-white transition-all duration-300">
-                            <FaMapMarkerAlt className="text-xl" />
+                        <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary flex-shrink-0 group-hover/item:bg-primary group-hover/item:text-primary-foreground transition-all duration-300">
+                            <MapPin className="h-5 w-5" />
                         </div>
                         <div className="ml-5">
                             <h4 className="text-lg font-semibold text-foreground mb-1">Our Office</h4>
@@ -115,8 +125,8 @@ const Contact = () => {
                     </div>
 
                     <div className="flex items-start group/item">
-                        <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center text-accent flex-shrink-0 group-hover/item:bg-accent group-hover/item:text-white transition-all duration-300">
-                            <FaPhone className="text-xl" />
+                        <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary flex-shrink-0 group-hover/item:bg-primary group-hover/item:text-primary-foreground transition-all duration-300">
+                            <Phone className="h-5 w-5" />
                         </div>
                         <div className="ml-5">
                             <h4 className="text-lg font-semibold text-foreground mb-1">Phone</h4>
@@ -128,8 +138,8 @@ const Contact = () => {
                     </div>
 
                     <div className="flex items-start group/item">
-                        <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center text-accent flex-shrink-0 group-hover/item:bg-accent group-hover/item:text-white transition-all duration-300">
-                            <FaEnvelope className="text-xl" />
+                        <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary flex-shrink-0 group-hover/item:bg-primary group-hover/item:text-primary-foreground transition-all duration-300">
+                            <Mail className="h-5 w-5" />
                         </div>
                         <div className="ml-5">
                             <h4 className="text-lg font-semibold text-foreground mb-1">Email</h4>
@@ -139,125 +149,128 @@ const Contact = () => {
                             </p>
                         </div>
                     </div>
-                </div>
-             </div>
+                </CardContent>
+             </Card>
 
-             <div className="bg-accent p-8 lg:p-10 rounded-3xl shadow-xl text-white relative overflow-hidden">
-               <div className="absolute -bottom-10 -right-10 text-accent/60 opacity-50">
-                    <FaClock className="text-9xl" />
+             <Card className="bg-primary text-primary-foreground border-none shadow-xl relative overflow-hidden">
+               <div className="absolute -bottom-10 -right-10 text-primary-foreground/20">
+                    <Clock className="h-40 w-40" />
                 </div>
-                <h3 className="text-2xl font-bold mb-6 relative z-10">Operating Hours</h3>
-                <div className="space-y-4 relative z-10">
-                    <div className="flex justify-between items-center border-b border-white/20 pb-3">
-                        <span className="font-medium text-accent-foreground">Monday - Friday</span>
+                <CardHeader className="relative z-10">
+                    <CardTitle className="text-2xl font-bold">Operating Hours</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4 relative z-10">
+                    <div className="flex justify-between items-center border-b border-primary-foreground/20 pb-3">
+                        <span className="font-medium opacity-90">Monday - Friday</span>
                         <span className="font-bold">8:00 AM - 6:00 PM</span>
                     </div>
-                    <div className="flex justify-between items-center border-b border-white/20 pb-3">
-                        <span className="font-medium text-accent-foreground">Saturday</span>
+                    <div className="flex justify-between items-center border-b border-primary-foreground/20 pb-3">
+                        <span className="font-medium opacity-90">Saturday</span>
                         <span className="font-bold">9:00 AM - 2:00 PM</span>
                     </div>
                     <div className="flex justify-between items-center">
-                        <span className="font-medium text-accent-foreground">Sunday</span>
-                        <span className="font-bold text-white/60">Closed</span>
+                        <span className="font-medium opacity-90">Sunday</span>
+                        <span className="font-bold opacity-60">Closed</span>
                     </div>
-                </div>
-             </div>
+                </CardContent>
+             </Card>
           </motion.div>
 
           {/* Contact Form Column */}
           <motion.div variants={itemVariants} className="order-1 lg:order-2">
-            <div className="bg-card p-8 lg:p-12 rounded-3xl shadow-xl border border-border">
-                <h3 className="text-2xl font-bold text-foreground mb-8">Send us a Message</h3>
-                <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="relative group">
-                <div className="absolute left-0 top-1/2 -translate-y-1/2 left-4 text-gray-400 group-focus-within:text-accent transition-colors">
-                        <FaUser className="text-lg" />
-                    </div>
-                    <input 
-                        name="name"
-                        type="text" 
-                        placeholder="Your Name" 
-                        value={form.name}
-                        onChange={handleChange}
-                        required
-                        className="w-full bg-muted border border-border p-4 pl-12 rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent transition-all outline-none text-foreground placeholder-muted-foreground font-medium"
-                    />
-                </div>
-                
-                <div className="relative group">
-                    <div className="absolute left-0 top-1/2 -translate-y-1/2 left-4 text-gray-400 group-focus-within:text-accent transition-colors">
-                        <FaEnvelope className="text-lg" />
-                    </div>
-                    <input 
-                        name="email"
-                        type="email" 
-                        placeholder="Your Email" 
-                        value={form.email}
-                        onChange={handleChange}
-                        required
-                        className="w-full bg-muted border border-border p-4 pl-12 rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent transition-all outline-none text-foreground placeholder-muted-foreground font-medium"
-                    />
-                </div>
-                
-                <div className="relative group">
-                     <textarea 
-                        name="message"
-                        placeholder="How can we help you?" 
-                        rows="5" 
-                        value={form.message}
-                        onChange={handleChange}
-                        required
-                        className="w-full bg-muted border border-border p-4 rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent transition-all outline-none text-foreground placeholder-muted-foreground font-medium resize-none"
-                    ></textarea>
-                </div>
-                
-                    <motion.button 
-                    type="submit"
-                    disabled={status === "sending"}
-                      className="w-full flex items-center justify-center px-8 py-4 bg-accent text-white font-bold rounded-xl shadow-lg hover:bg-accent/90 hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed transform hover:-translate-y-1"
-                    whileTap={{ scale: 0.98 }}
-                >
-                    {status === "sending" ? (
-                        <>
-                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                        Sending...
-                        </>
-                    ) : (
-                        <>
-                        Send Message
-                        <FaPaperPlane className="ml-2" />
-                        </>
-                    )}
-                </motion.button>
+            <Card className="shadow-xl border-border">
+                <CardHeader>
+                    <CardTitle className="text-2xl font-bold">Send us a Message</CardTitle>
+                    <CardDescription>Fill out the form below and we will get back to you.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium leading-none text-foreground">
+                                Your Name
+                            </label>
+                            <div className="relative">
+                                <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                                <Input 
+                                    name="name"
+                                    type="text" 
+                                    placeholder="John Doe" 
+                                    value={form.name}
+                                    onChange={handleChange}
+                                    required
+                                    className="pl-9"
+                                />
+                            </div>
+                        </div>
+                        
+                        <div className="space-y-2">
+                             <label className="text-sm font-medium leading-none text-foreground">
+                                Your Email
+                            </label>
+                            <div className="relative">
+                                <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                                <Input 
+                                    name="email"
+                                    type="email" 
+                                    placeholder="john@example.com" 
+                                    value={form.email}
+                                    onChange={handleChange}
+                                    required
+                                    className="pl-9"
+                                />
+                            </div>
+                        </div>
+                        
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium leading-none text-foreground">
+                                Message
+                            </label>
+                            <Textarea 
+                                name="message"
+                                placeholder="How can we help you?" 
+                                rows={5}
+                                value={form.message}
+                                onChange={handleChange}
+                                required
+                                className="resize-none"
+                            />
+                        </div>
+                        
+                        <Button 
+                            type="submit"
+                            disabled={status === "sending"}
+                            className="w-full"
+                            size="lg"
+                        >
+                            {status === "sending" ? (
+                                <>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                Sending...
+                                </>
+                            ) : (
+                                <>
+                                Send Message
+                                <Send className="ml-2 h-4 w-4" />
+                                </>
+                            )}
+                        </Button>
 
-                {/* Status Messages */}
-                <AnimatePresence>
-                    {status === "success" && (
-                    <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
-                        exit={{ opacity: 0, height: 0 }}
-                    className="flex items-center gap-3 p-4 bg-accent/10 border border-accent/20 rounded-xl text-accent"
-                    >
-                        <FaCheckCircle className="text-xl" />
-                        <span className="font-medium">Message sent successfully! We'll get back to you shortly.</span>
-                    </motion.div>
-                    )}
-
-                    {status === "error" && (
-                    <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
-                        exit={{ opacity: 0, height: 0 }}
-                        className="flex items-center gap-3 p-4 bg-red-50 border border-red-200 rounded-xl text-red-600"
-                    >
-                        <div className="text-xl">⚠️</div>
-                        <span className="font-medium">Something went wrong. Please try again.</span>
-                    </motion.div>
-                    )}
-                </AnimatePresence>
-                </form>
-            </div>
+                        <AnimatePresence>
+                            {status === "success" && (
+                            <motion.div
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: "auto" }}
+                                exit={{ opacity: 0, height: 0 }}
+                                className="flex items-center gap-2 p-3 bg-green-500/10 text-green-600 dark:text-green-400 text-sm border border-green-500/20 rounded-lg"
+                            >
+                                <CheckCircle2 className="h-4 w-4" />
+                                <span className="font-medium">Message sent! We'll be in touch.</span>
+                            </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </form>
+                </CardContent>
+            </Card>
           </motion.div>
         
         </div>
