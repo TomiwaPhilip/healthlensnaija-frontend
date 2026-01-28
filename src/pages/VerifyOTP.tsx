@@ -2,6 +2,10 @@ import React, { useState, useEffect } from "react";
 import axiosInstance from "../utils/axiosInstance";
 import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from "react-toastify";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from "@/components/ui/card";
+import { Loader2 } from "lucide-react";
 
 const VerifyOTP = () => {
   const [otp, setOtp] = useState("");
@@ -22,8 +26,8 @@ const VerifyOTP = () => {
     }
   }, [emailFromState]);
 
-  const handleVerify = async (e) => {
-    e.preventDefault();
+  const handleVerify = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     setLoading(true);
     try {
       const response = await axiosInstance.post("/auth/verify-otp", { email, otp });
@@ -31,12 +35,14 @@ const VerifyOTP = () => {
 
       // Clean localStorage after successful verification
       localStorage.removeItem("verifyEmail");
+      toast.success("Verification successful!");
 
       setTimeout(() => {
         navigate("/dashboard");
       }, 1500);
-    } catch (err) {
+    } catch (err: any) {
       setMessage(err.response?.data?.message || "Verification failed");
+      toast.error(err.response?.data?.message || "Verification failed");
     }
     setLoading(false);
   };
@@ -45,48 +51,72 @@ const VerifyOTP = () => {
     try {
       await axiosInstance.post("/auth/resend-otp", { email });
       toast.success("OTP resent successfully.");
-    } catch (err) {
+    } catch (err: any) {
       toast.error(err.response?.data?.message || "Failed to resend OTP");
     }
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-100">
-      <form onSubmit={handleVerify} className="bg-white p-8 rounded shadow-md w-full max-w-sm">
-        <h2 className="text-xl font-bold mb-4">Verify OTP</h2>
+    <div className="flex min-h-screen w-full items-center justify-center bg-background px-4">
+      <Card className="w-full max-w-sm shadow-lg">
+        <CardHeader className="space-y-1">
+          <CardTitle className="text-2xl font-bold text-center">Verify OTP</CardTitle>
+          <CardDescription className="text-center">
+            Enter the One-Time Password sent to your email.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleVerify} className="space-y-4">
+            <div className="space-y-2">
+              <label htmlFor="email" className="text-sm font-medium leading-none text-foreground peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                Email Address
+              </label>
+              <Input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="name@example.com"
+                required
+              />
+            </div>
 
-        <div className="mb-4">
-          <label>Email:</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="border p-2 w-full"
-            required
-          />
-        </div>
+            <div className="space-y-2">
+              <label htmlFor="otp" className="text-sm font-medium leading-none text-foreground peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                OTP Code
+              </label>
+              <Input
+                id="otp"
+                type="text"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+                placeholder="123456"
+                required
+                className="tracking-widest"
+              />
+            </div>
 
-        <div className="mb-4">
-          <label>OTP:</label>
-          <input
-            type="text"
-            value={otp}
-            onChange={(e) => setOtp(e.target.value)}
-            className="border p-2 w-full"
-            required
-          />
-        </div>
+            {message && (
+              <p className={`text-sm text-center ${message.includes("success") ? "text-green-600" : "text-destructive"}`}>
+                {message}
+              </p>
+            )}
 
-        <button type="submit" className="bg-green-600 text-white p-2 rounded w-full" disabled={loading}>
-          {loading ? "Verifying..." : "Verify OTP"}
-        </button>
-
-        {message && <p className="mt-4 text-center text-sm text-red-600">{message}</p>}
-
-        <button type="button" onClick={handleResendOtp} className="text-green-500 underline mt-2">
-          Resend OTP
-        </button>
-      </form>
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {loading ? "Verifying..." : "Verify OTP"}
+            </Button>
+          </form>
+        </CardContent>
+        <CardFooter className="flex flex-col gap-2">
+           <div className="text-center text-sm text-muted-foreground">
+                Didn't receive the code?
+            </div>
+          <Button variant="link" onClick={handleResendOtp} className="h-auto p-0 text-primary">
+            Resend OTP
+          </Button>
+        </CardFooter>
+      </Card>
     </div>
   );
 };

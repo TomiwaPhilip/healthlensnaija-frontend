@@ -1,11 +1,14 @@
 import React, { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import axios from "axios";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { Eye, EyeOff, Lock, Loader2, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 import Typewriter from "typewriter-effect";
 import signInImage from "../assets/SoJo-project-closes-scaled 1.png";
 import logo from "../assets/logo.png";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { toast } from "react-toastify";
 
 const ResetPassword = () => {
   const { token } = useParams();
@@ -20,34 +23,18 @@ const ResetPassword = () => {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-    // Clear messages when user starts typing
-    if (message || error) {
-      setMessage("");
-      setError("");
-    }
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError("");
     setMessage("");
+    setError("");
 
-    // Validation
     if (formData.newPassword !== formData.confirmPassword) {
       setError("Passwords do not match");
-      setLoading(false);
-      return;
-    }
-
-    if (formData.newPassword.length < 6) {
-      setError("Password must be at least 6 characters long");
       setLoading(false);
       return;
     }
@@ -55,215 +42,199 @@ const ResetPassword = () => {
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/auth/reset-password/${token}`,
-        { newPassword: formData.newPassword }
+        { password: formData.newPassword }
       );
 
       setMessage(response.data.message || "Password reset successfully!");
+      toast.success("Password reset successfully!");
 
       // Redirect after 2s so user sees success message
       setTimeout(() => {
         navigate("/signin");
       }, 2000);
-    } catch (error) {
-      setError(error.response?.data?.message || "An error occurred. Please try again.");
+    } catch (error: any) {
+        console.error(error);
+      const errMsg = error.response?.data?.message || "An error occurred. Please try again.";
+      setError(errMsg);
+      toast.error(errMsg);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white flex items-center justify-center p-4">
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="w-full max-w-6xl bg-white rounded-xl shadow-lg overflow-hidden flex flex-col lg:flex-row"
-      >
-        {/* Left Section with Image and Overlay */}
-        <div className="lg:w-1/2 relative h-64 lg:h-auto">
-          <img
-            src={signInImage}
-            alt="Reset Password"
-            className="object-cover w-full h-full"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/40 flex items-center justify-center p-8">
-            <motion.div 
-              className="text-center"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.3 }}
-            >
-              <h2 className="text-white text-3xl lg:text-4xl font-bold mb-4">
-                <Typewriter
+    <div className="min-h-screen bg-background flex">
+      {/* Left Section: Image & Brand (Hidden on Mobile) */}
+      <div className="hidden lg:flex w-1/2 relative bg-primary overflow-hidden">
+        <div className="absolute inset-0 z-10 bg-gradient-to-b from-primary/80 to-primary/90 mix-blend-multiply" />
+        <img
+          src={signInImage}
+          alt="HealthLens Dashboard"
+          className="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-50"
+        />
+        
+        {/* Animated Blobs */}
+        <div className="absolute -top-24 -left-24 w-96 h-96 bg-white/10 rounded-full blur-3xl animate-blob" />
+        <div className="absolute bottom-24 right-12 w-80 h-80 bg-white/10 rounded-full blur-3xl animate-blob animation-delay-2000" />
+        
+        <div className="relative z-20 flex flex-col justify-between h-full p-16 text-white">
+          <Link to="/">
+             <div className="bg-white/20 backdrop-blur-md p-3 rounded-xl w-fit">
+                <img src={logo} alt="Logo" className="h-8 brightness-0 invert" />
+             </div>
+          </Link>
+          
+          <div className="max-w-xl">
+             <h1 className="text-5xl font-bold leading-tight mb-6 drop-shadow-sm">
+               <Typewriter
                   options={{
-                    strings: ["Set New Password", "Secure Your Account", "Almost There!"],
+                    strings: ["Secure Your Account.", "Reset With Ease.", "Back to Storytelling."],
                     autoStart: true,
                     loop: true,
                     delay: 75,
                     deleteSpeed: 50,
                   }}
                 />
-              </h2>
-              <p className="text-gray-200 text-sm lg:text-lg">
-                Create a strong new password for your account
-              </p>
-            </motion.div>
+             </h1>
+             <p className="text-xl text-primary-foreground/90 mb-8 leading-relaxed font-light">
+               Create a strong new password to protect your journalism workspace.
+             </p>
+          </div>
+          
+          <div className="text-sm text-white/60">
+             © {new Date().getFullYear()} Nigeria Health Watch. All rights reserved.
           </div>
         </div>
+      </div>
 
-        {/* Right Section with Form */}
-        <div className="lg:w-1/2 p-8 sm:p-12 flex items-center justify-center">
-          <div className="w-full max-w-md">
-            <motion.div 
-              className="mb-8 flex flex-col items-center justify-center text-center"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-            >
-              <Link to="/">
-                <motion.img 
-                  src={logo} 
-                  alt="Logo" 
-                  className="h-16 lg:h-18 mb-4 cursor-pointer hover:opacity-90 transition-opacity"
-                  whileHover={{ scale: 1.05 }}
-                />
-              </Link>
-              <h2 className="text-2xl lg:text-3xl font-bold text-gray-800 mb-2">
-                Reset Password
-              </h2>
-              <p className="text-gray-600 text-sm lg:text-base">
-                Enter your new password to secure your account.
+      {/* Right Section: Form */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-background">
+        <div className="w-full max-w-lg">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <div className="text-center mb-10 lg:hidden">
+               <Link to="/" className="inline-block mb-6">
+                  <img src={logo} alt="HealthLens Logo" className="h-10 dark:invert" />
+               </Link>
+            </div>
+
+            <div className="mb-10 text-center lg:text-left">
+              <h2 className="text-3xl font-bold text-foreground mb-3">Reset Password</h2>
+              <p className="text-muted-foreground">
+                Enter your new password below.
               </p>
-            </motion.div>
+            </div>
 
-            <form onSubmit={handleSubmit}>
-              <motion.div 
-                className="mb-5 relative"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-              >
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  New Password <span className="text-red-500">*</span>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              
+              {/* New Password Input */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium leading-none text-foreground peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    New Password
                 </label>
-                <input
-                  type={showPassword ? "text" : "password"}
-                  name="newPassword"
-                  placeholder="Enter new password"
-                  value={formData.newPassword}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all pr-12"
-                  required
-                  minLength="6"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-10 text-gray-500 hover:text-gray-700 transition-colors"
-                >
-                  {showPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
-                </button>
-              </motion.div>
+                <div className="relative">
+                   <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                   <Input
+                    type={showPassword ? "text" : "password"}
+                    name="newPassword"
+                    value={formData.newPassword}
+                    onChange={handleChange}
+                    className="pl-9 pr-10"
+                    placeholder="••••••••"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-0 top-0 h-full px-3 py-2 text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+              </div>
 
-              <motion.div 
-                className="mb-6 relative"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-              >
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Confirm Password <span className="text-red-500">*</span>
+              {/* Confirm Password Input */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium leading-none text-foreground peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    Confirm New Password
                 </label>
-                <input
-                  type={showConfirmPassword ? "text" : "password"}
-                  name="confirmPassword"
-                  placeholder="Confirm new password"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all pr-12"
-                  required
-                  minLength="6"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-10 text-gray-500 hover:text-gray-700 transition-colors"
-                >
-                  {showConfirmPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
-                </button>
-              </motion.div>
+                <div className="relative">
+                   <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                   <Input
+                    type={showConfirmPassword ? "text" : "password"}
+                    name="confirmPassword"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    className="pl-9 pr-10"
+                    placeholder="••••••••"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-0 top-0 h-full px-3 py-2 text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+              </div>
 
               {error && (
-                <motion.p 
-                  className="text-red-500 text-sm mb-4 text-center"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="p-3 rounded-lg bg-destructive/10 text-destructive text-sm border border-destructive/20 flex items-center gap-2"
                 >
+                  <div className="h-2 w-2 rounded-full bg-destructive" />
                   {error}
-                </motion.p>
+                </motion.div>
               )}
 
               {message && (
-                <motion.p 
-                  className="text-green-600 text-sm mb-4 text-center"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="p-3 rounded-lg bg-green-500/10 text-green-600 dark:text-green-400 text-sm border border-green-500/20 flex items-center gap-2"
                 >
+                  <div className="h-2 w-2 rounded-full bg-green-500" />
                   {message}
-                </motion.p>
+                </motion.div>
               )}
 
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
+              {/* Submit Button */}
+              <Button
+                type="submit"
+                disabled={loading}
+                size="lg"
+                className="w-full text-base font-semibold shadow-md active:scale-[0.98] transition-transform"
               >
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className={`w-full bg-green-600 text-white py-3 rounded-xl font-bold hover:bg-green-700 transition-colors ${
-                    loading ? 'opacity-80 cursor-not-allowed' : ''
-                  }`}
-                >
-                  {loading ? (
-                    <span className="flex items-center justify-center">
-                      <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                      Resetting...
-                    </span>
-                  ) : "Reset Password"}
-                </button>
-              </motion.div>
-            </form>
-
-            <motion.div 
-              className="mt-6 text-center"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
-            >
-              <button
-                onClick={() => navigate("/signin")}
-                className="w-full text-center text-sm text-gray-600 hover:text-green-600 transition-colors mb-4"
-              >
-                Back to Sign In
-              </button>
+                {loading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Resetting...
+                  </>
+                ) : (
+                  <>
+                    <span>Reset Password</span>
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </>
+                )}
+              </Button>
               
-              <p className="text-gray-600 text-sm lg:text-base">
-                Remember your password?{" "}
-                <Link 
-                  to="/signin" 
-                  className="text-green-600 hover:text-green-700 font-medium transition-colors"
-                >
-                  Sign In
-                </Link>
-              </p>
-            </motion.div>
-          </div>
+               {/* Footer Links */}
+              <div className="text-center mt-4">
+                <Button variant="link" asChild className="p-0 h-auto text-muted-foreground hover:text-primary">
+                    <Link to="/signin">Back to Sign In</Link>
+                </Button>
+              </div>
+
+            </form>
+          </motion.div>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 };

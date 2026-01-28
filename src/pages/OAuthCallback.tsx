@@ -1,11 +1,12 @@
 // src/pages/OAuthCallback.jsx
-import React, { useEffect, useContext } from "react";
+import { useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { DashboardContext } from "../context/DashboardContext";
+import { Loader2 } from "lucide-react";
 
 const OAuthCallback = () => {
   const navigate = useNavigate();
-  const { login } = useContext(DashboardContext);
+  const { login } = useContext(DashboardContext) as any;
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -29,10 +30,11 @@ const OAuthCallback = () => {
   }, [navigate, login]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div role="status" className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-green-600 border-r-transparent">
-        <span className="sr-only">Processing login...</span>
-      </div>
+    <div className="flex h-screen items-center justify-center bg-background">
+        <div className="flex flex-col items-center gap-4">
+            <Loader2 className="h-10 w-10 animate-spin text-primary" />
+            <p className="text-muted-foreground font-medium animate-pulse">Authenticating...</p>
+        </div>
     </div>
   );
 };

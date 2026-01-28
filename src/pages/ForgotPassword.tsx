@@ -7,13 +7,16 @@ import Typewriter from "typewriter-effect";
 import "react-toastify/dist/ReactToastify.css";
 import signInImage from "../assets/SoJo-project-closes-scaled 1.png";
 import logo from "../assets/logo.png";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Loader2 } from "lucide-react";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
@@ -28,7 +31,7 @@ const ForgotPassword = () => {
         autoClose: 2500,
         theme: "colored",
       });
-    } catch (err) {
+    } catch (err: any) {
       const msg =
         err.response?.data?.message || "This email is not registered.";
       toast.error(msg, {
@@ -43,28 +46,31 @@ const ForgotPassword = () => {
 
   return (
     <>
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white flex items-center justify-center p-4">
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="w-full max-w-6xl bg-white rounded-xl shadow-lg overflow-hidden flex flex-col lg:flex-row"
+          className="w-full max-w-6xl bg-card rounded-xl shadow-lg overflow-hidden flex flex-col lg:flex-row border"
         >
           {/* Left Section with Image and Overlay */}
-          <div className="lg:w-1/2 relative h-64 lg:h-auto">
+          <div className="lg:w-1/2 relative h-64 lg:h-auto bg-muted">
             <img
               src={signInImage}
               alt="Forgot Password"
               className="object-cover w-full h-full"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/40 flex items-center justify-center p-8">
+            {/* Dark overlay for text readability */}
+            <div className="absolute inset-0 bg-primary/90 mix-blend-multiply" />
+            
+            <div className="absolute inset-0 flex items-center justify-center p-8">
               <motion.div 
-                className="text-center"
+                className="text-center text-primary-foreground"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3 }}
               >
-                <h2 className="text-white text-3xl lg:text-4xl font-bold mb-4">
+                <h2 className="text-3xl lg:text-4xl font-bold mb-4 drop-shadow-md">
                   <Typewriter
                     options={{
                       strings: ["Reset Your Password", "Secure Your Account", "We've Got You Covered!"],
@@ -75,7 +81,7 @@ const ForgotPassword = () => {
                     }}
                   />
                 </h2>
-                <p className="text-gray-200 text-sm lg:text-lg">
+                <p className="text-primary-foreground/80 text-sm lg:text-lg">
                   Enter your email to receive a password reset link
                 </p>
               </motion.div>
@@ -83,104 +89,79 @@ const ForgotPassword = () => {
           </div>
 
           {/* Right Section with Form */}
-          <div className="lg:w-1/2 p-8 sm:p-12 flex items-center justify-center">
-            <div className="w-full max-w-md">
+          <div className="lg:w-1/2 p-8 sm:p-12 flex items-center justify-center bg-card">
+            <div className="w-full max-w-md space-y-8">
               <motion.div 
-                className="mb-8 flex flex-col items-center justify-center text-center"
+                className="flex flex-col items-center justify-center text-center space-y-2"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
               >
                 <Link to="/">
-                  <motion.img 
+                  <img 
                     src={logo} 
                     alt="Logo" 
-                    className="h-16 lg:h-18 mb-4 cursor-pointer hover:opacity-90 transition-opacity"
-                    whileHover={{ scale: 1.05 }}
+                    className="h-12 mb-2 dark:invert"
                   />
                 </Link>
-                <h2 className="text-2xl lg:text-3xl font-bold text-gray-800 mb-2">
+                <h2 className="text-2xl lg:text-3xl font-bold text-foreground">
                   Forgot Password
                 </h2>
-                <p className="text-gray-600 text-sm lg:text-base">
+                <p className="text-muted-foreground text-sm">
                   Enter your registered email to receive a reset link.
                 </p>
               </motion.div>
 
-              <form onSubmit={handleSubmit}>
-                <motion.div 
-                  className="mb-6"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 }}
-                >
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Email Address <span className="text-red-500">*</span>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="space-y-2">
+                  <label htmlFor="email" className="text-sm font-medium text-foreground">
+                    Email Address <span className="text-destructive">*</span>
                   </label>
-                  <input
+                  <Input
+                    id="email"
                     type="email"
-                    placeholder="Enter your email"
+                    placeholder="name@example.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
                     required
                   />
-                </motion.div>
+                </div>
 
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 }}
-                >
-                  <button
+                <Button
                     type="submit"
                     disabled={loading}
-                    className={`w-full bg-green-600 text-white py-3 rounded-xl font-bold hover:bg-green-700 transition-colors ${
-                      loading ? 'opacity-80 cursor-not-allowed' : ''
-                    }`}
+                    className="w-full"
+                    size="lg"
                   >
                     {loading ? (
-                      <span className="flex items-center justify-center">
-                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
+                       <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                         Sending...
-                      </span>
+                       </>
                     ) : "Send Reset Link"}
-                  </button>
-                </motion.div>
+                  </Button>
               </form>
 
-              <motion.div 
-                className="mt-6 text-center"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
-              >
-                <button
-                  onClick={() => navigate("/signin")}
-                  className="w-full text-center text-sm text-gray-600 hover:text-green-600 transition-colors mb-4"
-                >
-                  Back to Sign In
-                </button>
+              {/* Footer Links */}
+              <div className="text-center space-y-4">
+                <Button variant="link" asChild className="p-0 h-auto text-muted-foreground hover:text-primary">
+                    <Link to="/signin">Back to Sign In</Link>
+                </Button>
                 
-                <p className="text-gray-600 text-sm lg:text-base">
+                <p className="text-sm text-muted-foreground">
                   Don't have an account?{" "}
                   <Link 
                     to="/signup" 
-                    className="text-green-600 hover:text-green-700 font-medium transition-colors"
+                    className="text-primary hover:underline font-medium"
                   >
                     Sign Up
                   </Link>
                 </p>
-              </motion.div>
+              </div>
             </div>
           </div>
         </motion.div>
       </div>
-
-      {/* Toast Container */}
       <ToastContainer />
     </>
   );

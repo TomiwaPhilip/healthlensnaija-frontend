@@ -2,13 +2,15 @@ import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Mail, Lock, User, Phone, Eye, EyeOff, ArrowRight } from "lucide-react";
+import { Mail, Lock, User, Phone, Eye, EyeOff, ArrowRight, Loader2 } from "lucide-react";
 import Typewriter from "typewriter-effect";
 import signUpImage from "../assets/SoJo-project-closes-scaled 1.png";
 import logo from "../assets/logo.png";
 import axiosInstance from "../utils/axiosInstance";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 const SignUp = () => {
   const {
@@ -34,11 +36,11 @@ const SignUp = () => {
     }
   }, []);
 
-  const handleOAuth = (provider) => {
+  const handleOAuth = (provider: string) => {
     window.location.href = `${import.meta.env.VITE_API_URL}/auth/${provider}`;
   };
 
-  const evaluatePasswordStrength = (password) => {
+  const evaluatePasswordStrength = (password: string) => {
     if (!password) return "";
     let strength = 0;
     if (/[A-Z]/.test(password)) strength++;
@@ -58,7 +60,7 @@ const SignUp = () => {
     setPasswordStrength(evaluatePasswordStrength(password));
   }, [password]);
 
-  const validatePassword = (password) => {
+  const validatePassword = (password: string) => {
     const hasUpperCase = /[A-Z]/.test(password);
     const hasLowerCase = /[a-z]/.test(password);
     const hasNumbers = /\d/.test(password);
@@ -66,7 +68,7 @@ const SignUp = () => {
     return hasUpperCase && hasLowerCase && hasNumbers && hasMinLength;
   };
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data: any) => {
     if (!data.agreeToTerms) {
       toast.error("You must accept the terms and conditions");
       return;
@@ -86,7 +88,7 @@ const SignUp = () => {
       toast.success("Account created! Check your email to verify.", { autoClose: 5000 });
       reset();
       setTimeout(() => navigate("/signin?pending-verification=1&email=" + encodeURIComponent(data.email)), 3000);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error creating user:", error);
       const errorMessage = error.response?.data?.message || "An error occurred. Please try again.";
       toast.error(errorMessage);
@@ -97,21 +99,21 @@ const SignUp = () => {
 
   const getPasswordStrengthColor = () => {
     switch (passwordStrength) {
-      case "Strong": return "bg-[#3AB54A]";
-      case "Good": return "bg-[#3AB54A]";
+      case "Strong": return "bg-green-500";
+      case "Good": return "bg-green-500";
       case "Medium": return "bg-yellow-500";
       case "Weak": return "bg-red-500";
-      default: return "bg-gray-200";
+      default: return "bg-muted";
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-background flex">
       <ToastContainer position="top-center" theme="colored" />
       
       {/* Left Section: Image & Brand (Hidden on Mobile) */}
-      <div className="hidden lg:flex w-1/2 relative bg-[#3AB54A] overflow-hidden">
-        <div className="absolute inset-0 z-10 bg-gradient-to-b from-[#3AB54A]/80 to-[#2d963c]/90" />
+      <div className="hidden lg:flex w-1/2 relative bg-primary overflow-hidden">
+        <div className="absolute inset-0 z-10 bg-gradient-to-b from-primary/80 to-primary/90 mix-blend-multiply" />
         <img
           src={signUpImage}
           alt="HealthLens Dashboard"
@@ -120,7 +122,7 @@ const SignUp = () => {
         
         {/* Animated Blobs */}
         <div className="absolute -top-24 -left-24 w-96 h-96 bg-white/10 rounded-full blur-3xl animate-blob" />
-        <div className="absolute bottom-24 right-12 w-80 h-80 bg-[#8CC43D]/20 rounded-full blur-3xl animate-blob animation-delay-2000" />
+        <div className="absolute bottom-24 right-12 w-80 h-80 bg-white/10 rounded-full blur-3xl animate-blob animation-delay-2000" />
         
         <div className="relative z-20 flex flex-col justify-between h-full p-16 text-white">
           <Link to="/">
@@ -130,7 +132,7 @@ const SignUp = () => {
           </Link>
           
           <div className="max-w-xl">
-             <h1 className="text-5xl font-bold leading-tight mb-6">
+             <h1 className="text-5xl font-bold leading-tight mb-6 drop-shadow-sm">
                <Typewriter
                   options={{
                     strings: ["Join the Transformation.", "Elevate Your Reporting.", "Build Better Stories."],
@@ -141,41 +143,41 @@ const SignUp = () => {
                   }}
                 />
              </h1>
-             <p className="text-xl text-green-50 mb-8 leading-relaxed">
+             <p className="text-xl text-primary-foreground/90 mb-8 leading-relaxed font-light">
                Create your account today to start using AI tools designed specifically for modern health journalism.
              </p>
              
              {/* Feature List */}
-             <div className="bg-white/10 backdrop-blur-md p-6 rounded-2xl border border-white/20 space-y-4">
+             <div className="bg-white/10 backdrop-blur-md p-6 rounded-2xl border border-white/20 space-y-4 shadow-lg">
                 <div className="flex items-center gap-3">
-                   <div className="w-8 h-8 rounded-full bg-[#3AB54A] flex items-center justify-center">
+                   <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center border border-white/20">
                      <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"/></svg>
                    </div>
-                   <span className="font-medium">AI-Powered Story Generation</span>
+                   <span className="font-medium text-white">AI-Powered Story Generation</span>
                 </div>
                 <div className="flex items-center gap-3">
-                   <div className="w-8 h-8 rounded-full bg-[#3AB54A] flex items-center justify-center">
+                   <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center border border-white/20">
                      <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"/></svg>
                    </div>
-                   <span className="font-medium">Instant Document Analysis</span>
+                   <span className="font-medium text-white">Instant Document Analysis</span>
                 </div>
                 <div className="flex items-center gap-3">
-                   <div className="w-8 h-8 rounded-full bg-[#3AB54A] flex items-center justify-center">
+                   <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center border border-white/20">
                      <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"/></svg>
                    </div>
-                   <span className="font-medium">Expert Fact-Checking Tools</span>
+                   <span className="font-medium text-white">Expert Fact-Checking Tools</span>
                 </div>
              </div>
           </div>
           
-          <div className="text-sm text-green-100/60">
-             © 2026 Nigeria Health Watch. All rights reserved.
+          <div className="text-sm text-white/60">
+             © {new Date().getFullYear()} Nigeria Health Watch. All rights reserved.
           </div>
         </div>
       </div>
 
       {/* Right Section: Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 lg:p-12 overflow-y-auto max-h-screen">
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 lg:p-12 overflow-y-auto max-h-screen bg-background">
         <div className="w-full max-w-lg">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -183,17 +185,17 @@ const SignUp = () => {
             transition={{ duration: 0.5 }}
           >
             {pendingMessage && (
-              <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6 rounded-r-lg">
-                <p className="text-yellow-800 text-sm">{pendingMessage}</p>
+              <div className="bg-yellow-500/10 border-l-4 border-yellow-500 p-4 mb-6 rounded-r-lg">
+                <p className="text-yellow-600 dark:text-yellow-400 text-sm">{pendingMessage}</p>
               </div>
             )}
 
             <div className="text-center mb-8 lg:text-left">
               <Link to="/" className="inline-block lg:hidden mb-6">
-                <img src={logo} alt="HealthLens Logo" className="h-10" />
+                <img src={logo} alt="HealthLens Logo" className="h-10 dark:invert" />
               </Link>
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">Create an Account</h2>
-              <p className="text-gray-500">
+              <h2 className="text-3xl font-bold text-foreground mb-2">Create an Account</h2>
+              <p className="text-muted-foreground">
                 Let's get you set up with your personal dashboard.
               </p>
             </div>
@@ -201,126 +203,114 @@ const SignUp = () => {
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-gray-700">First Name <span className="text-red-500">*</span></label>
-                  <div className="relative group">
-                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400 group-focus-within:text-[#3AB54A] transition-colors">
-                        <User className="h-5 w-5" />
-                     </div>
-                     <input
+                  <label className="text-sm font-medium text-foreground">First Name <span className="text-destructive">*</span></label>
+                  <div className="relative">
+                     <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                     <Input
                       {...register("firstName", { required: "Required", minLength: 2 })}
-                      className={`block w-full pl-10 pr-3 py-3 bg-gray-50 border rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#3AB54A]/20 transition-all ${errors.firstName ? 'border-red-300 focus:border-red-500' : 'border-gray-200 focus:border-[#3AB54A]'}`}
+                      className="pl-9"
                       placeholder="John"
                     />
                   </div>
-                  {errors.firstName && <p className="text-xs text-red-500">{errors.firstName.message}</p>}
+                  {errors.firstName && <p className="text-xs text-destructive">{errors.firstName.message as string}</p>}
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-gray-700">Last Name <span className="text-red-500">*</span></label>
-                  <div className="relative group">
-                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400 group-focus-within:text-[#3AB54A] transition-colors">
-                        <User className="h-5 w-5" />
-                     </div>
-                     <input
+                  <label className="text-sm font-medium text-foreground">Last Name <span className="text-destructive">*</span></label>
+                  <div className="relative">
+                     <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                     <Input
                       {...register("lastName", { required: "Required", minLength: 2 })}
-                      className={`block w-full pl-10 pr-3 py-3 bg-gray-50 border rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#3AB54A]/20 transition-all ${errors.lastName ? 'border-red-300 focus:border-red-500' : 'border-gray-200 focus:border-[#3AB54A]'}`}
+                      className="pl-9"
                       placeholder="Doe"
                     />
                   </div>
-                  {errors.lastName && <p className="text-xs text-red-500">{errors.lastName.message}</p>}
+                  {errors.lastName && <p className="text-xs text-destructive">{errors.lastName.message as string}</p>}
                 </div>
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-gray-700">Email Address <span className="text-red-500">*</span></label>
-                <div className="relative group">
-                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400 group-focus-within:text-[#3AB54A] transition-colors">
-                      <Mail className="h-5 w-5" />
-                   </div>
-                   <input
+                <label className="text-sm font-medium text-foreground">Email Address <span className="text-destructive">*</span></label>
+                <div className="relative">
+                   <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                   <Input
                     {...register("email", { 
                       required: "Required", 
                       pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: "Invalid email" }
                     })}
-                    className={`block w-full pl-10 pr-3 py-3 bg-gray-50 border rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#3AB54A]/20 transition-all ${errors.email ? 'border-red-300 focus:border-red-500' : 'border-gray-200 focus:border-[#3AB54A]'}`}
+                    className="pl-9"
                     placeholder="john@example.com"
                   />
                 </div>
-                {errors.email && <p className="text-xs text-red-500">{errors.email.message}</p>}
+                {errors.email && <p className="text-xs text-destructive">{errors.email.message as string}</p>}
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-gray-700">Phone Number <span className="text-red-500">*</span></label>
-                <div className="relative group">
-                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400 group-focus-within:text-[#3AB54A] transition-colors">
-                      <Phone className="h-5 w-5" />
-                   </div>
-                   <input
+                <label className="text-sm font-medium text-foreground">Phone Number <span className="text-destructive">*</span></label>
+                <div className="relative">
+                   <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                   <Input
                     {...register("phoneNumber", { required: "Required", pattern: { value: /^[0-9+\-() ]+$/, message: "Invalid phone" } })}
-                    className={`block w-full pl-10 pr-3 py-3 bg-gray-50 border rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#3AB54A]/20 transition-all ${errors.phoneNumber ? 'border-red-300 focus:border-red-500' : 'border-gray-200 focus:border-[#3AB54A]'}`}
+                    className="pl-9"
                     placeholder="+234 800 000 0000"
                   />
                 </div>
-                {errors.phoneNumber && <p className="text-xs text-red-500">{errors.phoneNumber.message}</p>}
+                {errors.phoneNumber && <p className="text-xs text-destructive">{errors.phoneNumber.message as string}</p>}
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-gray-700">Password <span className="text-red-500">*</span></label>
-                <div className="relative group">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400 group-focus-within:text-[#3AB54A] transition-colors">
-                      <Lock className="h-5 w-5" />
-                  </div>
-                  <input
+                <label className="text-sm font-medium text-foreground">Password <span className="text-destructive">*</span></label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
                     {...register("password", { required: "Required", validate: validatePassword })}
                     type={showPassword ? "text" : "password"}
-                    className={`block w-full pl-10 pr-10 py-3 bg-gray-50 border rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#3AB54A]/20 transition-all ${errors.password ? 'border-red-300 focus:border-red-500' : 'border-gray-200 focus:border-[#3AB54A]'}`}
+                    className="pl-9 pr-10"
                     placeholder="••••••••"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                    className="absolute right-3 top-3 text-muted-foreground hover:text-foreground"
                   >
-                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
                 
                 {/* Modern Password Strength Meter */}
                 <div className="mt-2 flex gap-1 h-1.5">
-                   <div className={`flex-1 rounded-full bg-gray-200 ${passwordStrength ? (['Weak','Medium','Good','Strong'].includes(passwordStrength) ? getPasswordStrengthColor() : '') : ''}`}></div>
-                   <div className={`flex-1 rounded-full bg-gray-200 ${passwordStrength ? (['Medium','Good','Strong'].includes(passwordStrength) ? getPasswordStrengthColor() : '') : ''}`}></div>
-                   <div className={`flex-1 rounded-full bg-gray-200 ${passwordStrength ? (['Good','Strong'].includes(passwordStrength) ? getPasswordStrengthColor() : '') : ''}`}></div>
-                   <div className={`flex-1 rounded-full bg-gray-200 ${passwordStrength ? (passwordStrength === 'Strong' ? getPasswordStrengthColor() : '') : ''}`}></div>
+                   <div className={`flex-1 rounded-full bg-muted transition-colors duration-300 ${passwordStrength ? (['Weak','Medium','Good','Strong'].includes(passwordStrength) ? getPasswordStrengthColor() : 'bg-muted') : 'bg-muted'}`}></div>
+                   <div className={`flex-1 rounded-full bg-muted transition-colors duration-300 ${passwordStrength ? (['Medium','Good','Strong'].includes(passwordStrength) ? getPasswordStrengthColor() : 'bg-muted') : 'bg-muted'}`}></div>
+                   <div className={`flex-1 rounded-full bg-muted transition-colors duration-300 ${passwordStrength ? (['Good','Strong'].includes(passwordStrength) ? getPasswordStrengthColor() : 'bg-muted') : 'bg-muted'}`}></div>
+                   <div className={`flex-1 rounded-full bg-muted transition-colors duration-300 ${passwordStrength ? (passwordStrength === 'Strong' ? getPasswordStrengthColor() : 'bg-muted') : 'bg-muted'}`}></div>
                 </div>
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-muted-foreground mt-1">
                   Must include 1 uppercase, 1 lowercase, 1 number, and be 8+ chars.
                 </p>
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-gray-700">Confirm Password <span className="text-red-500">*</span></label>
-                <div className="relative group">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400 group-focus-within:text-[#3AB54A] transition-colors">
-                      <Lock className="h-5 w-5" />
-                  </div>
-                  <input
+                <label className="text-sm font-medium text-foreground">Confirm Password <span className="text-destructive">*</span></label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
                     {...register("confirmPassword", { 
                       required: "Required", 
-                      validate: val => val === watch('password') || "Passwords don't match"
+                      validate: (val: string) => val === watch('password') || "Passwords don't match"
                     })}
                     type={showConfirmPassword ? "text" : "password"}
-                    className={`block w-full pl-10 pr-10 py-3 bg-gray-50 border rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#3AB54A]/20 transition-all ${errors.confirmPassword ? 'border-red-300 focus:border-red-500' : 'border-gray-200 focus:border-[#3AB54A]'}`}
+                    className="pl-9 pr-10"
                     placeholder="••••••••"
                   />
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                    className="absolute right-3 top-3 text-muted-foreground hover:text-foreground"
                   >
-                    {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                    {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
-                {errors.confirmPassword && <p className="text-xs text-red-500">{errors.confirmPassword.message}</p>}
+                {errors.confirmPassword && <p className="text-xs text-destructive">{errors.confirmPassword.message as string}</p>}
               </div>
 
               <div className="flex items-start pt-2">
@@ -328,59 +318,61 @@ const SignUp = () => {
                   <input
                     {...register("agreeToTerms", { required: "Required" })}
                     type="checkbox"
-                    className="w-4 h-4 rounded border-gray-300 text-[#3AB54A] focus:ring-[#3AB54A] cursor-pointer"
+                    className="w-4 h-4 rounded border-input ring-offset-background focus:ring-primary accent-primary cursor-pointer"
                   />
                 </div>
                 <div className="ml-3 text-sm">
-                  <label className="text-gray-600">
+                  <label className="text-muted-foreground">
                     I agree to the{" "}
-                    <Link to="/terms" className="text-[#3AB54A] font-medium hover:underline">Terms of Service</Link>
+                    <Link to="/terms" className="text-primary font-medium hover:underline">Terms of Service</Link>
                     {" "}and{" "}
-                    <Link to="/privacy" className="text-[#3AB54A] font-medium hover:underline">Privacy Policy</Link>
+                    <Link to="/privacy" className="text-primary font-medium hover:underline">Privacy Policy</Link>
                   </label>
-                  {errors.agreeToTerms && <p className="text-xs text-red-500 mt-0.5">You must agree to continue</p>}
+                  {errors.agreeToTerms && <p className="text-xs text-destructive mt-0.5">You must agree to continue</p>}
                 </div>
               </div>
 
-              <button
+              <Button
                 type="submit"
                 disabled={isSubmitting || !isValid}
-                className="w-full flex items-center justify-center py-3.5 px-4 bg-[#3AB54A] hover:bg-[#2d963c] text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:transform-none disabled:shadow-none space-x-2"
+                className="w-full"
+                size="lg"
               >
                 {isSubmitting ? (
-                  <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Creating Account...
+                  </>
                 ) : (
                   <>
                     <span>Create Account</span>
-                    <ArrowRight className="w-5 h-5" />
+                    <ArrowRight className="ml-2 h-4 w-4" />
                   </>
                 )}
-              </button>
+              </Button>
 
               <div className="relative my-6">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-200"></div>
+                  <div className="w-full border-t border-border"></div>
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-3 bg-white text-gray-500 font-medium">Or</span>
+                  <span className="px-3 bg-background text-muted-foreground font-medium">Or</span>
                 </div>
               </div>
 
-              <button
+              <Button
                 type="button"
+                variant="outline"
                 onClick={() => handleOAuth("google")}
-                className="w-full flex items-center justify-center gap-3 px-4 py-3.5 border border-gray-200 rounded-xl text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 font-medium group"
+                className="w-full gap-2 h-11 text-foreground"
               >
-                <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" className="h-5 w-5 group-hover:scale-110 transition-transform" />
+                <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" className="h-5 w-5" />
                 <span>Sign up with Google</span>
-              </button>
+              </Button>
 
-              <p className="text-center text-sm text-gray-600 mt-6 pb-6 lg:pb-0">
+              <p className="text-center text-sm text-muted-foreground mt-6 pb-6 lg:pb-0">
                 Already have an account?{" "}
-                <Link to="/signin" className="font-bold text-[#3AB54A] hover:text-[#2d963c] transition-colors">
+                <Link to="/signin" className="font-bold text-primary hover:underline transition-colors">
                   Sign In
                 </Link>
               </p>

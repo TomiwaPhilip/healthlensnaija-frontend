@@ -1,17 +1,18 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { CheckCircleIcon, XCircleIcon, ClockIcon } from "@heroicons/react/24/outline";
-import { useContext } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { CheckCircle2, XCircle, Loader2 } from "lucide-react";
 import { DashboardContext } from "../context/DashboardContext";
- 
+
 const VerifyEmail = () => {
   const { token } = useParams();
   const navigate = useNavigate();
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isSuccess, setIsSuccess] = useState(false);
-  const { login } = useContext(DashboardContext);
+  const { login } = useContext(DashboardContext) as any;
   const didVerifyRef = useRef(false);
 
   useEffect(() => {
@@ -31,7 +32,6 @@ const VerifyEmail = () => {
         if (response.data.accessToken && response.data.refreshToken) {
           localStorage.setItem("token", response.data.accessToken);
           localStorage.setItem("refreshToken", response.data.refreshToken);
-          // 🧠 NEW: hydrate the Dashboard context immediately
           try {
               const res = await axios.get(
                 `${import.meta.env.VITE_API_URL}/dashboard/me`,
@@ -44,9 +44,8 @@ const VerifyEmail = () => {
             } catch (err) {
               console.error("❌ Failed to hydrate user after verify:", err);
             }
-
         }
-      } catch (error) {
+      } catch (error: any) {
         setMessage(
           error.response?.data?.message ||
             "Email verification failed. The link may be invalid or expired."
@@ -58,22 +57,10 @@ const VerifyEmail = () => {
     };
 
     verifyEmail();
-  }, [token]);
-
-  const getIcon = () => {
-    if (isLoading) {
-      return <ClockIcon className="h-16 w-16 text-green-500 animate-pulse" />;
-    }
-    return isSuccess ? (
-      <CheckCircleIcon className="h-16 w-16 text-green-500" />
-    ) : (
-      <XCircleIcon className="h-16 w-16 text-red-500" />
-    );
-  };
+  }, [token, login]);
 
   const handleContinue = () => {
     if (isSuccess) {
-      // ✅ If verification succeeded and tokens exist → go straight to dashboard
       const token = localStorage.getItem("token");
       if (token) {
         navigate("/dashboard", { replace: true });
@@ -86,41 +73,39 @@ const VerifyEmail = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-green-50 to-gray-50 px-4">
-      <div className="w-full max-w-md p-8 bg-white rounded-xl shadow-md space-y-6">
-        <div className="flex flex-col items-center">
-          {getIcon()}
-          <h1 className="mt-4 text-2xl font-bold text-gray-800">
-            {isLoading
-              ? "Verifying your email..."
-              : isSuccess
-              ? "Verification Complete!"
-              : "Verification Failed"}
-          </h1>
-          <p className="mt-2 text-gray-600 text-center">{message}</p>
-        </div>
+    <div className="flex min-h-screen w-full items-center justify-center bg-background px-4">
+      <Card className="w-full max-w-md p-6 shadow-lg">
+        <CardContent className="flex flex-col items-center gap-6 text-center pt-6">
+          {isLoading ? (
+            <div className="rounded-full bg-primary/10 p-4">
+               <Loader2 className="h-12 w-12 animate-spin text-primary" />
+            </div>
+          ) : isSuccess ? (
+            <div className="rounded-full bg-green-100 p-4 dark:bg-green-900/20">
+               <CheckCircle2 className="h-12 w-12 text-green-600 dark:text-green-500" />
+            </div>
+          ) : (
+            <div className="rounded-full bg-red-100 p-4 dark:bg-red-900/20">
+               <XCircle className="h-12 w-12 text-red-600 dark:text-red-500" />
+            </div>
+          )}
 
-        {!isLoading && (
-          <div className="flex justify-center">
-            <button
-              onClick={handleContinue}
-              className={`px-6 py-2 rounded-lg font-medium transition-all ${
-                isSuccess
-                  ? "bg-green-500 hover:bg-green-600 text-white"
-                  : "bg-green-500 hover:bg-green-600 text-white"
-              }`}
-            >
-              {isSuccess ? "Continue" : "Back to Home"}
-            </button>
+          <div className="space-y-2">
+            <h1 className="text-2xl font-bold tracking-tight text-foreground">
+                {isLoading ? "Verifying..." : isSuccess ? "Verified!" : "Verification Failed"}
+            </h1>
+            <p className="text-muted-foreground max-w-xs mx-auto">
+                {message}
+            </p>
           </div>
-        )}
 
-        {isLoading && (
-          <div className="w-full bg-gray-200 rounded-full h-2.5">
-            <div className="bg-green-500 h-2.5 rounded-full animate-pulse w-3/4"></div>
-          </div>
-        )}
-      </div>
+          {!isLoading && (
+            <Button onClick={handleContinue} className="w-full" size="lg">
+              {isSuccess ? "Continue to Dashboard" : "Back to Home"}
+            </Button>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 };
