@@ -1,5 +1,6 @@
 import { defineConfig, transformWithEsbuild } from "vite";
 import react from "@vitejs/plugin-react";
+import path from "path";
 
 export default defineConfig({
   base: "/", // safer for local dev & GH Pages
@@ -8,7 +9,7 @@ export default defineConfig({
       name: "pre-transform-js-as-jsx",
       enforce: "pre",
       async transform(code, id) {
-        if (!id.match(/src\/.*\.jsx$/)) return null; // ✅ match .jsx files now
+        if (!id.match(/src\/.*\.(jsx|tsx)$/)) return null; // ✅ match .jsx and .tsx files now
         return transformWithEsbuild(code, id, {
           loader: "jsx",
           jsx: "automatic",
@@ -17,6 +18,11 @@ export default defineConfig({
     },
     react({ jsxRuntime: "automatic" }),
   ],
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
+  },
   optimizeDeps: {
     force: true,
     esbuildOptions: {
