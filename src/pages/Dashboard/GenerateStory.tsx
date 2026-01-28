@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { SourcesPanel } from "./components/SourcesPanel";
+import { SourcesPanel, useSourcesPanelState } from "./components/SourcesPanel";
 
 type PanelProps = {
   title: string;
@@ -76,6 +76,7 @@ const NewsroomPanel = ({
 );
 
 const GenerateStory = () => {
+  const sourcesPanelState = useSourcesPanelState();
   const [collapsedPanels, setCollapsedPanels] = useState({
     sources: false,
     artifacts: false,
@@ -105,7 +106,7 @@ const GenerateStory = () => {
               title="Sources"
               showToggle={false}
             >
-              <SourcesPanel />
+              <SourcesPanel state={sourcesPanelState} />
             </NewsroomPanel>
           </TabsContent>
           <TabsContent value="chat" className="mt-4 flex-1 h-full overflow-hidden">
@@ -142,7 +143,7 @@ const GenerateStory = () => {
             showToggle
             toggleIcon="left"
           >
-            <SourcesPanel />
+            <SourcesPanel state={sourcesPanelState} />
           </NewsroomPanel>
         </div>
 

@@ -18,10 +18,10 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-type SourceStatus = "queued" | "indexing" | "indexed" | "error";
-type SourceType = "pdf" | "url";
+export type SourceStatus = "queued" | "indexing" | "indexed" | "error";
+export type SourceType = "pdf" | "url";
 
-interface Source {
+export interface Source {
   id: string;
   name: string;
   type: SourceType;
@@ -31,51 +31,25 @@ interface Source {
   dateAdded: Date;
 }
 
-export function SourcesPanel() {
+export function useSourcesPanelState() {
   const [sources, setSources] = useState<Source[]>([]);
   const [urlInput, setUrlInput] = useState("");
-  const [isDragActive, setIsDragActive] = useState(false);
-  const [isLoading, setIsLoading] = useState(true); // Simulating initial fetch
+  const [isLoading, setIsLoading] = useState(true);
   const [globalError, setGlobalError] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Simulate initial loading
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
-      // Uncomment to start with empty state
-      // setSources([]); 
     }, 2000);
     return () => clearTimeout(timer);
   }, []);
-
-  // Handle Drag & Drop
-  const handleDrag = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (e.type === "dragenter" || e.type === "dragover") {
-      setIsDragActive(true);
-    } else if (e.type === "dragleave") {
-      setIsDragActive(false);
-    }
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragActive(false);
-    
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      handleFileUpload(e.dataTransfer.files[0]);
-    }
-  };
 
   const handleFileUpload = (file: File) => {
     if (file.type !== "application/pdf") {
       setGlobalError("Only PDF files are supported.");
       return;
     }
-    
+
     const newSource: Source = {
       id: Math.random().toString(36).substr(2, 9),
       name: file.name,
@@ -92,7 +66,6 @@ export function SourcesPanel() {
     e.preventDefault();
     if (!urlInput.trim()) return;
 
-    // Basic URL validation
     try {
       new URL(urlInput);
     } catch (_) {
@@ -117,7 +90,6 @@ export function SourcesPanel() {
     setGlobalError(null);
     setSources((prev) => [source, ...prev]);
 
-    // Simulate indexing progress
     let progress = 0;
     const interval = setInterval(() => {
       progress += Math.random() * 20;
@@ -130,7 +102,6 @@ export function SourcesPanel() {
           )
         );
       } else {
-        // Occasionally simulate an error for demo purposes (10% chance)
         if (Math.random() > 0.98 && progress < 50) {
             clearInterval(interval);
             setSources((prev) =>
@@ -159,8 +130,56 @@ export function SourcesPanel() {
           s.id === id ? { ...s, status: "indexing", progress: 0, errorMessage: undefined } : s
         )
       );
-      // Restart simulation (simplified logic here)
-       // meaningful simulation would require extraction logic
+  };
+
+  return {
+    sources,
+    urlInput,
+    setUrlInput,
+    isLoading,
+    globalError,
+    handleFileUpload,
+    handleUrlSubmit,
+    deleteSource,
+    retrySource
+  };
+}
+
+export function SourcesPanel({ state }: { state: ReturnType<typeof useSourcesPanelState> }) {
+  const {
+    sources,
+    urlInput,
+    setUrlInput,
+    isLoading,
+    globalError,
+    handleFileUpload,
+    handleUrlSubmit,
+    deleteSource,
+    retrySource
+  } = state;
+
+  const [isDragActive, setIsDragActive] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Handle Drag & Drop
+  const handleDrag = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setIsDragActive(true);
+    } else if (e.type === "dragleave") {
+      setIsDragActive(false);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragActive(false);
+    
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      handleFileUpload(e.dataTransfer.files[0]);
+    }
   };
 
   // Render Helpers
@@ -285,30 +304,30 @@ export function SourcesPanel() {
                     {sources.map((source) => (
                     <div
                         key={source.id}
-                        className="group flex flex-col gap-2 p-3 rounded-lg border bg-card hover:bg-accent/5 transition-colors max-w-full"
+                        className="group flex flex-col gap-2 p-3 rounded-lg border bg-card hover:bg-accent/5 transition-colors w-full overflow-hidden"
                     >
-                        <div className="flex items-start gap-3">
+                        <div className="flex items-start gap-3 w-full">
                             <div className="mt-0.5 flex-shrink-0">
                                 {source.type === 'pdf' ? <FileText className="h-8 w-8 text-red-500/80" /> : <Globe className="h-8 w-8 text-blue-500/80" />}
                             </div>
                             
-                            <div className="flex-1 min-w-0">
-                                <div className="flex items-center justify-between font-medium text-sm">
-                                    <span className="truncate pr-2 flex-1 min-w-0" title={source.name}>{source.name}</span>
+                            <div className="flex-1 min-w-0 grid gap-1">
+                                <div className="flex items-center justify-between gap-2">
+                                    <span className="truncate text-sm font-medium" title={source.name}>{source.name}</span>
                                     <Button
                                         variant="ghost" 
                                         size="icon" 
-                                        className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity -mr-2"
+                                        className="h-6 w-6 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
                                         onClick={() => deleteSource(source.id)}
                                     >
                                         <Trash2 className="h-3.5 w-3.5 text-muted-foreground hover:text-destructive" />
                                     </Button>
                                 </div>
                                 
-                                <div className="flex items-center gap-2 mt-1">
+                                <div className="flex items-center gap-2">
                                     {getStatusIcon(source.status)}
                                     <span className={cn(
-                                        "text-xs capitalize",
+                                        "text-xs capitalize truncate",
                                         source.status === 'error' ? "text-destructive" : "text-muted-foreground"
                                     )}>
                                         {source.errorMessage ? source.errorMessage : source.status}
