@@ -40,23 +40,23 @@ const FeatureCard = ({ title, description, useCases, icon, index, isReversed = f
         className="w-full lg:w-1/2"
       >
         <div className="relative group">
-           <div className="absolute inset-0 bg-gradient-to-r from-[#3AB54A]/20 to-[#8CC43D]/20 rounded-2xl transform rotate-3 group-hover:rotate-1 transition-transform duration-300"></div>
-           <div className="bg-white relative rounded-2xl p-8 lg:p-10 shadow-xl border border-gray-100 dark:border-gray-800">
-              <div className="w-16 h-16 bg-[#3AB54A]/10 rounded-2xl flex items-center justify-center mb-6 text-[#3AB54A]">
+           <div className="absolute inset-0 bg-gradient-to-r from-accent/20 to-accent/20 rounded-2xl transform rotate-3 group-hover:rotate-1 transition-transform duration-300"></div>
+           <div className="bg-card relative rounded-2xl p-8 lg:p-10 shadow-xl border border-border">
+              <div className="w-16 h-16 bg-accent/10 rounded-2xl flex items-center justify-center mb-6 text-accent">
                 {icon}
               </div>
-              <h3 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-4">{title}</h3>
-              <p className="text-gray-600 dark:text-gray-400 mb-6 leading-relaxed text-lg">{description}</p>
+              <h3 className="text-2xl lg:text-3xl font-bold text-foreground mb-4">{title}</h3>
+              <p className="text-muted-foreground mb-6 leading-relaxed text-lg">{description}</p>
               
-              <div className="border-t border-gray-100 dark:border-gray-800 pt-6">
-                <h4 className="font-semibold text-gray-900 mb-4 flex items-center">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#3AB54A] mr-2"></span>
+              <div className="border-t border-border pt-6">
+                <h4 className="font-semibold text-foreground mb-4 flex items-center">
+                  <span className="w-1.5 h-1.5 rounded-full bg-accent mr-2"></span>
                   Journalist Use Cases:
                 </h4>
                 <ul className="grid grid-cols-1 gap-3">
                   {useCases.map((useCase, i) => (
-                    <li key={i} className="flex items-start text-sm lg:text-base text-gray-700">
-                       <svg className="w-5 h-5 text-[#8CC43D] mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
+                    <li key={i} className="flex items-start text-sm lg:text-base text-foreground/80">
+                      <svg className="w-5 h-5 text-accent mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
                       {useCase}
                     </li>
                   ))}
@@ -75,19 +75,19 @@ const FeatureCard = ({ title, description, useCases, icon, index, isReversed = f
         className="w-full lg:w-1/2"
       >
         <div className="space-y-6 lg:pl-8">
-            <span className="inline-block py-1 px-3 rounded-full bg-[#3AB54A]/10 text-[#3AB54A] font-medium text-sm">
+            <span className="inline-block py-1 px-3 rounded-full bg-accent/10 text-accent font-medium text-sm">
                 Efficiency Booster
             </span>
-            <h4 className="text-2xl lg:text-3xl font-bold text-gray-900">How it empowers your reporting:</h4>
-            <p className="text-gray-600 text-lg leading-relaxed">
+            <h4 className="text-2xl lg:text-3xl font-bold text-foreground">How it empowers your reporting:</h4>
+            <p className="text-muted-foreground text-lg leading-relaxed">
             This tool is engineered to remove the friction from your workflow. By automating the heavy lifting of {title.toLowerCase()}, you can dedicate more time to the human elements of journalism—interviews, analysis, and crafting impactful narratives.
             </p>
-            <div className="bg-[#3AB54A]/5 p-6 rounded-xl border border-[#3AB54A]/10 relative overflow-hidden">
+            <div className="bg-accent/5 p-6 rounded-xl border border-accent/10 relative overflow-hidden">
                 <div className="absolute top-0 right-0 p-4 opacity-10">
-                    <FaLightbulb className="text-6xl text-[#3AB54A]" />
+                <FaLightbulb className="text-6xl text-accent" />
                 </div>
-                <p className="text-gray-800 text-base relative z-10">
-                <strong className="block text-[#3AB54A] mb-1">PRO TIP:</strong> Use this feature to quickly generate multiple angles for breaking news stories, ensuring comprehensive coverage in record time.
+                <p className="text-foreground text-base relative z-10">
+              <strong className="block text-accent mb-1">PRO TIP:</strong> Use this feature to quickly generate multiple angles for breaking news stories, ensuring comprehensive coverage in record time.
                 </p>
             </div>
         </div>
@@ -138,20 +138,20 @@ const FeaturesSlider = () => {
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        className="py-20 lg:py-24 bg-gray-50 rounded-3xl my-24 relative overflow-hidden"
+        className="py-20 lg:py-24 bg-muted rounded-3xl my-24 relative overflow-hidden"
       >
         {/* Decorative Background */}
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-            <div className="absolute top-0 left-1/4 w-96 h-96 bg-[#3AB54A]/5 rounded-full blur-3xl"></div>
-            <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-[#8CC43D]/5 rounded-full blur-3xl"></div>
+            <div className="absolute top-0 left-1/4 w-96 h-96 bg-accent/5 rounded-full blur-3xl"></div>
+            <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-accent/5 rounded-full blur-3xl"></div>
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
           <div className="text-center mb-16">
-            <h3 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            <h3 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
                Comprehensive Toolset
             </h3>
-            <p className="text-gray-600 max-w-2xl mx-auto">Everything you need to modernize your newsroom in one platform.</p>
+            <p className="text-muted-foreground max-w-2xl mx-auto">Everything you need to modernize your newsroom in one platform.</p>
           </div>
           
           <Swiper
@@ -181,13 +181,13 @@ const FeaturesSlider = () => {
             {features.map((feature, index) => (
               <SwiperSlide key={index} className="h-auto">
                 <div
-                  className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 hover:shadow-lg transition-all duration-300 h-full flex flex-col group"
+                  className="bg-card rounded-2xl p-8 shadow-sm border border-border hover:shadow-lg transition-all duration-300 h-full flex flex-col group"
                 >
-                  <div className="w-14 h-14 bg-gray-50 rounded-xl flex items-center justify-center mb-6 text-gray-400 group-hover:text-white group-hover:bg-[#3AB54A] transition-colors duration-300">
+                    <div className="w-14 h-14 bg-muted rounded-xl flex items-center justify-center mb-6 text-muted-foreground group-hover:text-white group-hover:bg-accent transition-colors duration-300">
                     {React.cloneElement(feature.icon, { className: "text-2xl" })}
                   </div>
-                  <h4 className="text-xl font-bold text-gray-900 mb-3">{feature.title}</h4>
-                  <p className="text-gray-600 leading-relaxed flex-grow">{feature.description}</p>
+                  <h4 className="text-xl font-bold text-foreground mb-3">{feature.title}</h4>
+                  <p className="text-muted-foreground leading-relaxed flex-grow">{feature.description}</p>
                 </div>
               </SwiperSlide>
             ))}
@@ -195,12 +195,12 @@ const FeaturesSlider = () => {
   
           {/* Navigation Buttons */}
           <div className="flex justify-center mt-8 space-x-4">
-            <button ref={prevRef} className="w-12 h-12 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:border-[#3AB54A] hover:text-[#3AB54A] transition-colors bg-white shadow-sm">
+            <button ref={prevRef} className="w-12 h-12 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:border-accent hover:text-accent transition-colors bg-card shadow-sm">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path>
               </svg>
             </button>
-            <button ref={nextRef} className="w-12 h-12 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:border-[#3AB54A] hover:text-[#3AB54A] transition-colors bg-white shadow-sm">
+            <button ref={nextRef} className="w-12 h-12 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:border-accent hover:text-accent transition-colors bg-card shadow-sm">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>
               </svg>
@@ -254,14 +254,14 @@ const FeaturesPage = () => {
   return (
     <>
       <Header />
-      <main className="min-h-screen bg-white overflow-hidden">
+      <main className="min-h-screen bg-background overflow-hidden">
         
         {/* Page Header */}
-        <div className="relative pt-20 pb-16 lg:pt-32 lg:pb-24 px-4 sm:px-6 lg:px-8 overflow-hidden">
+        <div className="relative pt-20 pb-16 lg:pt-32 lg:pb-24 px-4 md:px-8 lg:px-16 overflow-hidden">
              {/* Background Blobs */}
             <div className="absolute top-0 inset-x-0 h-full overflow-hidden pointer-events-none">
-                <div className="absolute -top-40 -right-40 w-[600px] h-[600px] bg-[#3AB54A]/10 rounded-full blur-3xl opacity-50 animate-blob"></div>
-                <div className="absolute top-20 -left-20 w-[400px] h-[400px] bg-[#8CC43D]/10 rounded-full blur-3xl opacity-50 animate-blob animation-delay-2000"></div>
+                <div className="absolute -top-40 -right-40 w-[600px] h-[600px] bg-accent/10 rounded-full blur-3xl opacity-50 animate-blob"></div>
+                <div className="absolute top-20 -left-20 w-[400px] h-[400px] bg-accent/10 rounded-full blur-3xl opacity-50 animate-blob animation-delay-2000"></div>
             </div>
 
             <motion.div 
@@ -270,20 +270,20 @@ const FeaturesPage = () => {
             transition={{ duration: 0.8 }}
             className="relative max-w-4xl mx-auto text-center z-10"
             >
-            <span className="inline-block py-1 px-3 rounded-full bg-[#3AB54A]/10 text-[#3AB54A] font-bold tracking-wide text-xs md:text-sm mb-6 uppercase">
+            <span className="inline-block py-1 px-3 rounded-full bg-accent/10 text-accent font-bold tracking-wide text-xs md:text-sm mb-6 uppercase">
                 Product Features
             </span>
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold text-gray-900 mb-6 tracking-tight">
-                AI Tools strictly for <br />
-                <span className="text-[#3AB54A]">Modern Journalists</span>
-            </h1>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold text-foreground mb-6 tracking-tight">
+            AI Tools strictly for <br />
+            <span className="text-accent">Modern Journalists</span>
+          </h1>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
                 Streamline your reporting workflow with powerful AI engines. Create better stories, analyze deeper data, and engage simpler audiences.
             </p>
             </motion.div>
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-16">
             {/* Main Features */}
             <div className="space-y-12 lg:space-y-24">
             {mainFeatures.map((feature, index) => (
@@ -307,7 +307,7 @@ const FeaturesPage = () => {
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            className="mb-24 relative rounded-3xl overflow-hidden bg-[#3AB54A] px-6 py-16 md:px-16 md:py-20 text-center shadow-2xl"
+            className="mb-24 relative rounded-3xl overflow-hidden bg-accent px-6 py-16 md:px-16 md:py-20 text-center shadow-2xl"
             >
                 {/* Abstract Patterns */}
                 <div className="absolute inset-0 opacity-10">
@@ -318,10 +318,10 @@ const FeaturesPage = () => {
 
                 <div className="relative z-10 max-w-3xl mx-auto">
                     <h2 className="text-3xl md:text-5xl font-bold text-white mb-6 tracking-tight">Ready to Transform Your Journalism?</h2>
-                    <p className="text-green-50 text-lg md:text-xl mb-10 leading-relaxed opacity-90">
+                    <p className="text-accent-foreground text-lg md:text-xl mb-10 leading-relaxed opacity-90">
                         Join verified journalists and newsrooms who are already creating better stories faster with HealthLensNaija.
                     </p>
-                    <button className="inline-flex items-center px-8 py-4 bg-white text-[#3AB54A] rounded-full font-bold text-lg hover:bg-gray-100 hover:scale-105 transition-all duration-200 shadow-lg">
+                    <button className="inline-flex items-center px-8 py-4 bg-white text-accent rounded-full font-bold text-lg hover:bg-gray-100 hover:scale-105 transition-all duration-200 shadow-lg">
                         Start Creating Today
                         <FaArrowRight className="ml-2" />
                     </button>

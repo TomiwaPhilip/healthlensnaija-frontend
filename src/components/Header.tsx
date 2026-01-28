@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+// removed framer-motion to avoid transform errors
 import { Menu, X, LogIn, UserPlus } from "lucide-react";
+import { Button } from "./ui/button";
 import logo from "../assets/logo.png";
 import "../index.css";
 
@@ -61,92 +62,58 @@ const Header = () => {
   ];
 
   return (
-    <motion.header 
-      initial="hidden"
-      animate="visible"
-      variants={containerVariants}
-      className="w-full bg-white shadow-sm sticky top-0 z-50"
-    >
+    <header className="w-full bg-background sticky top-0 z-50 border-b border-border">
       <div className="container mx-auto flex items-center justify-between px-4 lg:px-6 py-3">
         {/* Logo */}
-        <motion.div 
-          variants={itemVariants}
-          className="flex-shrink-0"
-        >
+        <div className="flex-shrink-0">
           <Link to="/">
-            <motion.img
-              src={logo}
-              alt="Nigeria Health Watch"
-              className="h-12"
-              whilehover={{ scale: 1.05 }}
-              whiletap={{ scale: 0.95 }}
-            />
+            <img src={logo} alt="Nigeria Health Watch" className="h-12" />
           </Link>
-        </motion.div>
+        </div>
 
         {/* Navigation Links (Desktop) */}
-        <motion.nav 
-          variants={containerVariants}
-          className="hidden lg:flex space-x-8 mx-8"
-        >
+        <nav className="hidden lg:flex space-x-8 mx-8">
           {navLinks.map((link, index) => {
             const isActive = location.pathname === link.path;
             
             return (
-              <motion.div
-                key={index}
-                variants={itemVariants}
-                whileHover={{ y: -2 }}
-                whileTap={{ scale: 0.95 }}
-              >
+              <div key={index}>
                 <Link 
                   to={link.path} 
-                  className={`font-medium relative group transition-colors ${isActive ? 'text-[#3AB54A]' : 'text-gray-800 hover:text-[#3AB54A]'}`}
+                  className={`font-medium relative group transition-colors ${isActive ? 'text-accent text-accent-foreground' : 'text-foreground/90 hover:text-accent'}`}
                 >
                   {link.text}
-                  <span className={`absolute left-0 bottom-0 h-0.5 bg-[#3AB54A] transition-all duration-300 ${isActive ? 'w-full' : 'w-0 group-hover:w-full'}`}></span>
+                  <span className={`absolute left-0 bottom-0 h-0.5 bg-accent transition-all duration-300 ${isActive ? 'w-full' : 'w-0 group-hover:w-full'}`}></span>
                 </Link>
-              </motion.div>
+              </div>
             );
           })}
-        </motion.nav>
+        </nav>
 
         {/* Auth Buttons (Desktop) */}
-        <motion.div 
-          variants={containerVariants}
-          className="hidden lg:flex items-center space-x-4"
-        >
-          <motion.div variants={itemVariants}>
-            <Link 
-              to="/signin"
-              className="flex items-center gap-2 text-gray-700 hover:text-[#3AB54A] font-medium transition-colors px-4 py-2"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <LogIn className="w-5 h-5" />
-              <span>Login</span>
-            </Link>
-          </motion.div>
-          <motion.div variants={itemVariants}>
-            <Link
-              to="/signup"
-              className="group flex items-center gap-2 bg-[#3AB54A] text-white px-6 py-2.5 rounded-full font-medium shadow-md hover:bg-[#2d963c] hover:shadow-lg transition-all duration-300"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <UserPlus className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" />
-              <span>Get Started</span>
-            </Link>
-          </motion.div>
-        </motion.div>
+        <div className="hidden lg:flex items-center space-x-4">
+          <div>
+            <Button asChild variant="ghost" size="default">
+              <Link to="/signin" className="flex items-center gap-2 px-4 py-2">
+                <LogIn className="w-5 h-5" />
+                <span>Login</span>
+              </Link>
+            </Button>
+          </div>
+          <div>
+            <Button asChild variant="default" size="default">
+              <Link to="/signup" className="flex items-center gap-2 px-4 py-2">
+                <UserPlus className="w-5 h-5" />
+                <span>Get Started</span>
+              </Link>
+            </Button>
+          </div>
+        </div>
 
         {/* Mobile Menu Button */}
-        <motion.button
-          variants={itemVariants}
+        <button
           className="lg:hidden text-gray-800 focus:outline-none p-2"
           onClick={() => setMenuOpen(!menuOpen)}
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.95 }}
           aria-label="Toggle menu"
         >
           {menuOpen ? (
@@ -154,81 +121,54 @@ const Header = () => {
           ) : (
             <Menu className="w-6 h-6" />
           )}
-        </motion.button>
+        </button>
       </div>
-
       {/* Mobile Menu */}
-      <AnimatePresence>
-        {menuOpen && (
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            exit="hidden"
-            variants={mobileMenuVariants}
-            className="w-full bg-white lg:hidden overflow-hidden shadow-md"
-          >
-            <div className="container mx-auto px-4 py-2">
-              <motion.nav 
-                className="flex flex-col space-y-4 py-4"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.2 }}
-              >
-                {navLinks.map((link, index) => {
-                  const isActive = location.pathname === link.path;
-                  return (
-                    <motion.div
-                      key={index}
-                      initial={{ x: -20, opacity: 0 }}
-                      animate={{ x: 0, opacity: 1 }}
-                      transition={{ delay: 0.3 + index * 0.1 }}
+      {menuOpen && (
+        <div className="w-full bg-background lg:hidden overflow-hidden shadow-md border-t border-border">
+          <div className="container mx-auto px-4 py-2">
+            <nav className="flex flex-col space-y-4 py-4">
+              {navLinks.map((link, index) => {
+                const isActive = location.pathname === link.path;
+                return (
+                  <div key={index}>
+                    <Link 
+                      to={link.path} 
+                      className={`block py-2 font-medium transition-colors ${isActive ? 'text-accent' : 'text-foreground/70 hover:text-accent'}`}
+                      onClick={() => setMenuOpen(false)}
                     >
-                      <Link 
-                        to={link.path} 
-                        className={`block py-2 font-medium transition-colors ${isActive ? 'text-[#3AB54A]' : 'text-gray-800 hover:text-[#3AB54A]'}`}
-                        onClick={() => setMenuOpen(false)}
-                      >
-                        {link.text}
-                      </Link>
-                    </motion.div>
-                  );
-                })}
-              </motion.nav>
-              <div className="flex flex-col space-y-4 pb-4 px-2">
-                <motion.div
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.5 }}
+                      {link.text}
+                    </Link>
+                  </div>
+                );
+              })}
+            </nav>
+            <div className="flex flex-col space-y-4 pb-4 px-2">
+              <div>
+                <Link
+                  to="/signin"
+                  className="flex w-full items-center justify-center gap-2 text-foreground bg-muted hover:bg-muted/80 py-3 rounded-xl font-medium transition-colors"
+                  onClick={() => setMenuOpen(false)}
                 >
-                  <Link
-                    to="/signin"
-                    className="flex w-full items-center justify-center gap-2 text-gray-700 bg-gray-50 hover:bg-gray-100 py-3 rounded-xl font-medium transition-colors"
-                    onClick={() => setMenuOpen(false)}
-                  >
-                    <LogIn className="w-5 h-5" />
-                    <span>Login</span>
-                  </Link>
-                </motion.div>
-                <motion.div
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.6 }}
+                  <LogIn className="w-5 h-5" />
+                  <span>Login</span>
+                </Link>
+              </div>
+              <div>
+                <Link
+                  to="/signup"
+                  className="flex w-full items-center justify-center gap-2 bg-[#3AB54A] hover:bg-[#2d963c] text-white py-3 rounded-xl font-medium shadow-md transition-colors"
+                  onClick={() => setMenuOpen(false)}
                 >
-                  <Link
-                    to="/signup"
-                    className="flex w-full items-center justify-center gap-2 bg-[#3AB54A] hover:bg-[#2d963c] text-white py-3 rounded-xl font-medium shadow-md transition-colors"
-                    onClick={() => setMenuOpen(false)}
-                  >
-                    <UserPlus className="w-5 h-5" />
-                    <span>Get Started</span>
-                  </Link>
-                </motion.div>
+                  <UserPlus className="w-5 h-5" />
+                  <span>Get Started</span>
+                </Link>
               </div>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.header>
+          </div>
+        </div>
+      )}
+    </header>
   );
 };
 
