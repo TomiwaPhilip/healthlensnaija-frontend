@@ -21,20 +21,9 @@ const AuthenticatedLayout = () => {
     console.log("%c[AuthenticatedLayout] Path changed →", "color:#3B82F6; font-weight:bold;", location.pathname);
   }, [location.pathname]);
 
-  // ✅ Memoize Outlet content to prevent unnecessary re-mounts
-  const memoizedContent = useMemo(() => {
-    console.log("%c[AuthenticatedLayout] Outlet memoized 🧩", "color:#8B5CF6;");
-    return (
-      <main className="p-4">
-        {/* ⛳️ Nested routes render here (Dashboard, etc.) */}
-        <Outlet />
-      </main>
-    );
-  }, []); // Only create once — persists across route transitions
-
   return (
-    <div className="flex bg-white dark:bg-gray-900 min-h-screen overflow-x-hidden">
-      {/* Sidebar (collapsible) */}
+    <div className="flex h-screen bg-white dark:bg-gray-900 overflow-hidden">
+      {/* Sidebar (fixed height) */}
       <Sidebar
         collapsed={sidebarCollapsed}
         toggleSidebar={() => {
@@ -43,24 +32,24 @@ const AuthenticatedLayout = () => {
         }}
       />
 
-      <div
-        className={`flex-1 main-content transition-all duration-300 ${
-          sidebarCollapsed ? "collapsed-sidebar" : ""
-        }`}
-      >
-        {/* Top Header */}
+      {/* Main content area - flexbox column with scrollable content */}
+      <div className="flex-1 flex flex-col h-screen overflow-hidden">
+        {/* Top Header - fixed height */}
         <DashboardHeader />
 
-        {/* Persistent Outlet (memoized) */}
-        {memoizedContent}
+        {/* Scrollable Content Area */}
+        <main className="flex-1 overflow-y-auto p-4">
+          {/* ⛳️ Nested routes render here (Dashboard, etc.) */}
+          <Outlet />
 
-        {/* Chat Widget (only for help-center route) */}
-        {showChatWidget && (
-          <>
-            {console.log("%c[AuthenticatedLayout] ChatbotWidget visible 💬", "color:#22C55E;")}
-            <ChatbotWidget />
-          </>
-        )}
+          {/* Chat Widget (only for help-center route) */}
+          {showChatWidget && (
+            <>
+              {console.log("%c[AuthenticatedLayout] ChatbotWidget visible 💬", "color:#22C55E;")}
+              <ChatbotWidget />
+            </>
+          )}
+        </main>
       </div>
     </div>
   );

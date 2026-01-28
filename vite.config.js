@@ -9,9 +9,10 @@ export default defineConfig({
       name: "pre-transform-js-as-jsx",
       enforce: "pre",
       async transform(code, id) {
-        if (!id.match(/src\/.*\.(jsx|tsx)$/)) return null; // ✅ match .jsx and .tsx files now
+        if (!id.includes('src/') || (!id.endsWith('.jsx') && !id.endsWith('.tsx'))) return null;
+        const isTsx = id.endsWith('.tsx');
         return transformWithEsbuild(code, id, {
-          loader: "jsx",
+          loader: isTsx ? "tsx" : "jsx",
           jsx: "automatic",
         });
       },
@@ -29,6 +30,7 @@ export default defineConfig({
       loader: {
         ".js": "jsx",   // still cover plain .js
         ".jsx": "jsx",  // ✅ add jsx loader
+        ".tsx": "tsx",  // ✅ add tsx loader
       },
     },
   },

@@ -49,20 +49,28 @@ const allowedRedirects = [
 ];
 
 const App = () => {
+  console.log("App component is rendering");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    console.log("App useEffect running");
     const token = localStorage.getItem("token");
+    console.log("Token from localStorage:", token);
     setIsAuthenticated(!!token);
     setIsLoading(false);
+    console.log("isLoading set to false");
   }, []);
 
   const validateRedirect = (path) => {
     return allowedRedirects.includes(path) ? path : "/signin";
   };
 
-  if (isLoading) return null;
+  console.log("Rendering App with isLoading:", isLoading);
+  if (isLoading) {
+    console.log("App is in loading state, returning null");
+    return null;
+  }
 
   return (
     <Router>
