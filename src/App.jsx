@@ -15,7 +15,7 @@ import UploadData from "./pages/Dashboard/UploadData";
 import AIChat from "./pages/Dashboard/AIChat";
 import HeroSection from "./components/HeroSection";
 import Features from "./components/Features";
-import Testimonials from "./components/Testimonials";
+// import Testimonials from "./components/Testimonials";
 import WhyNHWSection from "./components/WhyNHWSection";
 import AboutUs from "./components/AboutUs";
 import SignUp from "./pages/SignUp";
@@ -85,7 +85,7 @@ const App = () => {
                 <HeroSection />
                 <Features />
                 <WhyNHWSection />
-                <Testimonials />
+                {/* <Testimonials /> */}
                 <Footer />
               </>
             }
