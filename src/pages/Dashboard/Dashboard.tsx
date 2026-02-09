@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,97 +17,190 @@ import {
   Calendar,
   FileText,
   Trash2,
-  AlertCircle,
-  Clock,
-  ArrowRight
+  AlertCircle
 } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 // --- Types ---
-interface Story {
+interface StoryCard {
   id: string;
   title: string;
-  createdAt: Date;
-  status: "published" | "draft";
+  createdAt: string;
+  updatedAt?: string;
+  status: string;
   preview: string;
 }
+
+const PAGE_SIZE = 9;
+const API_URL = import.meta.env.VITE_API_URL ?? "/api";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
-  const [stories, setStories] = useState<Story[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [stories, setStories] = useState<StoryCard[]>([]);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const [isFetching, setIsFetching] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // --- Mock Data Load ---
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+  const formatDate = (value?: string) => {
+    if (!value) {
+      return "Unknown date";
+    }
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) {
+      return "Unknown date";
+    }
+    return date.toLocaleDateString(undefined, {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
+  const isEmpty = !isInitialLoading && !error && stories.length === 0;
+
   useEffect(() => {
-    const loadStories = async () => {
-      setIsLoading(true);
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchQuery.trim());
+    }, 400);
+    return () => clearTimeout(handler);
+  }, [searchQuery]);
+
+  const fetchStories = useCallback(
+    async (pageToLoad: number, append: boolean) => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setError("You must be signed in to view stories.");
+        setIsInitialLoading(false);
+        setHasMore(false);
+        return;
+      }
+
+      setIsFetching(true);
       setError(null);
-      
-      // Simulate network delay
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      if (!append) {
+        setIsInitialLoading(true);
+      }
 
-      // Mock Data (Demo Mode: Always loaded)
-      const mockStories: Story[] = [
-        {
-          id: "story-1",
-          title: "Malaria Intervention Strategy 2026",
-          createdAt: new Date("2026-01-25T10:00:00"),
-          status: "published",
-          preview: "Analysis of the effectiveness of new mosquito nets distribution in rural areas..."
-        },
-        {
-          id: "story-2",
-          title: "Maternal Health Statistics Q4 2025",
-          createdAt: new Date("2026-01-20T14:30:00"),
-          status: "draft",
-          preview: "Draft report on improved maternal survival rates across three key states..."
-        },
-        {
-          id: "story-3",
-          title: "Primary Healthcare Funding Report",
-          createdAt: new Date("2026-01-15T09:15:00"),
-          status: "published",
-          preview: "Breakdown of budget allocation for primary healthcare centers..."
-        },
-        {
-          id: "story-4",
-          title: "Vaccination Campaign Overview",
-          createdAt: new Date("2026-01-10T11:45:00"),
-          status: "draft",
-          preview: "Initial data from the nationwide polio vaccination drive..."
-        },
-        {
-          id: "story-5",
-          title: "Community Health Outreach Program",
-          createdAt: new Date("2026-01-05T16:20:00"),
-          status: "published",
-          preview: "Success stories from the recent community health outreach program in Lagos..."
+      try {
+        const params = new URLSearchParams({
+          page: String(pageToLoad),
+          limit: String(PAGE_SIZE),
+        });
+        if (debouncedSearch) {
+          params.set("q", debouncedSearch);
         }
-      ];
 
-      setStories(mockStories);
-      setIsLoading(false);
-      
-      // Uncomment to test empty state
-      // setStories([]);
+        const response = await fetch(`${API_URL}/stories?${params.toString()}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
-      // Uncomment to test error state
-      // setError("Failed to load stories. Please try again.");
-    };
+        const payload = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          throw new Error(payload?.message || "Failed to load stories");
+        }
 
-    loadStories();
-  }, []);
+        const incoming = ((payload?.stories || payload?.data) ?? []).map((story: any) => ({
+          id: story.id || story._id,
+          title: story.title,
+          status: story.status || "draft",
+          preview: story.preview_text || story.preview || "",
+          createdAt: story.createdAt || story.updatedAt,
+          updatedAt: story.updatedAt || story.createdAt,
+        })) as StoryCard[];
 
-  // Filter stories based on search
-  const filteredStories = stories.filter((story) =>
-    story.title.toLowerCase().includes(searchQuery.toLowerCase())
+        setStories((prev) => {
+          const next = append ? [...prev, ...incoming] : incoming;
+          const deduped: StoryCard[] = [];
+          const seen = new Set<string>();
+          next.forEach((item) => {
+            if (!item.id) {
+              return;
+            }
+            if (!seen.has(item.id)) {
+              seen.add(item.id);
+              deduped.push(item);
+            }
+          });
+          return deduped;
+        });
+
+        setPage(pageToLoad);
+        const hasMoreFlag =
+          typeof payload?.hasMore === "boolean"
+            ? payload.hasMore
+            : incoming.length === PAGE_SIZE;
+        setHasMore(hasMoreFlag);
+      } catch (err) {
+        console.error("Failed to fetch stories", err);
+        setError(err instanceof Error ? err.message : "Failed to load stories");
+      } finally {
+        setIsFetching(false);
+        setIsInitialLoading(false);
+      }
+    },
+    [debouncedSearch]
   );
 
-  const handleDelete = (e: React.MouseEvent, id: string) => {
+  useEffect(() => {
+    setStories([]);
+    setPage(1);
+    setHasMore(true);
+    fetchStories(1, false);
+  }, [debouncedSearch, fetchStories]);
+
+  useEffect(() => {
+    let observer: IntersectionObserver | null = null;
+    const node = sentinelRef.current;
+    if (node && hasMore) {
+      observer = new IntersectionObserver(
+        (entries) => {
+          if (entries[0].isIntersecting && !isFetching) {
+            fetchStories(page + 1, true);
+          }
+        },
+        { rootMargin: "200px" }
+      );
+
+      observer.observe(node);
+    }
+
+    return () => {
+      observer?.disconnect();
+    };
+  }, [fetchStories, hasMore, isFetching, page]);
+
+  const handleDelete = async (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
-    setStories((prev) => prev.filter((s) => s.id !== id));
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setError("You must be signed in to delete stories.");
+      return;
+    }
+
+    try {
+      setError(null);
+      const response = await fetch(`${API_URL}/stories/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const payload = await response.json().catch(() => ({}));
+        throw new Error(payload?.message || "Failed to delete story");
+      }
+
+      setStories((prev) => prev.filter((s) => s.id !== id));
+    } catch (err) {
+      console.error("Failed to delete story", err);
+      setError(err instanceof Error ? err.message : "Failed to delete story");
+    }
   };
 
   const handleStoryClick = (id: string) => {
@@ -143,7 +236,7 @@ const Dashboard = () => {
       {/* 3. Content Content */}
       <div className="space-y-4">
         {/* Loading State */}
-        {isLoading && (
+        {isInitialLoading && (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
              {[1, 2, 3, 4, 5, 6].map((i) => (
                <div key={i} className="p-4 rounded-lg border bg-card space-y-3">
@@ -163,7 +256,7 @@ const Dashboard = () => {
         )}
 
         {/* Error State */}
-        {!isLoading && error && (
+        {!isInitialLoading && error && (
           <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
             <AlertTitle>Error</AlertTitle>
@@ -172,7 +265,7 @@ const Dashboard = () => {
         )}
 
         {/* Empty State */}
-        {!isLoading && !error && filteredStories.length === 0 && (
+        {isEmpty && (
           <div className="flex flex-col items-center justify-center p-12 text-center border-2 border-dashed rounded-lg bg-muted/10">
             <div className="bg-muted p-4 rounded-full mb-4">
                 <FileText className="h-8 w-8 text-muted-foreground" />
@@ -192,9 +285,9 @@ const Dashboard = () => {
         )}
 
         {/* Loaded State: List/Grid of Cards */}
-        {!isLoading && !error && filteredStories.length > 0 && (
+        {!isInitialLoading && !error && stories.length > 0 && (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {filteredStories.map((story) => (
+            {stories.map((story) => (
               <div
                 key={story.id}
                 onClick={() => handleStoryClick(story.id)}
@@ -208,38 +301,62 @@ const Dashboard = () => {
                         </h3>
                         <div className="flex items-center text-xs text-muted-foreground">
                             <Calendar className="mr-1.5 h-3.5 w-3.5" />
-                            {story.createdAt.toLocaleDateString(undefined, {
-                                month: 'short',
-                                day: 'numeric',
-                                year: 'numeric'
-                            })}
+                            {formatDate(story.updatedAt || story.createdAt)}
                         </div>
+                        {story.preview && (
+                          <p className="text-sm text-muted-foreground line-clamp-3">
+                            {story.preview}
+                          </p>
+                        )}
                     </div>
 
-                    <div onClick={(e) => e.stopPropagation()} className="-mt-1 -mr-2 flex-shrink-0">
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground">
-                                    <MoreVertical className="h-4 w-4" />
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                                <DropdownMenuItem onClick={() => handleStoryClick(story.id)}>
-                                     Open Story
-                                </DropdownMenuItem>
-                                <DropdownMenuItem 
-                                    onClick={(e) => handleDelete(e, story.id)}
-                                    className="text-destructive focus:text-destructive"
-                                >
-                                    <Trash2 className="mr-2 h-4 w-4" />
-                                    Delete
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
+                    <div className="flex flex-col items-end gap-3">
+                      <span className={`text-xs font-medium px-2 py-1 rounded-full border ${
+                        story.status === "published"
+                          ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                          : "border-amber-200 bg-amber-50 text-amber-700"
+                      }`}>
+                        {story.status === "published" ? "Published" : "Draft"}
+                      </span>
+
+                      <div onClick={(e) => e.stopPropagation()} className="-mt-1 -mr-2 flex-shrink-0">
+                          <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                  <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground">
+                                      <MoreVertical className="h-4 w-4" />
+                                  </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                  <DropdownMenuItem onClick={() => handleStoryClick(story.id)}>
+                                       Open Story
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem 
+                                      onClick={(e) => handleDelete(e, story.id)}
+                                      className="text-destructive focus:text-destructive"
+                                  >
+                                      <Trash2 className="mr-2 h-4 w-4" />
+                                      Delete
+                                  </DropdownMenuItem>
+                              </DropdownMenuContent>
+                          </DropdownMenu>
+                      </div>
                     </div>
                 </div>
               </div>
             ))}
+          </div>
+        )}
+
+        {/* Infinite Scroll Sentinel & Loading */}
+        {!isInitialLoading && !error && stories.length > 0 && (
+          <div className="flex flex-col items-center justify-center py-6 gap-3">
+            {isFetching && hasMore && (
+              <div className="text-sm text-muted-foreground">Loading more stories...</div>
+            )}
+            <div ref={sentinelRef} className="h-2 w-full" />
+            {!hasMore && (
+              <p className="text-xs text-muted-foreground">You've reached the end.</p>
+            )}
           </div>
         )}
       </div>
