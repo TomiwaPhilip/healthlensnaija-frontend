@@ -19,6 +19,7 @@ import {
   Trash2,
   AlertCircle
 } from "lucide-react";
+import CreateStoryDialog from "@/components/stories/CreateStoryDialog";
 
 // --- Types ---
 interface StoryCard {
@@ -104,7 +105,8 @@ const Dashboard = () => {
           throw new Error(payload?.message || "Failed to load stories");
         }
 
-        const incoming = ((payload?.stories || payload?.data) ?? []).map((story: any) => ({
+        const rawList = Array.isArray(payload) ? payload : ((payload?.stories || payload?.data) ?? []);
+        const incoming = rawList.map((story: any) => ({
           id: story.id || story._id,
           title: story.title,
           status: story.status || "draft",
@@ -217,9 +219,20 @@ const Dashboard = () => {
             Manage your generated stories and reports
           </p>
         </div>
-        <Button onClick={() => navigate("/generate-story")} className="sm:w-auto w-full">
-          <Plus className="mr-2 h-4 w-4" /> New Story
-        </Button>
+        <CreateStoryDialog
+          trigger={
+            <Button className="sm:w-auto w-full">
+              <Plus className="mr-2 h-4 w-4" /> New Story
+            </Button>
+          }
+          onSuccess={(story) => {
+            const createdId = story.id || story._id;
+            fetchStories(1, false);
+            if (createdId) {
+              navigate(`/generate-story?id=${createdId}`);
+            }
+          }}
+        />
       </div>
 
       {/* 2. Search Bar */}
@@ -311,14 +324,6 @@ const Dashboard = () => {
                     </div>
 
                     <div className="flex flex-col items-end gap-3">
-                      <span className={`text-xs font-medium px-2 py-1 rounded-full border ${
-                        story.status === "published"
-                          ? "border-emerald-200 bg-emerald-50 text-emerald-700"
-                          : "border-amber-200 bg-amber-50 text-amber-700"
-                      }`}>
-                        {story.status === "published" ? "Published" : "Draft"}
-                      </span>
-
                       <div onClick={(e) => e.stopPropagation()} className="-mt-1 -mr-2 flex-shrink-0">
                           <DropdownMenu>
                               <DropdownMenuTrigger asChild>

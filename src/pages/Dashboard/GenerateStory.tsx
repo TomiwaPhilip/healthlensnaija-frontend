@@ -1,18 +1,29 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
-import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { SourcesPanel, useSourcesPanelState } from "./components/SourcesPanel";
 import { ChatPanel, useChatPanelState } from "./components/ChatPanel";
 import { ArtifactsPanel, useArtifactsPanelState } from "./components/ArtifactsPanel";
+import CreateStoryDialog from "@/components/stories/CreateStoryDialog";
+
+const API_URL = import.meta.env.VITE_API_URL ?? "/api";
+
+interface StoryWorkspaceData {
+  id: string;
+  title: string;
+  status: string;
+  preview_text?: string;
+  metadata?: Record<string, unknown>;
+  artifacts: unknown[];
+  sources: unknown[];
+  chat: unknown[];
+}
 
 type PanelProps = {
   title: string;
@@ -79,10 +90,25 @@ const NewsroomPanel = ({
 );
 
 // --- Main Logic Component ---
-const NewsroomContent = ({ resetKey }: { resetKey: string }) => {
-  const sourcesPanelState = useSourcesPanelState();
-  const chatPanelState = useChatPanelState();
-  const artifactsPanelState = useArtifactsPanelState();
+const NewsroomContent = ({
+  storyId,
+  storyData,
+}: {
+  storyId: string;
+  storyData: StoryWorkspaceData;
+}) => {
+  const sourcesPanelState = useSourcesPanelState({
+    storyId,
+    initialSources: storyData.sources,
+  });
+  const chatPanelState = useChatPanelState({
+    storyId,
+    initialMessages: storyData.chat,
+  });
+  const artifactsPanelState = useArtifactsPanelState({
+    storyId,
+    initialArtifacts: storyData.artifacts,
+  });
   const [collapsedPanels, setCollapsedPanels] = useState({
     sources: false,
     artifacts: false,
@@ -95,8 +121,12 @@ const NewsroomContent = ({ resetKey }: { resetKey: string }) => {
     }));
   };
 
-  const handleAddToArtifacts = (title: string, content: string) => {
-      artifactsPanelState.addArtifact(title, content, "summary");
+  const handleAddToArtifacts = async (title: string, content: string) => {
+    try {
+      await artifactsPanelState.addArtifact(title, content, "summary");
+    } catch (error) {
+      console.error("Failed to save artifact from chat", error);
+    }
   };
 
   return (
@@ -229,24 +259,139 @@ const NewsroomContent = ({ resetKey }: { resetKey: string }) => {
 const GenerateStory = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const storyId = searchParams.get("id");
-  const [sessionKey, setSessionKey] = useState(0);
+  const [storyData, setStoryData] = useState<StoryWorkspaceData | null>(null);
+  const [isStoryLoading, setIsStoryLoading] = useState(false);
+  const [storyError, setStoryError] = useState<string | null>(null);
 
-  const handleCreateNew = () => {
-    setSearchParams({}); // Clear ID
-    setSessionKey((prev) => prev + 1); // Reset State
+  const fetchStory = useCallback(
+    async (targetId: string) => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setStoryError("You must be signed in to open a story workspace.");
+        setStoryData(null);
+        setIsStoryLoading(false);
+        return;
+      }
+
+      try {
+        setIsStoryLoading(true);
+        setStoryError(null);
+        const response = await fetch(`${API_URL}/stories/${targetId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const payload = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          throw new Error(payload?.message || "Failed to load story workspace");
+        }
+
+        setStoryData({
+          id: payload.id || payload._id || targetId,
+          title: payload.title || "Untitled Story",
+          status: payload.status || "draft",
+          preview_text: payload.preview_text,
+          metadata: payload.metadata,
+          artifacts: Array.isArray(payload.artifacts) ? payload.artifacts : [],
+          sources: Array.isArray(payload.sources) ? payload.sources : [],
+          chat: Array.isArray(payload.chat) ? payload.chat : [],
+        });
+      } catch (error) {
+        console.error("Failed to fetch story", error);
+        setStoryError(error instanceof Error ? error.message : "Failed to load story");
+        setStoryData(null);
+      } finally {
+        setIsStoryLoading(false);
+      }
+    },
+    []
+  );
+
+  useEffect(() => {
+    if (!storyId) {
+      setStoryData(null);
+      setIsStoryLoading(false);
+      setStoryError(null);
+      return;
+    }
+    fetchStory(storyId);
+  }, [fetchStory, storyId]);
+
+  const handleStoryCreated = (story: { id?: string; _id?: string }) => {
+    const newId = story.id || story._id;
+    if (newId) {
+      setSearchParams({ id: newId });
+    }
   };
 
   return (
-    <div className="p-5 min-h-screen transition-colors duration-300 bg-background text-foreground">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Newsroom</h1>
-        <Button onClick={handleCreateNew} className="gap-2">
-             <Plus className="h-4 w-4" />
-             New Story
-        </Button>
+    <div className="p-5 min-h-screen transition-colors duration-300 bg-background text-foreground space-y-6">
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">Newsroom</h1>
+          <p className="text-sm text-muted-foreground">
+            Upload sources, chat with the assistant, and publish artifacts in one workspace.
+          </p>
+        </div>
+        <CreateStoryDialog
+          trigger={<Button className="gap-2">Create Story</Button>}
+          onSuccess={handleStoryCreated}
+        />
       </div>
 
-      <NewsroomContent key={`${storyId}-${sessionKey}`} resetKey={`${storyId}-${sessionKey}`} />
+      {!storyId && (
+        <div className="border rounded-xl p-10 text-center space-y-4 bg-muted/10">
+          <h2 className="text-xl font-semibold">No story selected</h2>
+          <p className="text-sm text-muted-foreground max-w-2xl mx-auto">
+            Create a new story workspace or select an existing one from the dashboard to begin researching, chatting with the assistant, and building artifacts.
+          </p>
+        </div>
+      )}
+
+      {storyId && isStoryLoading && (
+        <div className="space-y-4">
+          <Skeleton className="h-20 rounded-xl" />
+          <div className="grid gap-4 md:grid-cols-2">
+            <Skeleton className="h-64 rounded-xl" />
+            <Skeleton className="h-64 rounded-xl" />
+          </div>
+        </div>
+      )}
+
+      {storyId && !isStoryLoading && storyError && (
+        <Alert variant="destructive">
+          <AlertTitle>Unable to load story</AlertTitle>
+          <AlertDescription className="flex items-center justify-between gap-4">
+            <span>{storyError}</span>
+            <Button size="sm" variant="outline" onClick={() => fetchStory(storyId)}>
+              Retry
+            </Button>
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {storyId && !isStoryLoading && storyData && (
+        <>
+          <div className="border rounded-xl p-4 flex flex-col gap-1">
+            <span className="text-xs uppercase text-muted-foreground">Active Story</span>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+              <h2 className="text-xl font-semibold">{storyData.title}</h2>
+              <span
+                className={cn(
+                  "text-xs font-medium px-2 py-1 rounded-full border w-fit",
+                  storyData.status === "published"
+                    ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                    : "border-amber-200 bg-amber-50 text-amber-700"
+                )}
+              >
+                {storyData.status === "published" ? "Published" : "Draft"}
+              </span>
+            </div>
+          </div>
+
+          <NewsroomContent storyId={storyId} storyData={storyData} key={storyId} />
+        </>
+      )}
     </div>
   );
 };

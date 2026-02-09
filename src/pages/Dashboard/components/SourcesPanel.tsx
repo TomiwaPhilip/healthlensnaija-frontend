@@ -1,10 +1,9 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Progress } from "@/components/ui/progress";
 import {
   FileText,
   Upload,
@@ -18,7 +17,9 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export type SourceStatus = "queued" | "indexing" | "indexed" | "error";
+const API_URL = import.meta.env.VITE_API_URL ?? "/api";
+
+export type SourceStatus = "queued" | "processing" | "indexed" | "failed";
 export type SourceType = "pdf" | "url";
 
 export interface Source {
@@ -26,172 +27,348 @@ export interface Source {
   name: string;
   type: SourceType;
   status: SourceStatus;
-  progress: number;
   errorMessage?: string;
   dateAdded: Date;
 }
 
-export function useSourcesPanelState() {
-  const [sources, setSources] = useState<Source[]>([]);
+interface UseSourcesPanelArgs {
+  storyId?: string | null;
+  initialSources?: unknown[];
+}
+
+function mapSourceStatus(ingestStatus?: string, vectorStatus?: string): SourceStatus {
+  if (ingestStatus === "failed" || vectorStatus === "failed") {
+    return "failed";
+  }
+  if (ingestStatus === "indexed" || vectorStatus === "indexed") {
+    return "indexed";
+  }
+  if (ingestStatus === "processing" || vectorStatus === "processing") {
+    return "processing";
+  }
+  return "queued";
+}
+
+function mapSourceDocument(doc: any): Source | null {
+  if (!doc) {
+    return null;
+  }
+
+  const id = doc._id || doc.id;
+  if (!id) {
+    return null;
+  }
+
+  const date = doc.createdAt || doc.uploaded_at || Date.now();
+  const type: SourceType = doc.source_type === "url" ? "url" : "pdf";
+  return {
+    id,
+    name: doc.filename || doc.url || "Untitled source",
+    type,
+    status: mapSourceStatus(doc.ingest_status, doc.vector_status),
+    errorMessage: doc.ingest_error || undefined,
+    dateAdded: new Date(date),
+  };
+}
+
+export function useSourcesPanelState({ storyId, initialSources = [] }: UseSourcesPanelArgs = {}) {
+  const [sources, setSources] = useState<Source[]>(() =>
+    initialSources
+      .map(mapSourceDocument)
+      .filter((source): source is Source => Boolean(source))
+  );
   const [urlInput, setUrlInput] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(Boolean(storyId));
+  const [isMutating, setIsMutating] = useState(false);
   const [globalError, setGlobalError] = useState<string | null>(null);
+  const [storyError, setStoryError] = useState<string | null>(null);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 2000);
-    return () => clearTimeout(timer);
-  }, []);
+    setSources(
+      initialSources
+        .map(mapSourceDocument)
+        .filter((source): source is Source => Boolean(source))
+    );
+  }, [initialSources]);
 
-  const handleFileUpload = (file: File) => {
+  const fetchSources = useCallback(
+    async (showSpinner = true) => {
+      if (!storyId) {
+        return;
+      }
+
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setStoryError("You must be signed in to view sources.");
+        return;
+      }
+
+      try {
+        if (showSpinner) {
+          setIsLoading(true);
+        }
+        setStoryError(null);
+        const response = await fetch(`${API_URL}/stories/${storyId}/sources`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const payload = await response.json().catch(() => []);
+        if (!response.ok) {
+          throw new Error(payload?.message || "Failed to load sources");
+        }
+        setSources(
+          (Array.isArray(payload) ? payload : [])
+            .map(mapSourceDocument)
+            .filter((source): source is Source => Boolean(source))
+        );
+      } catch (error) {
+        console.error("Failed to load sources", error);
+        setStoryError(
+          error instanceof Error ? error.message : "Failed to load sources"
+        );
+      } finally {
+        if (showSpinner) {
+          setIsLoading(false);
+        }
+      }
+    },
+    [storyId]
+  );
+
+  useEffect(() => {
+    if (!storyId) {
+      setSources([]);
+      setIsLoading(false);
+      return;
+    }
+    fetchSources(true);
+  }, [fetchSources, storyId]);
+
+  const ensureStoryContext = () => {
+    if (!storyId) {
+      setGlobalError("Select or create a story before adding sources.");
+      return false;
+    }
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setGlobalError("You must be signed in to perform this action.");
+      return false;
+    }
+    return token;
+  };
+
+  const handleFileUpload = async (file: File) => {
     if (file.type !== "application/pdf") {
       setGlobalError("Only PDF files are supported.");
       return;
     }
-
-    const newSource: Source = {
-      id: Math.random().toString(36).substr(2, 9),
-      name: file.name,
-      type: "pdf",
-      status: "indexing",
-      progress: 0,
-      dateAdded: new Date(),
-    };
-
-    addSourceLimited_Simulated(newSource);
-  };
-
-  const handleUrlSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!urlInput.trim()) return;
+    const token = ensureStoryContext();
+    if (!token || !storyId) {
+      return;
+    }
 
     try {
-      new URL(urlInput);
-    } catch (_) {
+      setIsMutating(true);
+      setGlobalError(null);
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const response = await fetch(`${API_URL}/stories/${storyId}/sources`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(payload?.message || "Failed to upload source");
+      }
+
+      const mapped = mapSourceDocument(payload);
+      if (mapped) {
+        setSources((prev) => [mapped, ...prev]);
+      }
+    } catch (error) {
+      console.error("Failed to upload source", error);
+      setGlobalError(
+        error instanceof Error ? error.message : "Failed to upload source"
+      );
+    } finally {
+      setIsMutating(false);
+    }
+  };
+
+  const handleUrlSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (!urlInput.trim()) {
+      return;
+    }
+
+    let parsedUrl: string;
+    try {
+      const normalized = new URL(urlInput.trim());
+      parsedUrl = normalized.toString();
+    } catch (error) {
       setGlobalError("Please enter a valid URL.");
       return;
     }
 
-    const newSource: Source = {
-      id: Math.random().toString(36).substr(2, 9),
-      name: urlInput,
-      type: "url",
-      status: "indexing",
-      progress: 0,
-      dateAdded: new Date(),
-    };
+    const token = ensureStoryContext();
+    if (!token || !storyId) {
+      return;
+    }
 
-    addSourceLimited_Simulated(newSource);
-    setUrlInput("");
-  };
-
-  const addSourceLimited_Simulated = (source: Source) => {
-    setGlobalError(null);
-    setSources((prev) => [source, ...prev]);
-
-    let progress = 0;
-    const interval = setInterval(() => {
-      progress += Math.random() * 20;
-      if (progress >= 100) {
-        progress = 100;
-        clearInterval(interval);
-        setSources((prev) =>
-          prev.map((s) =>
-            s.id === source.id ? { ...s, status: "indexed", progress: 100 } : s
-          )
-        );
-      } else {
-        if (Math.random() > 0.98 && progress < 50) {
-            clearInterval(interval);
-            setSources((prev) =>
-                prev.map((s) =>
-                  s.id === source.id ? { ...s, status: "error", errorMessage: "Failed to extract text." } : s
-                )
-              );
-        } else {
-            setSources((prev) =>
-                prev.map((s) =>
-                  s.id === source.id ? { ...s, progress } : s
-                )
-              );
-        }
+    try {
+      setIsMutating(true);
+      setGlobalError(null);
+      const response = await fetch(`${API_URL}/stories/${storyId}/sources/url`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ url: parsedUrl }),
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(payload?.message || "Failed to add URL source");
       }
-    }, 800);
-  };
-
-  const deleteSource = (id: string) => {
-    setSources((prev) => prev.filter((s) => s.id !== id));
-  };
-
-  const retrySource = (id: string) => {
-     setSources((prev) =>
-        prev.map((s) =>
-          s.id === id ? { ...s, status: "indexing", progress: 0, errorMessage: undefined } : s
-        )
+      const mapped = mapSourceDocument(payload);
+      if (mapped) {
+        setSources((prev) => [mapped, ...prev]);
+      }
+      setUrlInput("");
+    } catch (error) {
+      console.error("Failed to add URL source", error);
+      setGlobalError(
+        error instanceof Error ? error.message : "Failed to add URL source"
       );
+    } finally {
+      setIsMutating(false);
+    }
   };
+
+  const deleteSource = async (id: string) => {
+    const token = ensureStoryContext();
+    if (!token) {
+      return;
+    }
+
+    try {
+      setIsMutating(true);
+      setGlobalError(null);
+      const response = await fetch(`${API_URL}/sources/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(payload?.message || "Failed to delete source");
+      }
+
+      setSources((prev) => prev.filter((source) => source.id !== id));
+    } catch (error) {
+      console.error("Failed to delete source", error);
+      setGlobalError(
+        error instanceof Error ? error.message : "Failed to delete source"
+      );
+    } finally {
+      setIsMutating(false);
+    }
+  };
+
+  const refreshSourceStatus = async () => {
+    await fetchSources(false);
+  };
+
+  // Poll for status updates when any source is still processing/queued
+  useEffect(() => {
+    const hasInProgress = sources.some(
+      (s) => s.status === "queued" || s.status === "processing"
+    );
+    if (!hasInProgress || !storyId) {
+      return;
+    }
+
+    const interval = setInterval(() => {
+      fetchSources(false);
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [sources, storyId, fetchSources]);
 
   return {
+    storyId,
     sources,
     urlInput,
     setUrlInput,
     isLoading,
+    isMutating,
     globalError,
+    storyError,
     handleFileUpload,
     handleUrlSubmit,
     deleteSource,
-    retrySource
+    refreshSourceStatus,
+    fetchSources,
   };
 }
 
 export function SourcesPanel({ state }: { state: ReturnType<typeof useSourcesPanelState> }) {
   const {
+    storyId,
     sources,
     urlInput,
     setUrlInput,
     isLoading,
+    isMutating,
     globalError,
+    storyError,
     handleFileUpload,
     handleUrlSubmit,
     deleteSource,
-    retrySource
+    refreshSourceStatus,
+    fetchSources,
   } = state;
 
   const [isDragActive, setIsDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const hasStory = Boolean(storyId);
 
-  // Handle Drag & Drop
-  const handleDrag = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (e.type === "dragenter" || e.type === "dragover") {
+  const handleDrag = (event: React.DragEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+    if (event.type === "dragenter" || event.type === "dragover") {
       setIsDragActive(true);
-    } else if (e.type === "dragleave") {
+    } else if (event.type === "dragleave") {
       setIsDragActive(false);
     }
   };
 
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const handleDrop = (event: React.DragEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
     setIsDragActive(false);
-    
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      handleFileUpload(e.dataTransfer.files[0]);
+    if (event.dataTransfer.files && event.dataTransfer.files[0]) {
+      handleFileUpload(event.dataTransfer.files[0]);
     }
   };
 
-  // Render Helpers
   const renderEmptyState = () => (
-    <div className="flex flex-col items-center justify-center h-full text-center p-6 space-y-4 opacity-100 transition-opacity">
+    <div className="flex flex-col items-center justify-center h-full text-center p-6 space-y-4">
       <div className="bg-muted/50 p-4 rounded-full">
         <Upload className="h-8 w-8 text-muted-foreground" />
       </div>
       <div className="space-y-1">
-        <h3 className="font-medium text-sm">No sources added</h3>
-        <p className="text-xs text-muted-foreground max-w-[200px] mx-auto">
-          Upload PDF documents or add web links to start generating stories.
+        <h3 className="font-medium text-sm">No sources yet</h3>
+        <p className="text-xs text-muted-foreground max-w-[220px] mx-auto">
+          Upload PDFs or add trusted links to power the investigation.
         </p>
       </div>
     </div>
@@ -199,8 +376,8 @@ export function SourcesPanel({ state }: { state: ReturnType<typeof useSourcesPan
 
   const renderLoadingState = () => (
     <div className="space-y-4 p-4">
-      {[1, 2, 3].map((i) => (
-        <div key={i} className="flex items-center space-x-3">
+      {[1, 2, 3].map((index) => (
+        <div key={index} className="flex items-center space-x-3">
           <Skeleton className="h-10 w-10 rounded-lg" />
           <div className="space-y-2 flex-1">
             <Skeleton className="h-4 w-[80%]" />
@@ -214,39 +391,77 @@ export function SourcesPanel({ state }: { state: ReturnType<typeof useSourcesPan
   const getStatusIcon = (status: SourceStatus) => {
     switch (status) {
       case "indexed":
-        return <CheckCircle2 className="h-4 w-4 text-green-500" />;
-      case "indexing":
+        return <CheckCircle2 className="h-4 w-4 text-emerald-500" />;
+      case "processing":
         return <Loader2 className="h-4 w-4 text-blue-500 animate-spin" />;
-      case "error":
+      case "failed":
         return <AlertCircle className="h-4 w-4 text-destructive" />;
-      case "queued":
+      default:
         return <div className="h-2 w-2 rounded-full bg-muted-foreground" />;
     }
   };
 
-  if (isLoading) {
-      return renderLoadingState();
+  if (!hasStory) {
+    return (
+      <div className="flex h-full items-center justify-center p-6 text-sm text-muted-foreground">
+        Create or select a story to start attaching sources.
+      </div>
+    );
   }
-  
-  // This could be a separate error state for "Initial Fetch Failed"
-  // For now assuming sources just might be empty.
+
+  if (isLoading) {
+    return renderLoadingState();
+  }
+
+  if (storyError) {
+    return (
+      <div className="flex flex-col items-center justify-center p-6 text-center space-y-4">
+        <div className="bg-destructive/10 p-3 rounded-full">
+          <AlertCircle className="h-6 w-6 text-destructive" />
+        </div>
+        <div>
+          <h3 className="font-medium">Unable to load sources</h3>
+          <p className="text-xs text-muted-foreground mt-1">{storyError}</p>
+        </div>
+        <Button variant="outline" size="sm" onClick={() => fetchSources(true)}>
+          <RefreshCw className="mr-2 h-3.5 w-3.5" />
+          Retry
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-full bg-background">
-      {/* Upload & Input Area */}
       <div className="p-4 border-b space-y-4">
         {globalError && (
-            <Alert variant="destructive" className="py-2">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription className="text-xs ml-2">{globalError}</AlertDescription>
-            </Alert>
+          <Alert variant="destructive" className="py-2">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription className="text-xs ml-2">{globalError}</AlertDescription>
+          </Alert>
         )}
 
-        {/* Drag & Drop Zone */}
+        <div className="flex items-center justify-between text-xs text-muted-foreground">
+          <span>Upload PDFs or paste a URL below</span>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="h-7 px-2 text-xs"
+            onClick={() => refreshSourceStatus()}
+            disabled={isMutating}
+          >
+            <RefreshCw className="mr-1.5 h-3 w-3" />
+            Refresh
+          </Button>
+        </div>
+
         <div
           className={cn(
             "relative border-2 border-dashed rounded-lg p-6 transition-colors text-center cursor-pointer",
-            isDragActive ? "border-primary bg-primary/5" : "border-muted-foreground/25 hover:border-primary/50"
+            isDragActive
+              ? "border-primary bg-primary/5"
+              : "border-muted-foreground/25 hover:border-primary/50"
           )}
           onDragEnter={handleDrag}
           onDragLeave={handleDrag}
@@ -259,104 +474,115 @@ export function SourcesPanel({ state }: { state: ReturnType<typeof useSourcesPan
             type="file"
             className="hidden"
             accept="application/pdf"
-            aria-label="Upload PDF"
-            onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0])}
+            onChange={(event) => event.target.files?.[0] && handleFileUpload(event.target.files[0])}
           />
           <div className="flex flex-col items-center gap-2">
             <div className="p-2 bg-background rounded-full shadow-sm">
-                <Upload className="h-5 w-5 text-muted-foreground" />
+              <Upload className="h-5 w-5 text-muted-foreground" />
             </div>
             <div className="space-y-1">
-                <p className="text-xs font-medium">Click to upload PDF or drag and drop</p>
-                <p className="text-[10px] text-muted-foreground">PDF (max. 10MB)</p>
+              <p className="text-xs font-medium">Click to upload PDF or drag and drop</p>
+              <p className="text-[10px] text-muted-foreground">Supports PDF up to 10MB</p>
             </div>
           </div>
         </div>
 
-        {/* URL Input */}
         <form onSubmit={handleUrlSubmit} className="flex gap-2">
-          <Input 
-            placeholder="Paste website URL..." 
+          <Input
+            placeholder="Paste website URL..."
             value={urlInput}
-            onChange={(e) => setUrlInput(e.target.value)}
+            onChange={(event) => setUrlInput(event.target.value)}
             className="h-9 text-xs"
+            disabled={isMutating}
           />
-          <Button type="submit" size="sm" className="h-9 w-9 p-0" variant="secondary" disabled={!urlInput.trim()}>
+          <Button
+            type="submit"
+            size="sm"
+            className="h-9 w-9 p-0"
+            variant="secondary"
+            disabled={!urlInput.trim() || isMutating}
+          >
             <Plus className="h-4 w-4" />
             <span className="sr-only">Add Link</span>
           </Button>
         </form>
       </div>
 
-      {/* Sources List */}
-      <div className="flex-1 overflow-hidden relative">
-          {sources.length === 0 ? (
-                renderEmptyState()
-            ) : (
-                <ScrollArea className="h-full w-full">
-                <div className="p-4 space-y-3">
-                    <div className="flex items-center justify-between">
-                        <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                            My Sources ({sources.length})
-                        </h4>
-                    </div>
-                    
-                    {sources.map((source) => (
-                    <div
-                        key={source.id}
-                        className="group flex flex-col gap-2 p-3 rounded-lg border bg-card hover:bg-accent/5 transition-colors w-full overflow-hidden"
-                    >
-                        <div className="flex items-start gap-3 w-full">
-                            <div className="mt-0.5 flex-shrink-0">
-                                {source.type === 'pdf' ? <FileText className="h-8 w-8 text-red-500/80" /> : <Globe className="h-8 w-8 text-blue-500/80" />}
-                            </div>
-                            
-                            <div className="flex-1 min-w-0 grid gap-1">
-                                <div className="flex items-center justify-between gap-2">
-                                    <span className="truncate text-sm font-medium" title={source.name}>{source.name}</span>
-                                    <Button
-                                        variant="ghost" 
-                                        size="icon" 
-                                        className="h-6 w-6 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                                        onClick={() => deleteSource(source.id)}
-                                    >
-                                        <Trash2 className="h-3.5 w-3.5 text-muted-foreground hover:text-destructive" />
-                                    </Button>
-                                </div>
-                                
-                                <div className="flex items-center gap-2">
-                                    {getStatusIcon(source.status)}
-                                    <span className={cn(
-                                        "text-xs capitalize truncate",
-                                        source.status === 'error' ? "text-destructive" : "text-muted-foreground"
-                                    )}>
-                                        {source.errorMessage ? source.errorMessage : source.status}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
+      <div className="flex-1 overflow-hidden">
+        {sources.length === 0 ? (
+          renderEmptyState()
+        ) : (
+          <ScrollArea className="h-full w-full">
+            <div className="p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  My Sources ({sources.length})
+                </h4>
+              </div>
 
-                        {/* Progress Bar for Indexing */}
-                        {source.status === 'indexing' && (
-                            <Progress value={source.progress} className="h-1 mt-1" />
-                        )}
-                        
-                        {/* Retry Button for Errors */}
-                         {source.status === 'error' && (
-                            <Button 
-                                variant="outline" 
-                                size="sm" 
-                                className="h-6 text-xs w-full mt-1"
-                                onClick={() => retrySource(source.id)}
-                            >
-                                Retry Indexing
-                            </Button>
-                        )}
+              {sources.map((source) => (
+                <div
+                  key={source.id}
+                  className="group flex flex-col gap-2 p-3 rounded-lg border bg-card hover:bg-accent/5 transition-colors"
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="mt-0.5 flex-shrink-0">
+                      {source.type === "pdf" ? (
+                        <FileText className="h-8 w-8 text-red-500/80" />
+                      ) : (
+                        <Globe className="h-8 w-8 text-blue-500/80" />
+                      )}
                     </div>
-                    ))}
+                    <div className="flex-1 min-w-0 grid gap-1">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="truncate text-sm font-medium" title={source.name}>
+                          {source.name}
+                        </span>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                          onClick={() => deleteSource(source.id)}
+                          disabled={isMutating}
+                        >
+                          <Trash2 className="h-3.5 w-3.5 text-muted-foreground hover:text-destructive" />
+                        </Button>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs">
+                        {getStatusIcon(source.status)}
+                        <span
+                          className={cn(
+                            "capitalize truncate",
+                            source.status === "failed"
+                              ? "text-destructive"
+                              : "text-muted-foreground"
+                          )}
+                        >
+                          {source.errorMessage || source.status}
+                        </span>
+                        <span className="text-muted-foreground/60">•</span>
+                        <span className="text-muted-foreground/60">
+                          {source.dateAdded.toLocaleDateString()}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  {source.status === "failed" && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-6 text-xs"
+                      onClick={() => refreshSourceStatus()}
+                      disabled={isMutating}
+                    >
+                      Refresh Status
+                    </Button>
+                  )}
                 </div>
-                </ScrollArea>
-           )}
+              ))}
+            </div>
+          </ScrollArea>
+        )}
       </div>
     </div>
   );

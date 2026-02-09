@@ -1,108 +1,214 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Send, Bot, User, Loader2, Mic, Sparkles, AlertCircle, RefreshCw, MessageSquarePlus, FilePlus } from "lucide-react";
+import {
+    Send,
+    Bot,
+    User,
+    Loader2,
+    Mic,
+    Sparkles,
+    AlertCircle,
+    RefreshCw,
+    MessageSquarePlus,
+    FilePlus
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 
-// --- Types ---
+const API_URL = import.meta.env.VITE_API_URL ?? "/api";
+
 export type MessageRole = "user" | "assistant" | "system";
 
 export interface Message {
-  id: string;
-  role: MessageRole;
-  content: string;
-  timestamp: Date;
+    id: string;
+    role: MessageRole;
+    content: string;
+    timestamp: Date;
 }
 
-// --- Hook / Logic ---
-export function useChatPanelState() {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [inputValue, setInputValue] = useState("");
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+interface UseChatPanelArgs {
+    storyId?: string | null;
+    initialMessages?: unknown[];
+}
 
-  // Simulate initial load
-  useEffect(() => {
-    loadChatHistory();
-  }, []);
+function mapMessageDocument(doc: any): Message | null {
+    if (!doc) {
+        return null;
+    }
+    const id = doc._id || doc.id;
+    if (!id) {
+        return null;
+    }
+    return {
+        id,
+        role: (doc.role as MessageRole) || "assistant",
+        content: doc.content || "",
+        timestamp: new Date(doc.timestamp || doc.createdAt || Date.now()),
+    };
+}
 
-  const loadChatHistory = () => {
-    setIsLoading(true);
-    setError(null);
-    
-    // Simulate network delay
-    setTimeout(() => {
-        // Randomly simulate error (10% chance) for demonstration
-        const shouldFail = Math.random() < 0.1;
-        
-        if (shouldFail) {
-            setError("Failed to connect to AI service.");
+export function useChatPanelState({ storyId, initialMessages = [] }: UseChatPanelArgs = {}) {
+    const [messages, setMessages] = useState<Message[]>(() =>
+        initialMessages
+            .map(mapMessageDocument)
+            .filter((message): message is Message => Boolean(message))
+    );
+    const [inputValue, setInputValue] = useState("");
+    const [isGenerating, setIsGenerating] = useState(false);
+    const [isLoading, setIsLoading] = useState(Boolean(storyId));
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        setMessages(
+            initialMessages
+                .map(mapMessageDocument)
+                .filter((message): message is Message => Boolean(message))
+        );
+    }, [initialMessages]);
+
+    const fetchHistory = useCallback(async () => {
+        if (!storyId) {
+            setMessages([]);
             setIsLoading(false);
-        } else {
-             setMessages([
-                {
-                  id: "welcome-1",
-                  role: "assistant",
-                  content: "Hello! I'm your Newsroom AI assistant. I can help you analyze your sources, draft stories, or answer questions about the data you've uploaded. How can I help you today?",
-                  timestamp: new Date(),
-                },
-             ]);
-             setIsLoading(false);
+            return;
         }
-    }, 1500);
-  };
 
-  const sendMessage = async (e?: React.FormEvent) => {
-    e?.preventDefault();
-    if (!inputValue.trim() || isGenerating) return;
+        const token = localStorage.getItem("token");
+        if (!token) {
+            setError("You must be signed in to load chat history.");
+            setIsLoading(false);
+            return;
+        }
 
-    const userMsg: Message = {
-      id: Date.now().toString(),
-      role: "user",
-      content: inputValue.trim(),
-      timestamp: new Date(),
+        try {
+            setIsLoading(true);
+            setError(null);
+            const response = await fetch(`${API_URL}/stories/${storyId}/chat?limit=50`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            const payload = await response.json().catch(() => []);
+            if (!response.ok) {
+                throw new Error(payload?.message || "Failed to load chat history");
+            }
+            setMessages(
+                (Array.isArray(payload) ? payload : [])
+                    .map(mapMessageDocument)
+                    .filter((message): message is Message => Boolean(message))
+            );
+        } catch (historyError) {
+            console.error("Failed to load chat history", historyError);
+            setError(
+                historyError instanceof Error ? historyError.message : "Failed to load chat history"
+            );
+        } finally {
+            setIsLoading(false);
+        }
+    }, [storyId]);
+
+    useEffect(() => {
+        fetchHistory();
+    }, [fetchHistory]);
+
+    const sendMessage = async (event?: React.FormEvent) => {
+        event?.preventDefault();
+        if (!inputValue.trim() || isGenerating) {
+            return;
+        }
+        if (!storyId) {
+            setError("Create or select a story to start chatting.");
+            return;
+        }
+
+        const token = localStorage.getItem("token");
+        if (!token) {
+            setError("You must be signed in to chat with the assistant.");
+            return;
+        }
+
+        const trimmed = inputValue.trim();
+        const optimisticId = `temp-${Date.now()}`;
+        const optimisticMessage: Message = {
+            id: optimisticId,
+            role: "user",
+            content: trimmed,
+            timestamp: new Date(),
+        };
+
+        setMessages((prev) => [...prev, optimisticMessage]);
+        setInputValue("");
+        setIsGenerating(true);
+        setError(null);
+
+        try {
+            const response = await fetch(`${API_URL}/stories/${storyId}/chat`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({ message: trimmed }),
+            });
+            const payload = await response.json().catch(() => ({}));
+            if (!response.ok) {
+                throw new Error(payload?.message || "Failed to send message");
+            }
+
+            const userMessage = mapMessageDocument(payload.userMessage) ?? optimisticMessage;
+            const assistantMessage = mapMessageDocument(payload.assistantMessage);
+
+            setMessages((prev) => {
+                const withoutTemp = prev.filter((message) => message.id !== optimisticId);
+                return assistantMessage
+                    ? [...withoutTemp, userMessage, assistantMessage]
+                    : [...withoutTemp, userMessage];
+            });
+        } catch (sendError) {
+            console.error("Failed to send chat message", sendError);
+            setMessages((prev) => prev.filter((message) => message.id !== optimisticId));
+            setError(sendError instanceof Error ? sendError.message : "Failed to send message");
+        } finally {
+            setIsGenerating(false);
+        }
     };
 
-    setMessages((prev) => [...prev, userMsg]);
-    setInputValue("");
-    setIsGenerating(true);
-
-    // Simulate AI response
-    setTimeout(() => {
-      const aiMsg: Message = {
-        id: (Date.now() + 1).toString(),
-        role: "assistant",
-        content: "This is a simulated response. In the real application, this would claim to analyze the provided sources and generate a relevant answer based on the context.",
-        timestamp: new Date(),
-      };
-      setMessages((prev) => [...prev, aiMsg]);
-      setIsGenerating(false);
-    }, 1500);
-  };
-
-  return {
-    messages,
-    inputValue,
-    setInputValue,
-    isGenerating,
-    sendMessage,
-    isLoading,
-    error,
-    retryLoad: loadChatHistory
-  };
+    return {
+        storyId,
+        messages,
+        inputValue,
+        setInputValue,
+        isGenerating,
+        sendMessage,
+        isLoading,
+        error,
+        retryLoad: fetchHistory,
+    };
 }
 
 // --- Component ---
-export function ChatPanel({ state, onAddToArtifacts }: { 
-    state: ReturnType<typeof useChatPanelState>,
-    onAddToArtifacts?: (title: string, content: string) => void
+export function ChatPanel({
+    state,
+    onAddToArtifacts,
+}: {
+    state: ReturnType<typeof useChatPanelState>;
+    onAddToArtifacts?: (title: string, content: string) => Promise<void> | void;
 }) {
-  const { messages, inputValue, setInputValue, isGenerating, sendMessage, isLoading, error, retryLoad } = state;
+    const {
+        storyId,
+        messages,
+        inputValue,
+        setInputValue,
+        isGenerating,
+        sendMessage,
+        isLoading,
+        error,
+        retryLoad,
+    } = state;
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll to bottom
@@ -119,7 +225,7 @@ export function ChatPanel({ state, onAddToArtifacts }: {
         <div className="flex flex-col gap-4 pb-4 max-w-3xl mx-auto w-full min-h-0">
             
             {/* Loading State */}
-            {isLoading && (
+                        {isLoading && (
               <div className="space-y-4 py-4">
                   {[1, 2, 3].map((i) => (
                       <div key={i} className={cn("flex w-full gap-3", i % 2 === 0 ? "justify-end" : "justify-start")}>
@@ -148,7 +254,7 @@ export function ChatPanel({ state, onAddToArtifacts }: {
             )}
 
             {/* Empty State */}
-            {!isLoading && !error && messages.length === 0 && (
+              {!isLoading && !error && messages.length === 0 && (
                  <div className="flex flex-col items-center justify-center py-10 text-center space-y-4 opacity-50">
                     <div className="bg-muted p-4 rounded-full">
                         <MessageSquarePlus className="h-8 w-8 text-muted-foreground" />
@@ -189,15 +295,17 @@ export function ChatPanel({ state, onAddToArtifacts }: {
                             <span className="text-[10px] opacity-50">
                                 {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                             </span>
-                            {msg.role === 'assistant' && onAddToArtifacts && (
+                            {msg.role === "assistant" && onAddToArtifacts && (
                                 <Button
                                     variant="ghost" 
                                     size="sm" 
                                     className="group h-6 px-2 text-[10px] text-muted-foreground hover:bg-green-100 hover:text-green-700 gap-1.5 ml-auto transition-all duration-300 ease-in-out"
-                                    onClick={() => onAddToArtifacts(
-                                        `Insight: ${msg.content.slice(0, 20)}...`, 
-                                        msg.content
-                                    )}
+                                                                        onClick={() => onAddToArtifacts(
+                                                                            `Insight: ${msg.content.slice(0, 48)}${
+                                                                                msg.content.length > 48 ? "..." : ""
+                                                                            }`,
+                                                                            msg.content
+                                                                        )}
                                 >
                                     <FilePlus className="h-3 w-3" />
                                     <span className="">Add to Artifacts</span>
@@ -238,14 +346,14 @@ export function ChatPanel({ state, onAddToArtifacts }: {
                 onSubmit={sendMessage}
                 className={cn(
                     "relative flex items-end gap-2 bg-muted/30 p-2 rounded-xl border focus-within:ring-2 focus-within:ring-ring/10 transition-all",
-                    (isLoading || error) && "opacity-50 pointer-events-none"
+                    (!storyId || isLoading || error) && "opacity-50 pointer-events-none"
                 )}
             >
                 <Input
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
                     placeholder="Ask a question about your sources..."
-                    disabled={isLoading || !!error}
+                    disabled={isLoading || !!error || !storyId}
                     className="border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 px-2 py-2 h-auto min-h-[40px] max-h-[120px]"
                 />
                 
@@ -256,6 +364,7 @@ export function ChatPanel({ state, onAddToArtifacts }: {
                             variant="ghost"
                             size="icon"
                             className="h-8 w-8 text-muted-foreground hover:text-foreground rounded-full"
+                            disabled={!storyId}
                         >
                             <Mic className="h-4 w-4" />
                         </Button>
@@ -263,7 +372,7 @@ export function ChatPanel({ state, onAddToArtifacts }: {
                          <Button 
                             type="submit" 
                             size="icon"
-                            disabled={isGenerating || !inputValue.trim()}
+                            disabled={isGenerating || !inputValue.trim() || !storyId}
                             className="h-8 w-8 rounded-full"
                         >
                              {isGenerating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
