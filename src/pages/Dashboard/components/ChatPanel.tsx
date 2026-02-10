@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -18,8 +18,51 @@ import {
     FilePlus
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { marked } from "marked";
+import DOMPurify from "dompurify";
 
 const API_URL = import.meta.env.VITE_API_URL ?? "/api";
+
+// Configure marked for safe rendering
+marked.setOptions({ breaks: true, gfm: true });
+
+function renderMarkdown(content: string): string {
+    const raw = marked.parse(content || "") as string;
+    return DOMPurify.sanitize(raw, {
+        ADD_ATTR: ["target"],
+        ALLOW_TAGS: [
+            "p","br","strong","em","b","i","u","s","del",
+            "h1","h2","h3","h4","h5","h6",
+            "ul","ol","li","blockquote","pre","code",
+            "a","table","thead","tbody","tr","th","td","hr","img",
+        ],
+    });
+}
+
+function MarkdownContent({ content }: { content: string }) {
+    const html = useMemo(() => renderMarkdown(content), [content]);
+    return (
+        <div
+            className="prose prose-sm dark:prose-invert max-w-none leading-relaxed w-full min-w-0 overflow-hidden
+                [&_a]:text-primary [&_a]:underline [&_a:hover]:text-primary/80 [&_a]:break-all
+                [&_h1]:text-lg [&_h1]:font-bold [&_h1]:mt-4 [&_h1]:mb-2
+                [&_h2]:text-base [&_h2]:font-bold [&_h2]:mt-3 [&_h2]:mb-1.5
+                [&_h3]:text-sm [&_h3]:font-semibold [&_h3]:mt-2 [&_h3]:mb-1
+                [&_p]:my-1.5
+                [&_ul]:my-1.5 [&_ul]:pl-5 [&_ul]:list-disc
+                [&_ol]:my-1.5 [&_ol]:pl-5 [&_ol]:list-decimal
+                [&_li]:my-0.5
+                [&_blockquote]:border-l-2 [&_blockquote]:pl-3 [&_blockquote]:italic [&_blockquote]:text-muted-foreground
+                [&_code]:bg-muted/60 [&_code]:px-1 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-xs
+                [&_pre]:bg-muted [&_pre]:p-3 [&_pre]:rounded-lg [&_pre]:overflow-x-auto
+                [&_table]:w-full [&_table]:text-xs [&_th]:bg-muted [&_th]:p-2 [&_td]:p-2 [&_td]:border [&_th]:border
+                [&_img]:max-w-full [&_img]:h-auto
+                [&_hr]:my-3"
+            style={{ overflowWrap: 'anywhere', wordBreak: 'break-word' }}
+            dangerouslySetInnerHTML={{ __html: html }}
+        />
+    );
+}
 
 export type MessageRole = "user" | "assistant" | "system";
 
@@ -219,10 +262,10 @@ export function ChatPanel({
   }, [messages, isGenerating, isLoading]); // Added isLoading to dependencies
 
   return (
-    <div className="flex flex-col h-full bg-background relative">
+        <div className="flex flex-col h-full bg-background relative overflow-hidden">
       {/* Messages Area */}
-      <ScrollArea className="flex-1 w-full p-4">
-        <div className="flex flex-col gap-4 pb-4 max-w-3xl mx-auto w-full min-h-0">
+            <ScrollArea className="flex-1 w-full min-w-0">
+                <div className="flex flex-col gap-4 pb-4 max-w-3xl mx-auto w-full min-h-0 px-4">
             
             {/* Loading State */}
                         {isLoading && (
@@ -271,7 +314,7 @@ export function ChatPanel({
                 <div
                     key={msg.id}
                     className={cn(
-                        "flex w-full gap-3",
+                        "flex w-full gap-3 min-w-0 overflow-hidden",
                         msg.role === "user" ? "justify-end" : "justify-start"
                     )}
                 >
@@ -284,13 +327,17 @@ export function ChatPanel({
 
                     <div
                         className={cn(
-                            "relative px-4 py-3 text-sm shadow-sm max-w-[80%]",
+                            "relative px-4 py-3 text-sm shadow-sm max-w-[85%] min-w-0 overflow-hidden",
                             msg.role === "user"
                                 ? "bg-primary text-primary-foreground rounded-2xl rounded-tr-sm"
                                 : "bg-muted text-foreground rounded-2xl rounded-tl-sm border"
                         )}
                     >
-                        <p className="whitespace-pre-wrap leading-relaxed">{msg.content}</p>
+                        {msg.role === "assistant" ? (
+                            <MarkdownContent content={msg.content} />
+                        ) : (
+                            <p className="whitespace-pre-wrap break-words leading-relaxed">{msg.content}</p>
+                        )}
                         <div className="flex items-center justify-between mt-2 pt-2 border-t border-border/50">
                             <span className="text-[10px] opacity-50">
                                 {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}

@@ -338,7 +338,7 @@ export function ArtifactsPanel({ state }: { state: ReturnType<typeof useArtifact
   }
 
   return (
-    <div className="flex flex-col h-full bg-background">
+    <div className="flex flex-col h-full bg-background overflow-hidden">
       <div className="p-4 border-b">
         <div className="flex items-center justify-between">
           <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
@@ -352,63 +352,65 @@ export function ArtifactsPanel({ state }: { state: ReturnType<typeof useArtifact
           )}
         </div>
       </div>
-      <ScrollArea className="flex-1 w-full h-full">
-        <div className="p-4 space-y-3">
-          {artifacts.map((item) => (
+      <div className="flex-1 overflow-hidden">
+        <ScrollArea className="h-full w-full">
+          <div className="p-4 space-y-3">
+            {artifacts.map((item) => (
             <div
               key={item.id}
-              className="group flex flex-col gap-3 p-4 rounded-lg border bg-card hover:bg-accent/5 transition-all w-full overflow-hidden shadow-sm"
+              className="group flex flex-col gap-2 p-3 rounded-lg border bg-card hover:bg-accent/5 transition-colors overflow-hidden w-full shadow-sm"
             >
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex items-start gap-3 min-w-0">
-                  <div className="mt-0.5 p-2 bg-muted rounded-md flex-shrink-0">
-                    {getIcon(item.type)}
-                  </div>
-                  <div className="grid gap-1 min-w-0">
-                    <h4 className="font-medium text-sm truncate pr-2" title={item.title}>
+              <div className="flex items-start gap-3 min-w-0 w-full">
+                <div className="mt-0.5 p-2 bg-muted rounded-md flex-shrink-0">
+                  {getIcon(item.type)}
+                </div>
+                <div className="flex-1 min-w-0 grid gap-1 overflow-hidden">
+                  <div className="flex items-center justify-between gap-2 min-w-0">
+                    <span className="truncate text-sm font-medium block min-w-0" title={item.title}>
                       {item.title}
-                    </h4>
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                      <span className="capitalize">{item.type}</span>
-                      <span>•</span>
-                      <span>{item.dateCreated.toLocaleDateString()}</span>
+                    </span>
+                    <div className="flex-shrink-0" onClick={(event) => event.stopPropagation()}>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon" className="h-7 w-7">
+                            <MoreVertical className="h-3.5 w-3.5" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem onClick={() => exportArtifact(item.id)}>
+                            <Download className="mr-2 h-3.5 w-3.5" />
+                            Export PDF
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => deleteArtifact(item.id)}
+                            className="text-destructive focus:text-destructive"
+                          >
+                            <Trash2 className="mr-2 h-3.5 w-3.5" />
+                            Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </div>
                   </div>
-                </div>
-                <div className="flex-shrink-0" onClick={(event) => event.stopPropagation()}>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-7 w-7">
-                        <MoreVertical className="h-3.5 w-3.5" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={() => exportArtifact(item.id)}>
-                        <Download className="mr-2 h-3.5 w-3.5" />
-                        Export PDF
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => deleteArtifact(item.id)}
-                        className="text-destructive focus:text-destructive"
-                      >
-                        <Trash2 className="mr-2 h-3.5 w-3.5" />
-                        Delete
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <span className="capitalize">{item.type}</span>
+                    <span>•</span>
+                    <span>{item.dateCreated.toLocaleDateString()}</span>
+                  </div>
                 </div>
               </div>
               {item.previewText && (
-                <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
+                <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed overflow-hidden" style={{ overflowWrap: 'anywhere' }}>
                   {item.previewText}
                 </p>
               )}
             </div>
           ))}
-        </div>
-      </ScrollArea>
+          </div>
+        </ScrollArea>
+      </div>
     </div>
   );
 }

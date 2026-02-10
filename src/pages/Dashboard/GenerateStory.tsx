@@ -174,7 +174,7 @@ const NewsroomContent = ({
             "relative hidden h-full transition-all duration-300 ease-in-out lg:block",
             collapsedPanels.sources
               ? "w-0 min-w-0 opacity-0 overflow-hidden"
-              : "w-[20%] min-w-[240px] mr-2 opacity-100"
+              : "w-[20%] min-w-[240px] mr-2 opacity-100 overflow-hidden"
           )}
         >
           <NewsroomPanel
@@ -239,7 +239,7 @@ const NewsroomContent = ({
             "relative hidden h-full transition-all duration-300 ease-in-out lg:block",
             collapsedPanels.artifacts
               ? "w-0 min-w-0 opacity-0 overflow-hidden"
-              : "w-[25%] min-w-[280px] ml-2 opacity-100"
+              : "w-[25%] min-w-[280px] ml-2 opacity-100 overflow-hidden"
           )}
         >
           <NewsroomPanel

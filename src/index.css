@@ -176,6 +176,13 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
+/* Fix Radix ScrollArea viewport child expanding beyond container.
+   Radix injects a div with display:table which ignores parent width. */
+[data-radix-scroll-area-viewport] > div {
+  display: block !important;
+  min-width: 0 !important;
+}
+
 @layer base {
   * {
     @apply border-border;

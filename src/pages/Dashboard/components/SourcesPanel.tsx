@@ -432,8 +432,8 @@ export function SourcesPanel({ state }: { state: ReturnType<typeof useSourcesPan
   }
 
   return (
-    <div className="flex flex-col h-full bg-background">
-      <div className="p-4 border-b space-y-4">
+    <div className="flex flex-col h-full bg-background overflow-hidden">
+      <div className="p-4 border-b space-y-4 flex-shrink-0">
         {globalError && (
           <Alert variant="destructive" className="py-2">
             <AlertCircle className="h-4 w-4" />
@@ -523,9 +523,9 @@ export function SourcesPanel({ state }: { state: ReturnType<typeof useSourcesPan
               {sources.map((source) => (
                 <div
                   key={source.id}
-                  className="group flex flex-col gap-2 p-3 rounded-lg border bg-card hover:bg-accent/5 transition-colors"
+                  className="group flex flex-col gap-2 p-3 rounded-lg border bg-card hover:bg-accent/5 transition-colors overflow-hidden w-full"
                 >
-                  <div className="flex items-start gap-3">
+                  <div className="flex items-start gap-3 min-w-0 w-full">
                     <div className="mt-0.5 flex-shrink-0">
                       {source.type === "pdf" ? (
                         <FileText className="h-8 w-8 text-red-500/80" />
@@ -533,9 +533,9 @@ export function SourcesPanel({ state }: { state: ReturnType<typeof useSourcesPan
                         <Globe className="h-8 w-8 text-blue-500/80" />
                       )}
                     </div>
-                    <div className="flex-1 min-w-0 grid gap-1">
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="truncate text-sm font-medium" title={source.name}>
+                    <div className="flex-1 min-w-0 grid gap-1 overflow-hidden">
+                      <div className="flex items-center justify-between gap-2 min-w-0">
+                        <span className="truncate text-sm font-medium block min-w-0" title={source.name}>
                           {source.name}
                         </span>
                         <Button
@@ -548,11 +548,11 @@ export function SourcesPanel({ state }: { state: ReturnType<typeof useSourcesPan
                           <Trash2 className="h-3.5 w-3.5 text-muted-foreground hover:text-destructive" />
                         </Button>
                       </div>
-                      <div className="flex items-center gap-2 text-xs">
+                      <div className="flex items-center gap-2 text-xs min-w-0 overflow-hidden">
                         {getStatusIcon(source.status)}
                         <span
                           className={cn(
-                            "capitalize truncate",
+                            "capitalize truncate block min-w-0",
                             source.status === "failed"
                               ? "text-destructive"
                               : "text-muted-foreground"
