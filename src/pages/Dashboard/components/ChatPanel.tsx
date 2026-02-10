@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -10,7 +9,6 @@ import {
     Bot,
     User,
     Loader2,
-    Mic,
     Sparkles,
     AlertCircle,
     RefreshCw,
@@ -401,35 +399,31 @@ export function ChatPanel({
                     (!storyId || isLoading || error) && "opacity-50 pointer-events-none"
                 )}
             >
-                <Input
+                <textarea
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            sendMessage();
+                        }
+                    }}
                     placeholder="Ask a question about your sources..."
                     disabled={isLoading || !!error || !storyId}
-                    className="border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 px-2 py-2 h-auto min-h-[40px] max-h-[120px]"
+                    rows={1}
+                    className="flex-1 resize-none border-0 bg-transparent focus:outline-none focus:ring-0 px-2 py-2 min-h-[40px] max-h-[120px] text-sm placeholder:text-muted-foreground disabled:opacity-50"
+                    style={{ fieldSizing: 'content' } as React.CSSProperties}
                 />
                 
                 <div className="flex items-center gap-1 shrink-0 pb-0.5">
-                     { inputValue.length === 0 ? (
-                        <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 text-muted-foreground hover:text-foreground rounded-full"
-                            disabled={!storyId}
-                        >
-                            <Mic className="h-4 w-4" />
-                        </Button>
-                     ) : (
-                         <Button 
-                            type="submit" 
-                            size="icon"
-                            disabled={isGenerating || !inputValue.trim() || !storyId}
-                            className="h-8 w-8 rounded-full"
-                        >
-                             {isGenerating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-                        </Button>
-                     )}
+                     <Button 
+                        type="submit" 
+                        size="icon"
+                        disabled={isGenerating || !inputValue.trim() || !storyId}
+                        className="h-8 w-8 rounded-full"
+                    >
+                         {isGenerating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                    </Button>
                 </div>
             </form>
             <div className="text-center mt-2">

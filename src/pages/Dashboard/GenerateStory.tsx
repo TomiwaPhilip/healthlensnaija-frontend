@@ -374,19 +374,7 @@ const GenerateStory = () => {
         <>
           <div className="border rounded-xl p-4 flex flex-col gap-1">
             <span className="text-xs uppercase text-muted-foreground">Active Story</span>
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-              <h2 className="text-xl font-semibold">{storyData.title}</h2>
-              <span
-                className={cn(
-                  "text-xs font-medium px-2 py-1 rounded-full border w-fit",
-                  storyData.status === "published"
-                    ? "border-emerald-200 bg-emerald-50 text-emerald-700"
-                    : "border-amber-200 bg-amber-50 text-amber-700"
-                )}
-              >
-                {storyData.status === "published" ? "Published" : "Draft"}
-              </span>
-            </div>
+            <h2 className="text-xl font-semibold">{storyData.title}</h2>
           </div>
 
           <NewsroomContent storyId={storyId} storyData={storyData} key={storyId} />
