@@ -210,7 +210,7 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="p-6 max-w-7xl mx-auto space-y-6">
+    <div className="p-6 pt-16 md:pt-6 max-w-7xl mx-auto space-y-6 overflow-hidden w-full">
       {/* 1. Heading & Header Action */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -315,47 +315,45 @@ const Dashboard = () => {
               <div
                 key={story.id}
                 onClick={() => handleStoryClick(story.id)}
-                className="group relative flex flex-col p-5 rounded-xl border bg-card text-card-foreground shadow-sm hover:shadow-md transition-all cursor-pointer hover:border-primary/50"
+                className="group relative flex flex-col p-4 rounded-xl border bg-card text-card-foreground shadow-sm hover:shadow-md transition-all cursor-pointer hover:border-primary/50 overflow-hidden w-full min-w-0"
               >
                 {/* Card Content simplified */}
-                <div className="flex items-start justify-between gap-4">
-                    <div className="space-y-3 min-w-0 flex-1">
-                        <h3 className="font-semibold text-xl leading-tight group-hover:text-primary transition-colors line-clamp-3" title={story.title}>
+                <div className="flex items-start gap-3 min-w-0 w-full">
+                    <div className="space-y-2 min-w-0 flex-1 overflow-hidden">
+                        <h3 className="font-semibold text-base leading-tight group-hover:text-primary transition-colors truncate" title={story.title}>
                              {story.title}
                         </h3>
                         <div className="flex items-center text-xs text-muted-foreground">
-                            <Calendar className="mr-1.5 h-3.5 w-3.5" />
+                            <Calendar className="mr-1.5 h-3.5 w-3.5 flex-shrink-0" />
                             {formatDate(story.updatedAt || story.createdAt)}
                         </div>
                         {story.preview && (
-                          <p className="text-sm text-muted-foreground line-clamp-3">
+                          <p className="text-sm text-muted-foreground line-clamp-2" style={{ overflowWrap: 'anywhere' }}>
                             {story.preview}
                           </p>
                         )}
                     </div>
 
-                    <div className="flex flex-col items-end gap-3">
-                      <div onClick={(e) => e.stopPropagation()} className="-mt-1 -mr-2 flex-shrink-0">
-                          <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                  <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground">
-                                      <MoreVertical className="h-4 w-4" />
-                                  </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end">
-                                  <DropdownMenuItem onClick={() => handleStoryClick(story.id)}>
-                                       Open Story
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem 
-                                      onClick={(e) => handleDelete(e, story.id)}
-                                      className="text-destructive focus:text-destructive"
-                                  >
-                                      <Trash2 className="mr-2 h-4 w-4" />
-                                      Delete
-                                  </DropdownMenuItem>
-                              </DropdownMenuContent>
-                          </DropdownMenu>
-                      </div>
+                    <div onClick={(e) => e.stopPropagation()} className="flex-shrink-0">
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground">
+                                    <MoreVertical className="h-4 w-4" />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                                <DropdownMenuItem onClick={() => handleStoryClick(story.id)}>
+                                     Open Story
+                                </DropdownMenuItem>
+                                <DropdownMenuItem 
+                                    onClick={(e) => handleDelete(e, story.id)}
+                                    className="text-destructive focus:text-destructive"
+                                >
+                                    <Trash2 className="mr-2 h-4 w-4" />
+                                    Delete
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                     </div>
                 </div>
               </div>

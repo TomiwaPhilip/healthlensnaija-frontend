@@ -180,7 +180,7 @@ const SettingsPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-background text-foreground pt-14 md:pt-0">
       <ToastContainer position="top-right" autoClose={3000} />
       <div className="max-w-3xl mx-auto px-6 py-8">
         <Card className="p-6 bg-card">

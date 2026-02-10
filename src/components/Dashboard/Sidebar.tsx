@@ -265,7 +265,7 @@ const Sidebar = () => {
       {/* Animated Mobile Hamburger Toggle */}
       {isMobile && (
         <button 
-          className="fixed top-4 left-4 z-50 md:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
+          className="fixed top-4 left-4 z-50 md:hidden p-2.5 rounded-xl backdrop-blur-md bg-white/60 dark:bg-gray-900/60 border border-white/30 dark:border-gray-700/40 shadow-lg shadow-black/5 transition-all hover:bg-white/80 dark:hover:bg-gray-900/80"
           onClick={toggleMobileSidebar}
           aria-label={isMobileOpen ? "Close menu" : "Open menu"}
         >

@@ -325,7 +325,7 @@ const GenerateStory = () => {
   };
 
   return (
-    <div className="p-5 min-h-screen transition-colors duration-300 bg-background text-foreground space-y-6">
+    <div className="p-5 pt-16 md:pt-5 min-h-screen transition-colors duration-300 bg-background text-foreground space-y-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-2xl font-bold">Newsroom</h1>

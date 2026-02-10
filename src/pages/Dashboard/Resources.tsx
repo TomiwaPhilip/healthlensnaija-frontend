@@ -49,7 +49,7 @@ const Resources = () => {
   };
 
   return (
-    <div className="p-6 max-w-6xl mx-auto">
+    <div className="p-6 pt-16 md:pt-6 max-w-6xl mx-auto">
       <div className="mb-2 flex justify-between items-center">
         <h1 className="text-2xl font-semibold text-foreground">{t("title")}</h1>
         <span className="text-sm text-muted-foreground">
