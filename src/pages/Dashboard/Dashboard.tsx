@@ -290,9 +290,20 @@ const Dashboard = () => {
                 : "You haven't created any stories yet. Start by creating your first story."}
             </p>
             {!searchQuery && (
-                 <Button onClick={() => navigate("/generate-story")} variant="outline">
-                    <Plus className="mr-2 h-4 w-4" /> Create Story
-                 </Button>
+                 <CreateStoryDialog
+                   trigger={
+                     <Button variant="outline">
+                       <Plus className="mr-2 h-4 w-4" /> Create Story
+                     </Button>
+                   }
+                   onSuccess={(story) => {
+                     const createdId = story.id || story._id;
+                     fetchStories(1, false);
+                     if (createdId) {
+                       navigate(`/generate-story?id=${createdId}`);
+                     }
+                   }}
+                 />
             )}
           </div>
         )}

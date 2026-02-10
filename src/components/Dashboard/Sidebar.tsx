@@ -1,6 +1,6 @@
 // src/components/Sidebar.tsx
 import React, { useState, useContext, useEffect } from "react";
-import { NavLink, useLocation } from "react-router-dom"; // ADD useLocation
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import {
   Home,
   PenTool,
@@ -27,6 +27,7 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ThemeToggle } from "@/components/theme-toggle";
+import CreateStoryDialog from "@/components/stories/CreateStoryDialog";
 
 const getInitials = (firstName, lastName) => {
   if (!firstName || !lastName) return "U";
@@ -148,15 +149,24 @@ const UserSidebar = ({
       {/* Navigation */}
       <div className="flex-1 overflow-y-auto p-3 space-y-2">
         <div className="mb-2">
-           <NavLink to="/generate-story" onClick={onMobileLinkClick}>
-              <Button 
-                className={`w-full ${showExpanded ? 'justify-start gap-2' : 'justify-center px-0'}`} 
-                size={showExpanded ? "default" : "icon"}
-              >
-                  <Plus className="h-4 w-4" />
-                  {showExpanded && "New Story"}
-              </Button>
-           </NavLink>
+           <CreateStoryDialog
+              trigger={
+                <Button 
+                  className={`w-full ${showExpanded ? 'justify-start gap-2' : 'justify-center px-0'}`} 
+                  size={showExpanded ? "default" : "icon"}
+                >
+                    <Plus className="h-4 w-4" />
+                    {showExpanded && "New Story"}
+                </Button>
+              }
+              onSuccess={(story) => {
+                const createdId = story.id || story._id;
+                if (onMobileLinkClick) onMobileLinkClick();
+                if (createdId) {
+                  navigate(`/generate-story?id=${createdId}`);
+                }
+              }}
+           />
         </div>
         
         <div className="h-px bg-gray-200 dark:bg-gray-800 my-2" />
