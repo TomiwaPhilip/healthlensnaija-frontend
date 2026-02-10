@@ -30,7 +30,7 @@ import Resources from "./pages/Dashboard/Resources";
 import VerifyOTP from "./pages/VerifyOTP";
 import StoryEditor from "./pages/StoryEditor";
 import ProtectedRouteAdmin from "./components/ProtectedRouteAdmin";
-import AdminPage from "./pages/Dashboard/AdminPage";
+import AdminPage from "./pages/Admin/AdminPage";
 import Contact from "./pages/Contact";
 import FeaturesPage from "./pages/FeaturesPage";
 import ProtectedRoute from "./components/ProtectedRoute"; // ✅ New stable one
@@ -178,9 +178,9 @@ const App = () => {
             <Route 
               path="/admin/*" 
               element={
-                // <ProtectedRouteAdmin>
+                <ProtectedRouteAdmin>
                   <AdminPage />
-                // </ProtectedRouteAdmin>
+                </ProtectedRouteAdmin>
               } 
             />
           </Route>

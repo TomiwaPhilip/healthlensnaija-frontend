@@ -71,14 +71,8 @@ const AdminSidebar = ({
       <div className="flex-1 overflow-y-auto p-3 space-y-2">
         <SidebarItem to="/admin/overview" icon={<BarChart className="w-5 h-5" />} label="Overview" showExpanded={showExpanded} />
         <SidebarItem to="/admin/users" icon={<Users className="w-5 h-5" />} label="Users" showExpanded={showExpanded} />
-        <SidebarItem to="/admin/content" icon={<File className="w-5 h-5" />} label="Content" showExpanded={showExpanded} />
-        <SidebarItem to="/admin/ai-training" icon={<Bot className="w-5 h-5" />} label="AI Training" showExpanded={showExpanded} />
-        <SidebarItem to="/admin/chats" icon={<MessageCircle className="w-5 h-5" />} label="Chats" showExpanded={showExpanded} />
-        <SidebarItem to="/admin/testimonials" icon={<List className="w-5 h-5" />} label="Testimonials" showExpanded={showExpanded} />
-        <SidebarItem to="/admin/support" icon={<Shield className="w-5 h-5" />} label="Support" showExpanded={showExpanded} />
-        <SidebarItem to="/admin/faq" icon={<HelpCircle className="w-5 h-5" />} label="FAQs" showExpanded={showExpanded} />
         <SidebarItem to="/admin/contact" icon={<Mail className="w-5 h-5" />} label="Contact Messages" showExpanded={showExpanded} />
-        <SidebarItem to="/admin/tools" icon={<Wrench className="w-5 h-5" />} label="Tools" showExpanded={showExpanded} />
+        <SidebarItem to="/admin/testimonials" icon={<List className="w-5 h-5" />} label="Testimonials" showExpanded={showExpanded} />
       </div>
 
       {/* Footer sections - pinned to bottom */}
