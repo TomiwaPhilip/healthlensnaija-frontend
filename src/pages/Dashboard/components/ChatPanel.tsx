@@ -375,10 +375,15 @@ export function ChatPanel({
                     <Avatar className="h-8 w-8 mt-0.5 border bg-primary/10">
                         <AvatarFallback><Bot className="h-4 w-4 text-primary" /></AvatarFallback>
                     </Avatar>
-                    <div className="bg-muted border rounded-2xl rounded-tl-sm px-4 py-3 flex items-center gap-2">
-                        <span className="h-2 w-2 bg-primary/50 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
-                        <span className="h-2 w-2 bg-primary/50 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
-                        <span className="h-2 w-2 bg-primary/50 rounded-full animate-bounce"></span>
+                    <div className="bg-muted border rounded-2xl rounded-tl-sm px-4 py-3 max-w-[85%]">
+                        <p className="text-sm text-muted-foreground italic leading-relaxed">
+                            Gathering sources and data, please be patient while I craft a good response for you…
+                        </p>
+                        <div className="flex items-center gap-1.5 mt-2">
+                            <span className="h-1.5 w-1.5 bg-primary/50 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
+                            <span className="h-1.5 w-1.5 bg-primary/50 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
+                            <span className="h-1.5 w-1.5 bg-primary/50 rounded-full animate-bounce"></span>
+                        </div>
                     </div>
                  </div>
             )}
