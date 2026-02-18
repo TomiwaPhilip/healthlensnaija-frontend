@@ -11,6 +11,18 @@ const axiosInstance = axios.create({
   headers: { "Content-Type": "application/json" },
 });
 
+// Public paths that should never trigger a redirect to /signin
+const PUBLIC_PATHS = [
+  "/", "/signin", "/signup", "/about", "/contact", "/features",
+  "/forgot-password", "/reset-password", "/verify-email",
+  "/verify-otp", "/pending-verification", "/oauth/callback",
+];
+
+const isPublicPath = () => {
+  const path = window.location.pathname;
+  return PUBLIC_PATHS.some((p) => path === p || path.startsWith(p + "/"));
+};
+
 // Attach token
 axiosInstance.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
@@ -45,14 +57,18 @@ axiosInstance.interceptors.response.use(
         } catch (refreshError) {
           localStorage.removeItem("token");
           localStorage.removeItem("refreshToken");
-          window.location.href = "/signin";
+          if (!isPublicPath()) {
+            window.location.href = "/signin";
+          }
           return Promise.reject(refreshError);
         }
       }
 
       localStorage.removeItem("token");
       localStorage.removeItem("refreshToken");
-      window.location.href = "/signin";
+      if (!isPublicPath()) {
+        window.location.href = "/signin";
+      }
     }
 
     return Promise.reject(error);
