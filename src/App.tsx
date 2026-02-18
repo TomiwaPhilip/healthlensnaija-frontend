@@ -74,7 +74,7 @@ const App = () => {
 
   return (
     <Router>
-      <div className="w-full bg-white text-gray-900">
+      <div className="w-full min-h-screen bg-background text-foreground">
         <ToastContainer
           position="bottom-right"
           autoClose={2000}
