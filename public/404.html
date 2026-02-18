@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Redirecting...</title>
+    <script>
+      // Capture the full path + query + hash, store it, and redirect to index.html.
+      // index.html will restore the path so React Router can handle it.
+      sessionStorage.setItem('spa-redirect', window.location.pathname + window.location.search + window.location.hash);
+      window.location.replace('/');
+    </script>
+  </head>
+  <body>
+    Redirecting...
+  </body>
+</html>
