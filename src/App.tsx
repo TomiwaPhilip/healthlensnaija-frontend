@@ -185,11 +185,8 @@ const App = () => {
             />
           </Route>
 
-          {/* 🚧 Fallback Redirect */}
-          <Route
-            path="*"
-            element={<Navigate to={validateRedirect(window.location.pathname)} />}
-          />
+          {/* 🚧 Fallback — send unknown paths to home */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </div>
     </Router>
