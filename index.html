@@ -9,13 +9,22 @@
   <body>
     <div id="root"></div>
     <script>
-      // SPA fallback: if Render served this as /index.html via redirect (not rewrite),
-      // restore the original path so React Router can handle it.
+      // Convert non-hash paths to hash paths for HashRouter compatibility.
+      // Email links from backend use paths like /verify-email/token — this
+      // converts them to /#/verify-email/token so HashRouter can handle them.
       (function () {
+        var path = window.location.pathname;
+        var hash = window.location.hash;
+        var search = window.location.search;
+        // If we're at a real path (not just / or /index.html) and there's no hash route yet
+        if (path && path !== '/' && path !== '/index.html' && !hash) {
+          window.location.replace('/#' + path + search);
+        }
+        // If we came from 404.html sessionStorage redirect
         var redirect = sessionStorage.getItem('spa-redirect');
         if (redirect) {
           sessionStorage.removeItem('spa-redirect');
-          window.history.replaceState(null, '', redirect);
+          window.location.replace('/#' + redirect);
         }
       })();
     </script>

@@ -241,7 +241,7 @@ const Sidebar = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    window.location.href = "/signin";
+    window.location.href = "/#/signin";
   };
 
   const toggleMobileSidebar = () => {

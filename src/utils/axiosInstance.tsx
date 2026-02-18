@@ -58,7 +58,7 @@ axiosInstance.interceptors.response.use(
           localStorage.removeItem("token");
           localStorage.removeItem("refreshToken");
           if (!isPublicPath()) {
-            window.location.href = "/signin";
+            window.location.href = "/#/signin";
           }
           return Promise.reject(refreshError);
         }
@@ -67,7 +67,7 @@ axiosInstance.interceptors.response.use(
       localStorage.removeItem("token");
       localStorage.removeItem("refreshToken");
       if (!isPublicPath()) {
-        window.location.href = "/signin";
+        window.location.href = "/#/signin";
       }
     }
 
