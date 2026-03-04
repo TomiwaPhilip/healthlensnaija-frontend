@@ -181,14 +181,21 @@ export function useChatPanelState({ storyId, initialMessages = [] }: UseChatPane
 
         const trimmed = inputValue.trim();
         const optimisticId = `temp-${Date.now()}`;
+        const streamingId = `streaming-${Date.now()}`;
         const optimisticMessage: Message = {
             id: optimisticId,
             role: "user",
             content: trimmed,
             timestamp: new Date(),
         };
+        const streamingMessage: Message = {
+            id: streamingId,
+            role: "assistant",
+            content: "",
+            timestamp: new Date(),
+        };
 
-        setMessages((prev) => [...prev, optimisticMessage]);
+        setMessages((prev) => [...prev, optimisticMessage, streamingMessage]);
         setInputValue("");
         setIsGenerating(true);
         setError(null);
@@ -199,26 +206,109 @@ export function useChatPanelState({ storyId, initialMessages = [] }: UseChatPane
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${token}`,
+                    Accept: "text/event-stream",
                 },
                 body: JSON.stringify({ message: trimmed, sourcesOnly }),
             });
-            const payload = await response.json().catch(() => ({}));
+
             if (!response.ok) {
-                throw new Error(payload?.message || "Failed to send message");
+                const errPayload = await response.json().catch(() => ({}));
+                throw new Error(errPayload?.message || "Failed to send message");
             }
 
-            const userMessage = mapMessageDocument(payload.userMessage) ?? optimisticMessage;
-            const assistantMessage = mapMessageDocument(payload.assistantMessage);
+            const reader = response.body?.getReader();
+            if (!reader) {
+                throw new Error("Streaming not supported by browser");
+            }
 
-            setMessages((prev) => {
-                const withoutTemp = prev.filter((message) => message.id !== optimisticId);
-                return assistantMessage
-                    ? [...withoutTemp, userMessage, assistantMessage]
-                    : [...withoutTemp, userMessage];
-            });
+            const decoder = new TextDecoder();
+            let buffer = "";
+            let accumulated = "";
+            let finalPayload: any = null;
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+
+                buffer += decoder.decode(value, { stream: true });
+
+                // Parse SSE frames from buffer
+                const parts = buffer.split("\n\n");
+                // Keep the last (possibly incomplete) chunk in the buffer
+                buffer = parts.pop() || "";
+
+                for (const part of parts) {
+                    let eventType = "";
+                    let dataStr = "";
+
+                    for (const line of part.split("\n")) {
+                        if (line.startsWith("event: ")) {
+                            eventType = line.slice(7).trim();
+                        } else if (line.startsWith("data: ")) {
+                            dataStr += line.slice(6);
+                        }
+                    }
+
+                    if (!eventType || !dataStr) continue;
+
+                    try {
+                        const parsed = JSON.parse(dataStr);
+
+                        if (eventType === "token" && parsed.token) {
+                            accumulated += parsed.token;
+                            const snapshot = accumulated;
+                            setMessages((prev) =>
+                                prev.map((msg) =>
+                                    msg.id === streamingId
+                                        ? { ...msg, content: snapshot }
+                                        : msg
+                                )
+                            );
+                        } else if (eventType === "complete") {
+                            finalPayload = parsed;
+                        } else if (eventType === "error") {
+                            throw new Error(parsed.message || "Streaming error");
+                        }
+                    } catch (parseErr) {
+                        if (parseErr instanceof Error && parseErr.message !== "Streaming error") {
+                            console.warn("SSE parse error", parseErr);
+                        } else {
+                            throw parseErr;
+                        }
+                    }
+                }
+            }
+
+            // Replace optimistic + streaming messages with final persisted ones
+            if (finalPayload) {
+                const userMsg = mapMessageDocument(finalPayload.userMessage) ?? optimisticMessage;
+                const assistantMsg = mapMessageDocument(finalPayload.assistantMessage);
+
+                setMessages((prev) => {
+                    const cleaned = prev.filter(
+                        (msg) => msg.id !== optimisticId && msg.id !== streamingId
+                    );
+                    return assistantMsg
+                        ? [...cleaned, userMsg, assistantMsg]
+                        : [...cleaned, userMsg];
+                });
+            } else if (accumulated) {
+                // No complete event but we got tokens — keep the streamed content
+                setMessages((prev) =>
+                    prev.map((msg) =>
+                        msg.id === optimisticId
+                            ? { ...msg, id: optimisticId }
+                            : msg.id === streamingId
+                              ? { ...msg, content: accumulated }
+                              : msg
+                    )
+                );
+            }
         } catch (sendError) {
             console.error("Failed to send chat message", sendError);
-            setMessages((prev) => prev.filter((message) => message.id !== optimisticId));
+            setMessages((prev) =>
+                prev.filter((msg) => msg.id !== optimisticId && msg.id !== streamingId)
+            );
             setError(sendError instanceof Error ? sendError.message : "Failed to send message");
         } finally {
             setIsGenerating(false);
@@ -319,7 +409,7 @@ export function ChatPanel({
             )}
 
             {/* Messages */}
-            {!isLoading && !error && messages.map((msg) => (
+            {!isLoading && !error && messages.filter((msg) => msg.role !== "assistant" || msg.content).map((msg) => (
                 <div
                     key={msg.id}
                     className={cn(
@@ -379,14 +469,14 @@ export function ChatPanel({
                 </div>
             ))}
 
-            {isGenerating && (
+            {isGenerating && (!messages.length || !messages[messages.length - 1]?.content) && (
                  <div className="flex w-full gap-3 justify-start">
                     <Avatar className="h-8 w-8 mt-0.5 border bg-primary/10">
                         <AvatarFallback><Bot className="h-4 w-4 text-primary" /></AvatarFallback>
                     </Avatar>
                     <div className="bg-muted border rounded-2xl rounded-tl-sm px-4 py-3 max-w-[85%]">
                         <p className="text-sm text-muted-foreground italic leading-relaxed">
-                            Gathering sources and data, please be patient while I craft a good response for you…
+                            Gathering sources and data…
                         </p>
                         <div className="flex items-center gap-1.5 mt-2">
                             <span className="h-1.5 w-1.5 bg-primary/50 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
