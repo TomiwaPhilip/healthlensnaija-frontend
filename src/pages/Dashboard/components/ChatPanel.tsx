@@ -16,6 +16,7 @@ import {
     FilePlus
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Switch } from "@/components/ui/switch";
 import { marked } from "marked";
 import DOMPurify from "dompurify";
 
@@ -105,6 +106,7 @@ export function useChatPanelState({ storyId, initialMessages = [] }: UseChatPane
     );
     const [inputValue, setInputValue] = useState("");
     const [isGenerating, setIsGenerating] = useState(false);
+    const [sourcesOnly, setSourcesOnly] = useState(false);
     const [isLoading, setIsLoading] = useState(Boolean(storyId));
     const [error, setError] = useState<string | null>(null);
 
@@ -198,7 +200,7 @@ export function useChatPanelState({ storyId, initialMessages = [] }: UseChatPane
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${token}`,
                 },
-                body: JSON.stringify({ message: trimmed }),
+                body: JSON.stringify({ message: trimmed, sourcesOnly }),
             });
             const payload = await response.json().catch(() => ({}));
             if (!response.ok) {
@@ -229,6 +231,8 @@ export function useChatPanelState({ storyId, initialMessages = [] }: UseChatPane
         inputValue,
         setInputValue,
         isGenerating,
+        sourcesOnly,
+        setSourcesOnly,
         sendMessage,
         isLoading,
         error,
@@ -250,6 +254,8 @@ export function ChatPanel({
         inputValue,
         setInputValue,
         isGenerating,
+        sourcesOnly,
+        setSourcesOnly,
         sendMessage,
         isLoading,
         error,
@@ -431,8 +437,18 @@ export function ChatPanel({
                     </Button>
                 </div>
             </form>
-            <div className="text-center mt-2">
-                 <p className="text-[10px] text-muted-foreground flex items-center justify-center gap-1">
+            <div className="flex items-center justify-between mt-2">
+                 <label className="flex items-center gap-2 cursor-pointer select-none">
+                    <Switch
+                        checked={sourcesOnly}
+                        onCheckedChange={setSourcesOnly}
+                        className="h-4 w-7 data-[state=checked]:bg-green-600 [&>span]:h-3 [&>span]:w-3"
+                    />
+                    <span className="text-[11px] text-muted-foreground">
+                        {sourcesOnly ? "Using uploaded sources only" : "Sources + web search"}
+                    </span>
+                 </label>
+                 <p className="text-[10px] text-muted-foreground flex items-center gap-1">
                     <Sparkles className="h-3 w-3" /> 
                     AI can make mistakes. Check important info.
                  </p>
