@@ -21,13 +21,18 @@ import DOMPurify from "dompurify";
 
 const API_URL = import.meta.env.VITE_API_URL ?? "/api";
 
-// Configure marked for safe rendering
-marked.setOptions({ breaks: true, gfm: true });
+// Configure marked for safe rendering with external links opening in new tab
+const renderer = new marked.Renderer();
+renderer.link = ({ href, title, text }) => {
+    const titleAttr = title ? ` title="${title}"` : "";
+    return `<a href="${href}"${titleAttr} target="_blank" rel="noopener noreferrer">${text}</a>`;
+};
+marked.setOptions({ breaks: true, gfm: true, renderer });
 
 function renderMarkdown(content: string): string {
     const raw = marked.parse(content || "") as string;
     return DOMPurify.sanitize(raw, {
-        ADD_ATTR: ["target"],
+        ADD_ATTR: ["target", "rel"],
         ALLOW_TAGS: [
             "p","br","strong","em","b","i","u","s","del",
             "h1","h2","h3","h4","h5","h6",

@@ -51,7 +51,7 @@ const Header = () => {
                 key={index}
                 to={link.path} 
                 className={`relative transition-colors hover:text-primary ${
-                  isActive ? "text-primary font-semibold" : "text-muted-foreground"
+                  isActive ? "text-primary font-semibold" : "text-foreground/80 hover:text-foreground"
                 }`}
               >
                 {link.text}
@@ -78,7 +78,7 @@ const Header = () => {
         {/* Mobile Menu Toggle */}
         <div className="flex items-center gap-4 lg:hidden">
           <ThemeToggle />
-          <Button variant="ghost" size="icon" onClick={() => setMenuOpen(!menuOpen)}>
+          <Button variant="ghost" size="icon" className="text-foreground" onClick={() => setMenuOpen(!menuOpen)}>
             {menuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </Button>
         </div>
@@ -98,7 +98,7 @@ const Header = () => {
                     className={`flex items-center rounded-md px-3 py-2 text-sm font-medium transition-colors ${
                       isActive 
                         ? "bg-primary/10 text-primary" 
-                        : "hover:bg-accent hover:text-accent-foreground text-foreground"
+                        : "hover:bg-accent hover:text-accent-foreground text-foreground/80"
                     }`}
                     onClick={() => setMenuOpen(false)}
                   >

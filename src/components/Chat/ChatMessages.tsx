@@ -24,9 +24,11 @@ const ChatMessages = ({
       .replace(/\*\*Solution\*\*/g, "</li><li class='font-semibold'>Solution:</li><li>")
       .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
       .replace(/- /g, "<li>")
-      .replace(/\n/g, "<br/>");
+      .replace(/\n/g, "<br/>")
+      // Convert URLs to clickable links opening in new tab
+      .replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener noreferrer" class="text-green-600 underline">$1</a>');
     
-    return DOMPurify.sanitize(`<ul class='list-disc ml-6 space-y-2'>${formattedText}</ul>`);
+    return DOMPurify.sanitize(`<ul class='list-disc ml-6 space-y-2'>${formattedText}</ul>`, { ADD_ATTR: ["target", "rel"] });
   };
 
   const MessageDropdown = ({ message, onCopy, onEdit, onCopyAndEdit }) => {

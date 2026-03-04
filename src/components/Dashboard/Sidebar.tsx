@@ -124,6 +124,7 @@ const UserSidebar = ({
 }) => {
   const { isNightMode } = useContext(DashboardContext);
   const { t } = useTranslation("sidebar");
+  const navigate = useNavigate();
   const showExpanded = !collapsed || isMobile;
 
   return (
