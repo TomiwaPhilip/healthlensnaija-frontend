@@ -13,7 +13,11 @@ import {
     AlertCircle,
     RefreshCw,
     MessageSquarePlus,
-    FilePlus
+    FilePlus,
+    Search,
+    Globe,
+    FileText,
+    Brain
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Switch } from "@/components/ui/switch";
@@ -106,6 +110,7 @@ export function useChatPanelState({ storyId, initialMessages = [] }: UseChatPane
     );
     const [inputValue, setInputValue] = useState("");
     const [isGenerating, setIsGenerating] = useState(false);
+    const [agentStatus, setAgentStatus] = useState<string | null>(null);
     const [sourcesOnly, setSourcesOnly] = useState(false);
     const [isLoading, setIsLoading] = useState(Boolean(storyId));
     const [error, setError] = useState<string | null>(null);
@@ -198,6 +203,7 @@ export function useChatPanelState({ storyId, initialMessages = [] }: UseChatPane
         setMessages((prev) => [...prev, optimisticMessage, streamingMessage]);
         setInputValue("");
         setIsGenerating(true);
+        setAgentStatus("Sending request…");
         setError(null);
 
         try {
@@ -257,6 +263,7 @@ export function useChatPanelState({ storyId, initialMessages = [] }: UseChatPane
                         if (eventType === "token" && parsed.token) {
                             accumulated += parsed.token;
                             const snapshot = accumulated;
+                            setAgentStatus(null);
                             setMessages((prev) =>
                                 prev.map((msg) =>
                                     msg.id === streamingId
@@ -266,6 +273,8 @@ export function useChatPanelState({ storyId, initialMessages = [] }: UseChatPane
                             );
                         } else if (eventType === "complete") {
                             finalPayload = parsed;
+                        } else if (eventType === "status" && parsed.status) {
+                            setAgentStatus(parsed.status);
                         } else if (eventType === "error") {
                             throw new Error(parsed.message || "Streaming error");
                         }
@@ -312,6 +321,7 @@ export function useChatPanelState({ storyId, initialMessages = [] }: UseChatPane
             setError(sendError instanceof Error ? sendError.message : "Failed to send message");
         } finally {
             setIsGenerating(false);
+            setAgentStatus(null);
         }
     };
 
@@ -321,6 +331,7 @@ export function useChatPanelState({ storyId, initialMessages = [] }: UseChatPane
         inputValue,
         setInputValue,
         isGenerating,
+        agentStatus,
         sourcesOnly,
         setSourcesOnly,
         sendMessage,
@@ -344,6 +355,7 @@ export function ChatPanel({
         inputValue,
         setInputValue,
         isGenerating,
+        agentStatus,
         sourcesOnly,
         setSourcesOnly,
         sendMessage,
@@ -475,9 +487,20 @@ export function ChatPanel({
                         <AvatarFallback><Bot className="h-4 w-4 text-primary" /></AvatarFallback>
                     </Avatar>
                     <div className="bg-muted border rounded-2xl rounded-tl-sm px-4 py-3 max-w-[85%]">
-                        <p className="text-sm text-muted-foreground italic leading-relaxed">
-                            Gathering sources and data…
-                        </p>
+                        <div className="flex items-center gap-2">
+                            {agentStatus?.includes("source") ? (
+                                <Search className="h-3.5 w-3.5 text-primary animate-pulse" />
+                            ) : agentStatus?.includes("web") ? (
+                                <Globe className="h-3.5 w-3.5 text-primary animate-pulse" />
+                            ) : agentStatus?.includes("Extracting") ? (
+                                <FileText className="h-3.5 w-3.5 text-primary animate-pulse" />
+                            ) : (
+                                <Brain className="h-3.5 w-3.5 text-primary animate-pulse" />
+                            )}
+                            <p className="text-sm text-muted-foreground italic leading-relaxed">
+                                {agentStatus || "Gathering sources and data…"}
+                            </p>
+                        </div>
                         <div className="flex items-center gap-1.5 mt-2">
                             <span className="h-1.5 w-1.5 bg-primary/50 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
                             <span className="h-1.5 w-1.5 bg-primary/50 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
