@@ -250,9 +250,9 @@ const SignUp = () => {
                 <div className="relative">
                    <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                    <Input
-                    {...register("phoneNumber", { required: "Required", pattern: { value: /^[0-9+\-() ]+$/, message: "Invalid phone" } })}
+                    {...register("phoneNumber", { required: "Required", pattern: { value: /^\+?[0-9][0-9\-() ]{8,16}$/, message: "Invalid phone number" } })}
                     className="pl-9"
-                    placeholder="+234 800 000 0000"
+                    placeholder="08031234567"
                   />
                 </div>
                 {errors.phoneNumber && <p className="text-xs text-destructive">{errors.phoneNumber.message as string}</p>}
