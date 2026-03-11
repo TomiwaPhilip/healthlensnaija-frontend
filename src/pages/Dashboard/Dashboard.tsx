@@ -219,20 +219,6 @@ const Dashboard = () => {
             Manage your generated stories and reports
           </p>
         </div>
-        <CreateStoryDialog
-          trigger={
-            <Button className="sm:w-auto w-full">
-              <Plus className="mr-2 h-4 w-4" /> New Story
-            </Button>
-          }
-          onSuccess={(story) => {
-            const createdId = story.id || story._id;
-            fetchStories(1, false);
-            if (createdId) {
-              navigate(`/generate-story?id=${createdId}`);
-            }
-          }}
-        />
       </div>
 
       {/* 2. Search Bar */}
