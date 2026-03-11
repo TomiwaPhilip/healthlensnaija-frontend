@@ -11,13 +11,20 @@ const Header = () => {
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
 
+  const isAuthPage = ["/signin", "/signup"].includes(location.pathname);
+
   useEffect(() => {
+    if (isAuthPage) {
+      setScrolled(true);
+      return;
+    }
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
     };
+    handleScroll(); // check on mount
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [isAuthPage]);
 
   const navLinks = [
     { path: "/", text: "Home" },
