@@ -14,17 +14,16 @@ const Header = () => {
   const isAuthPage = ["/signin", "/signup"].includes(location.pathname);
 
   useEffect(() => {
-    if (isAuthPage) {
-      setScrolled(true);
-      return;
-    }
+    if (isAuthPage) return;
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
     };
-    handleScroll(); // check on mount
+    handleScroll();
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, [isAuthPage]);
+
+  const showGlass = scrolled || isAuthPage;
 
   const navLinks = [
     { path: "/", text: "Home" },
@@ -36,7 +35,7 @@ const Header = () => {
   return (
     <header 
       className={`fixed top-0 left-0 right-0 z-50 w-full border-b transition-all duration-300 ${
-        scrolled 
+        showGlass 
           ? "bg-background/80 backdrop-blur-md shadow-sm border-border" 
           : "bg-transparent border-transparent backdrop-blur-none"
       }`}

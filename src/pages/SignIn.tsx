@@ -80,7 +80,7 @@ const SignIn = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex pt-20 lg:pt-0">
+    <div className="min-h-screen bg-background flex pt-16">
       {/* Left Section: Image & Brand (Hidden on Mobile) */}
       <div className="hidden lg:flex w-1/2 relative bg-primary overflow-hidden">
         <div className="absolute inset-0 z-10 bg-gradient-to-b from-primary/80 to-primary/90 mix-blend-multiply" />

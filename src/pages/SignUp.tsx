@@ -108,7 +108,7 @@ const SignUp = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex pt-20 lg:pt-0">
+    <div className="min-h-screen bg-background flex pt-16">
       <ToastContainer position="top-center" theme="colored" />
       
       {/* Left Section: Image & Brand (Hidden on Mobile) */}
