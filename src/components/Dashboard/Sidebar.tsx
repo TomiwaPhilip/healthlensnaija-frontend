@@ -29,9 +29,27 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ThemeToggle } from "@/components/theme-toggle";
 import CreateStoryDialog from "@/components/stories/CreateStoryDialog";
 
+const API_URL = import.meta.env.VITE_API_URL ?? "/api";
+const RECENT_STORIES_LIMIT = 8;
+
 const getInitials = (firstName, lastName) => {
   if (!firstName || !lastName) return "U";
   return `${firstName[0]}${lastName[0]}`.toUpperCase();
+};
+
+const mapRecentStories = (payload) => {
+  const rawStories = Array.isArray(payload)
+    ? payload
+    : ((payload?.stories || payload?.data) ?? []);
+
+  return rawStories
+    .map((story) => ({
+      id: story.id || story._id,
+      title: (story.title || "Untitled story").trim() || "Untitled story",
+      updatedAt: story.updatedAt || story.createdAt || null,
+    }))
+    .filter((story) => Boolean(story.id))
+    .slice(0, RECENT_STORIES_LIMIT);
 };
 
 // ================================
@@ -99,7 +117,12 @@ const AdminSidebar = ({
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{user?.firstName} {user?.lastName}</p>
               </div>
-              <button onClick={() => setShowLogoutModal(true)} className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded">
+              <button
+                onClick={() => setShowLogoutModal(true)}
+                className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded"
+                aria-label="Log out"
+                title="Log out"
+              >
                 <LogOut className="w-4 h-4 text-gray-600 dark:text-gray-400" />
               </button>
             </>
@@ -125,7 +148,67 @@ const UserSidebar = ({
   const { isNightMode } = useContext(DashboardContext);
   const { t } = useTranslation("sidebar");
   const navigate = useNavigate();
+  const location = useLocation();
   const showExpanded = !collapsed || isMobile;
+  const [recentStories, setRecentStories] = useState([]);
+  const [recentStoriesLoading, setRecentStoriesLoading] = useState(false);
+  const currentStoryId = new URLSearchParams(location.search).get("id");
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchRecentStories = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        if (isMounted) {
+          setRecentStories([]);
+          setRecentStoriesLoading(false);
+        }
+        return;
+      }
+
+      if (isMounted) {
+        setRecentStoriesLoading(true);
+      }
+
+      try {
+        const response = await fetch(`${API_URL}/stories?limit=${RECENT_STORIES_LIMIT}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const payload = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          throw new Error(payload?.message || "Failed to load recent chats");
+        }
+
+        if (isMounted) {
+          setRecentStories(mapRecentStories(payload));
+        }
+      } catch (error) {
+        console.error("Failed to fetch recent chats", error);
+        if (isMounted) {
+          setRecentStories([]);
+        }
+      } finally {
+        if (isMounted) {
+          setRecentStoriesLoading(false);
+        }
+      }
+    };
+
+    fetchRecentStories();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [location.pathname, location.search, user?.id]);
+
+  const handleRecentStoryClick = (storyId) => {
+    if (onMobileLinkClick) onMobileLinkClick();
+    navigate(`/generate-story?id=${storyId}`);
+  };
 
   return (
     <div className="flex flex-col h-full bg-background overflow-hidden">
@@ -171,6 +254,54 @@ const UserSidebar = ({
         {user?.role === "Admin" && (
           <SidebarItem to="/admin/overview" icon={<Shield className="w-5 h-5" />} label="Admin Panel" onClick={onMobileLinkClick} showExpanded={showExpanded} />
         )}
+
+                {showExpanded && (
+                  <>
+                    <div className="h-px bg-gray-200 dark:bg-gray-800 my-3" />
+
+                    <div className="space-y-1">
+                      <div className="px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-gray-500 dark:text-gray-400">
+                        Recent Chats
+                      </div>
+
+                      {recentStoriesLoading && recentStories.length === 0 && (
+                        <div className="px-3 py-2 text-xs text-gray-500 dark:text-gray-400">
+                          Loading recent chats...
+                        </div>
+                      )}
+
+                      {!recentStoriesLoading && recentStories.length === 0 && (
+                        <div className="px-3 py-2 text-xs text-gray-500 dark:text-gray-400">
+                          No recent chats yet.
+                        </div>
+                      )}
+
+                      {recentStories.map((story) => {
+                        const isActiveStory =
+                          location.pathname === "/generate-story" && currentStoryId === story.id;
+
+                        return (
+                          <button
+                            key={story.id}
+                            type="button"
+                            onClick={() => handleRecentStoryClick(story.id)}
+                            title={story.title}
+                            className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left transition-all duration-200 ${
+                              isActiveStory
+                                ? "bg-accent/10 text-accent font-medium"
+                                : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                            }`}
+                          >
+                            <span className="flex h-5 w-5 flex-shrink-0 items-center justify-center">
+                              <MessageCircle className="w-4 h-4" />
+                            </span>
+                            <span className="min-w-0 flex-1 truncate text-sm">{story.title}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </>
+                )}
       </div>
 
       {/* Footer sections - pinned to bottom */}
@@ -197,7 +328,12 @@ const UserSidebar = ({
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{user?.firstName} {user?.lastName}</p>
               </div>
-              <button onClick={() => setShowLogoutModal(true)} className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded">
+              <button
+                onClick={() => setShowLogoutModal(true)}
+                className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded"
+                aria-label="Log out"
+                title="Log out"
+              >
                 <LogOut className="w-4 h-4 text-gray-600 dark:text-gray-400" />
               </button>
             </>
