@@ -376,7 +376,7 @@ export function ChatPanel({
         <div className="flex flex-col h-full bg-background relative overflow-hidden">
       {/* Messages Area */}
             <ScrollArea className="flex-1 w-full min-w-0">
-                <div className="flex flex-col gap-4 pb-4 max-w-3xl mx-auto w-full min-h-0 px-4">
+                <div className="flex flex-col gap-2.5 pb-3 max-w-3xl mx-auto w-full min-h-0 px-3">
             
             {/* Loading State */}
                         {isLoading && (
@@ -425,7 +425,7 @@ export function ChatPanel({
                 <div
                     key={msg.id}
                     className={cn(
-                        "flex w-full gap-3 min-w-0 overflow-hidden",
+                        "flex w-full gap-2 min-w-0 overflow-hidden",
                         msg.role === "user" ? "justify-end" : "justify-start"
                     )}
                 >
@@ -438,7 +438,7 @@ export function ChatPanel({
 
                     <div
                         className={cn(
-                            "relative px-4 py-3 text-sm shadow-sm max-w-[85%] min-w-0 overflow-hidden",
+                            "relative px-3 py-2.5 text-sm shadow-sm max-w-[85%] min-w-0 overflow-hidden",
                             msg.role === "user"
                                 ? "bg-primary text-primary-foreground rounded-2xl rounded-tr-sm"
                                 : "bg-muted text-foreground rounded-2xl rounded-tl-sm border"
@@ -449,27 +449,24 @@ export function ChatPanel({
                         ) : (
                             <p className="whitespace-pre-wrap break-words leading-relaxed">{msg.content}</p>
                         )}
-                        <div className="flex items-center justify-between mt-2 pt-2 border-t border-border/50">
-                            <span className="text-[10px] opacity-50">
-                                {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                            </span>
-                            {msg.role === "assistant" && onAddToArtifacts && (
+                        {msg.role === "assistant" && onAddToArtifacts && (
+                            <div className="mt-1.5 flex justify-end">
                                 <Button
                                     variant="ghost" 
                                     size="sm" 
-                                    className="group h-6 px-2 text-[10px] text-muted-foreground hover:bg-green-100 hover:text-green-700 gap-1.5 ml-auto transition-all duration-300 ease-in-out"
-                                                                        onClick={() => onAddToArtifacts(
-                                                                            `Insight: ${msg.content.slice(0, 48)}${
-                                                                                msg.content.length > 48 ? "..." : ""
-                                                                            }`,
-                                                                            msg.content
-                                                                        )}
+                                    className="group h-6 px-2 text-[10px] text-muted-foreground hover:bg-green-100 hover:text-green-700 gap-1.5 transition-all duration-300 ease-in-out"
+                                    onClick={() => onAddToArtifacts(
+                                        `Insight: ${msg.content.slice(0, 48)}${
+                                            msg.content.length > 48 ? "..." : ""
+                                        }`,
+                                        msg.content
+                                    )}
                                 >
                                     <FilePlus className="h-3 w-3" />
-                                    <span className="">Add to Artifacts</span>
+                                    <span>Add to Artifacts</span>
                                 </Button>
-                            )}
-                        </div>
+                            </div>
+                        )}
                     </div>
 
                     {/* User Avatar */}
@@ -482,11 +479,11 @@ export function ChatPanel({
             ))}
 
             {isGenerating && (!messages.length || !messages[messages.length - 1]?.content) && (
-                 <div className="flex w-full gap-3 justify-start">
+                      <div className="flex w-full gap-2 justify-start">
                     <Avatar className="h-8 w-8 mt-0.5 border bg-primary/10">
                         <AvatarFallback><Bot className="h-4 w-4 text-primary" /></AvatarFallback>
                     </Avatar>
-                    <div className="bg-muted border rounded-2xl rounded-tl-sm px-4 py-3 max-w-[85%]">
+                          <div className="bg-muted border rounded-2xl rounded-tl-sm px-3 py-2.5 max-w-[85%]">
                         <div className="flex items-center gap-2">
                             {agentStatus?.includes("source") ? (
                                 <Search className="h-3.5 w-3.5 text-primary animate-pulse" />
