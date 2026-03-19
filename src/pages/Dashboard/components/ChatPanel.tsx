@@ -8,6 +8,7 @@ import {
     Send,
     Bot,
     User,
+    ChevronDown,
     Loader2,
     Sparkles,
     AlertCircle,
@@ -363,19 +364,79 @@ export function ChatPanel({
         error,
         retryLoad,
     } = state;
-  const scrollRef = useRef<HTMLDivElement>(null);
+    const scrollAreaRef = useRef<HTMLDivElement>(null);
+    const scrollViewportRef = useRef<HTMLDivElement | null>(null);
+    const bottomAnchorRef = useRef<HTMLDivElement>(null);
+    const shouldAutoScrollRef = useRef(true);
+    const [showScrollToBottom, setShowScrollToBottom] = useState(false);
 
-  // Auto-scroll to bottom
-  useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [messages, isGenerating, isLoading]); // Added isLoading to dependencies
+    const updateScrollState = useCallback(() => {
+        const viewport = scrollViewportRef.current;
+        if (!viewport) {
+            return;
+        }
+
+        const distanceFromBottom = viewport.scrollHeight - viewport.scrollTop - viewport.clientHeight;
+        const isNearBottom = distanceFromBottom <= 120;
+
+        shouldAutoScrollRef.current = isNearBottom;
+        setShowScrollToBottom(!isNearBottom && viewport.scrollHeight > viewport.clientHeight + 80);
+    }, []);
+
+    const scrollToBottom = useCallback((behavior: ScrollBehavior = "smooth") => {
+        const viewport = scrollViewportRef.current;
+
+        if (viewport) {
+            viewport.scrollTo({
+                top: viewport.scrollHeight,
+                behavior,
+            });
+        } else if (bottomAnchorRef.current) {
+            bottomAnchorRef.current.scrollIntoView({ behavior });
+        }
+
+        shouldAutoScrollRef.current = true;
+        setShowScrollToBottom(false);
+    }, []);
+
+    useEffect(() => {
+        const scrollArea = scrollAreaRef.current;
+        if (!scrollArea) {
+            return;
+        }
+
+        const viewport = scrollArea.querySelector("[data-radix-scroll-area-viewport]");
+        if (!(viewport instanceof HTMLDivElement)) {
+            return;
+        }
+
+        scrollViewportRef.current = viewport;
+        updateScrollState();
+
+        const handleScroll = () => updateScrollState();
+        viewport.addEventListener("scroll", handleScroll, { passive: true });
+        window.addEventListener("resize", handleScroll);
+
+        return () => {
+            viewport.removeEventListener("scroll", handleScroll);
+            window.removeEventListener("resize", handleScroll);
+            scrollViewportRef.current = null;
+        };
+    }, [updateScrollState]);
+
+    useEffect(() => {
+        if (shouldAutoScrollRef.current) {
+            scrollToBottom(messages.length ? "smooth" : "auto");
+            return;
+        }
+
+        updateScrollState();
+    }, [messages, isGenerating, isLoading, scrollToBottom, updateScrollState]);
 
   return (
         <div className="flex flex-col h-full bg-background relative overflow-hidden">
       {/* Messages Area */}
-            <ScrollArea className="flex-1 w-full min-w-0">
+                        <ScrollArea ref={scrollAreaRef} className="flex-1 w-full min-w-0">
                 <div className="flex flex-col gap-2.5 pb-3 max-w-3xl mx-auto w-full min-h-0 px-3">
             
             {/* Loading State */}
@@ -506,9 +567,24 @@ export function ChatPanel({
                     </div>
                  </div>
             )}
-            <div ref={scrollRef} />
+                        <div ref={bottomAnchorRef} />
         </div>
       </ScrollArea>
+
+            {showScrollToBottom && (
+                <div className="absolute bottom-24 right-5 z-20">
+                    <Button
+                        type="button"
+                        size="icon"
+                        variant="outline"
+                        onClick={() => scrollToBottom("smooth")}
+                        className="h-10 w-10 rounded-full border bg-background/95 shadow-lg backdrop-blur supports-[backdrop-filter]:bg-background/80"
+                        aria-label="Scroll to bottom"
+                    >
+                        <ChevronDown className="h-4 w-4" />
+                    </Button>
+                </div>
+            )}
 
       {/* Input Area */}
       <div className="p-4 bg-background border-t">
