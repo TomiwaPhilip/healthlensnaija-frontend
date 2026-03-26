@@ -82,6 +82,18 @@ export interface Message {
     timestamp: Date;
 }
 
+type ResearchMode = "fast" | "balanced" | "deep";
+
+const RESEARCH_MODE_OPTIONS: Array<{
+    value: ResearchMode;
+    label: string;
+    hint: string;
+}> = [
+    { value: "fast", label: "Fast", hint: "Quick answer, minimal research" },
+    { value: "balanced", label: "Balanced", hint: "Default mix of speed and depth" },
+    { value: "deep", label: "Deep", hint: "Broader research, slower but more thorough" },
+];
+
 interface UseChatPanelArgs {
     storyId?: string | null;
     initialMessages?: unknown[];
@@ -113,6 +125,7 @@ export function useChatPanelState({ storyId, initialMessages = [] }: UseChatPane
     const [isGenerating, setIsGenerating] = useState(false);
     const [agentStatus, setAgentStatus] = useState<string | null>(null);
     const [sourcesOnly, setSourcesOnly] = useState(false);
+    const [researchMode, setResearchMode] = useState<ResearchMode>("balanced");
     const [isLoading, setIsLoading] = useState(Boolean(storyId));
     const [error, setError] = useState<string | null>(null);
 
@@ -215,7 +228,7 @@ export function useChatPanelState({ storyId, initialMessages = [] }: UseChatPane
                     Authorization: `Bearer ${token}`,
                     Accept: "text/event-stream",
                 },
-                body: JSON.stringify({ message: trimmed, sourcesOnly }),
+                body: JSON.stringify({ message: trimmed, sourcesOnly, researchMode }),
             });
 
             if (!response.ok) {
@@ -335,6 +348,8 @@ export function useChatPanelState({ storyId, initialMessages = [] }: UseChatPane
         agentStatus,
         sourcesOnly,
         setSourcesOnly,
+        researchMode,
+        setResearchMode,
         sendMessage,
         isLoading,
         error,
@@ -359,6 +374,8 @@ export function ChatPanel({
         agentStatus,
         sourcesOnly,
         setSourcesOnly,
+        researchMode,
+        setResearchMode,
         sendMessage,
         isLoading,
         error,
@@ -634,10 +651,33 @@ export function ChatPanel({
                         {sourcesOnly ? "Using uploaded sources only" : "Sources + web search"}
                     </span>
                  </label>
-                 <p className="text-[10px] text-muted-foreground flex items-center gap-1">
-                    <Sparkles className="h-3 w-3" /> 
-                    AI can make mistakes. Check important info.
-                 </p>
+                 <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1 rounded-full border bg-background/70 p-1">
+                        {RESEARCH_MODE_OPTIONS.map((option) => {
+                            const active = researchMode === option.value;
+                            return (
+                                <button
+                                    key={option.value}
+                                    type="button"
+                                    onClick={() => setResearchMode(option.value)}
+                                    title={option.hint}
+                                    className={cn(
+                                        "rounded-full px-2.5 py-1 text-[10px] font-medium transition-colors",
+                                        active
+                                            ? "bg-primary text-primary-foreground"
+                                            : "text-muted-foreground hover:bg-muted"
+                                    )}
+                                >
+                                    {option.label}
+                                </button>
+                            );
+                        })}
+                    </div>
+                    <p className="text-[10px] text-muted-foreground flex items-center gap-1">
+                        <Sparkles className="h-3 w-3" /> 
+                        AI can make mistakes. Check important info.
+                    </p>
+                 </div>
             </div>
         </div>
       </div>
